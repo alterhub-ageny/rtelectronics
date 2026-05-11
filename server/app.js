@@ -33,17 +33,104 @@ CREATE INDEX IF NOT EXISTS idx_stock_log_productId ON stock_log("productId");
 CREATE INDEX IF NOT EXISTS idx_expenses_date ON expenses(date);
 `;
 
+async function seedFull() {
+  try {
+    // Check if we already have orders
+    const { rows: existingOrders } = await query("SELECT COUNT(*) FROM orders");
+    if (parseInt(existingOrders[0].count) > 0) return;
+
+    const users = await query("SELECT id FROM users WHERE role = 'user' LIMIT 5");
+    if (!users.rows.length) return; // wait for seed
+
+    const products = await query("SELECT id, name, price FROM products");
+    if (!products.rows.length) return;
+
+    // Create 30 sample orders across the last 30 days
+    const statuses = ["confirmed", "processing", "shipped", "delivered", "delivered", "delivered"];
+    for (let i = 0; i < 30; i++) {
+      const userId = users.rows[i % users.rows.length].id;
+      const numItems = Math.floor(Math.random() * 3) + 1;
+      const items = [];
+      let total = 0;
+      for (let j = 0; j < numItems; j++) {
+        const prod = products.rows[Math.floor(Math.random() * products.rows.length)];
+        const qty = Math.floor(Math.random() * 2) + 1;
+        items.push({ id: prod.id, name: prod.name, price: prod.price, quantity: qty });
+        total += prod.price * qty;
+      }
+      const shipping = total > 100 ? 0 : 9.99;
+      const tax = total * 0.08;
+      const daysAgo = i;
+      const date = new Date(Date.now() - daysAgo * 86400000);
+      const status = statuses[Math.min(i, statuses.length - 1)];
+      const oid = `ord-${uuidv4().slice(0, 8)}`;
+      await query(
+        `INSERT INTO orders (id, "userId", items, total, shipping, tax, address, status, "statusHistory", "createdAt") VALUES ($1,$2,$3::jsonb,$4,$5,$6,$7::jsonb,$8,$9::jsonb,$10)`,
+        [oid, userId, JSON.stringify(items), total, shipping, tax,
+         JSON.stringify({ name: "Test User", city: "San Francisco", state: "CA" }),
+         status, JSON.stringify([{ status, date: date.toISOString() }]), date.toISOString()]
+      );
+      // Stock log
+      for (const item of items) {
+        await query('INSERT INTO stock_log (id, "productId", type, quantity, note, "createdAt") VALUES ($1,$2,$3,$4,$5,$6)',
+          [uuidv4(), item.id, "out", item.quantity, `Order ${oid}`, date.toISOString()]);
+      }
+    }
+
+    // Seed expenses for the last 30 days
+    const expenseTemplates = [
+      { title: "Office Rent", category: "rent", amount: 4500, recurring: true },
+      { title: "Electricity & Internet", category: "utilities", amount: 1200, recurring: true },
+      { title: "Cloud Hosting", category: "software", amount: 800, recurring: true },
+      { title: "Software Licenses", category: "software", amount: 600, recurring: true },
+      { title: "Marketing Ads", category: "marketing", amount: 3500, recurring: false },
+      { title: "Supplier Payment", category: "supplier", amount: 12000, recurring: false },
+      { title: "Shipping Costs", category: "shipping", amount: 1800, recurring: false },
+      { title: "Developer Salaries", category: "salary", amount: 15000, recurring: true },
+      { title: "Support Team", category: "salary", amount: 7000, recurring: true },
+    ];
+    for (let d = 0; d < 30; d++) {
+      const date = new Date(Date.now() - d * 86400000).toISOString().slice(0, 10);
+      for (const e of expenseTemplates) {
+        if (e.recurring || d % 5 === 0) {
+          await query(
+            'INSERT INTO expenses (id, title, category, amount, description, date, recurring, "createdAt") VALUES ($1,$2,$3,$4,$5,$6,$7,$8)',
+            [uuidv4(), e.title, e.category, e.amount * (0.9 + Math.random() * 0.2), "", date, e.recurring, new Date().toISOString()]
+          );
+        }
+      }
+    }
+
+    // Seed suppliers
+    const suppliers = [
+      { name: "TechSupply Global", contact: "David Park", email: "david@techsupply.com", phone: "+1-555-0101", address: "4427 Innovation Drive, Shenzhen" },
+      { name: "AudioCraft Pro", contact: "Lisa Martinez", email: "lisa@audiocraft.com", phone: "+1-555-0102", address: "89 Sound Boulevard, Austin, TX" },
+      { name: "GameRig Systems", contact: "Tom Nguyen", email: "tom@gamerig.com", phone: "+1-555-0103", address: "1567 Esports Way, Los Angeles, CA" },
+    ];
+    for (const s of suppliers) {
+      const exists = await query("SELECT id FROM suppliers WHERE name = $1", [s.name]);
+      if (!exists.rows.length) {
+        await query('INSERT INTO suppliers (id, name, contact, email, phone, address, "createdAt") VALUES ($1,$2,$3,$4,$5,$6,$7)',
+          [uuidv4(), s.name, s.contact, s.email, s.phone, s.address, new Date().toISOString()]);
+      }
+    }
+
+    console.log("Full seed complete");
+  } catch (e) { console.error("Seed error:", e.message); }
+}
+
 async function initDb() {
   try {
     const stmts = SCHEMA_SQL.split(";").filter(Boolean);
     for (const s of stmts) { try { await query(s); } catch {} }
-    // Seed defaults
-    await seedDefaults();
+    await seedSettings();
+    // Full seed runs later once tables are ready
+    setTimeout(() => seedFull(), 2000);
     console.log("DB initialized");
   } catch (e) { console.error("DB init error:", e.message); }
 }
 
-async function seedDefaults() {
+async function seedSettings() {
   try {
     await query("INSERT INTO settings (key, value, type) VALUES ('store_name','RT ELECTRONICS','text'),('store_email','support@rtelectronics.com','text'),('store_phone','+1 (555) 123-4567','text'),('store_address','123 Tech Street, Silicon Valley, CA 94025','text'),('currency','USD','text'),('tax_rate','0.08','number'),('free_shipping_min','100','number'),('shipping_rate','10','number'),('low_stock_threshold','5','number'),('order_prefix','RT-','text'),('facebook_url','','text'),('twitter_url','','text'),('instagram_url','','text'),('about_text','RT Electronics is your premier destination for cutting-edge technology and electronics.','textarea'),('announcement','','text'),('announcement_active','false','boolean'),('maintenance_mode','false','boolean') ON CONFLICT (key) DO NOTHING");
     await query("INSERT INTO pages (id, slug, title, content, published) VALUES ('about-page','about','About Us','',true),('faq-page','faq','Frequently Asked Questions','',true),('privacy-page','privacy','Privacy Policy','',true),('terms-page','terms','Terms of Service','',true) ON CONFLICT (slug) DO NOTHING");
