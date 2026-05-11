@@ -35,20 +35,38 @@ CREATE INDEX IF NOT EXISTS idx_expenses_date ON expenses(date);
 
 async function seedFull() {
   try {
-    // Check if we already have orders
     const { rows: existingOrders } = await query("SELECT COUNT(*) FROM orders");
     if (parseInt(existingOrders[0].count) > 0) return;
 
-    const users = await query("SELECT id FROM users WHERE role = 'user' LIMIT 5");
-    if (!users.rows.length) return; // wait for seed
+    // Ensure test users exist
+    const testUsers = [
+      { name: "John Smith", email: "john@example.com" },
+      { name: "Sarah Johnson", email: "sarah@example.com" },
+      { name: "Mike Chen", email: "mike@example.com" },
+      { name: "Emily Davis", email: "emily@example.com" },
+      { name: "Alex Wilson", email: "alex@example.com" },
+    ];
+    for (const u of testUsers) {
+      const exists = await query("SELECT id FROM users WHERE email = $1", [u.email]);
+      if (!exists.rows.length) {
+        const hashed = await bcrypt.hash("password123", 10);
+        const id = uuidv4();
+        await query(
+          'INSERT INTO users (id, name, email, password, role, avatar, addresses, wishlist, "createdAt") VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)',
+          [id, u.name, u.email, hashed, "user", `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(u.name)}`, '[]', '[]', new Date().toISOString()]
+        );
+      }
+    }
 
+    const { rows: userRows } = await query("SELECT id FROM users LIMIT 10");
+    if (!userRows.length) return;
     const products = await query("SELECT id, name, price FROM products");
     if (!products.rows.length) return;
 
     // Create 30 sample orders across the last 30 days
     const statuses = ["confirmed", "processing", "shipped", "delivered", "delivered", "delivered"];
     for (let i = 0; i < 30; i++) {
-      const userId = users.rows[i % users.rows.length].id;
+      const userId = userRows[i % userRows.length].id;
       const numItems = Math.floor(Math.random() * 3) + 1;
       const items = [];
       let total = 0;
