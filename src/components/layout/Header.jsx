@@ -48,7 +48,7 @@ export default function Header() {
           </Link>
 
           <nav className="hidden lg:flex items-center gap-1">
-            {categories.slice(0, 6).map((cat) => (
+            {categories.slice(0, 4).map((cat) => (
               <Link key={cat.id} to={`/products?category=${cat.slug}`}
                 className="px-3 py-2 text-sm text-white/60 hover:text-rt-accent rounded-lg hover:bg-white/5 transition-all duration-300"
               >
@@ -57,7 +57,7 @@ export default function Header() {
             ))}
             {navLinks.map((l) => (
               <Link key={l.href} to={l.href}
-                className="px-3 py-2 text-sm text-white/60 hover:text-rt-accent rounded-lg hover:bg-white/5 transition-all duration-300"
+                className="px-3 py-2 text-sm text-white/60 hover:text-rt-accent rounded-lg hover:bg-white/5 transition-all duration-300 hidden xl:block"
               >
                 {l.label}
               </Link>
@@ -65,7 +65,7 @@ export default function Header() {
           </nav>
 
           <div className="flex items-center gap-3">
-            <div className="hidden md:block w-64 lg:w-80">
+            <div className="hidden md:block w-48 lg:w-64 xl:w-80">
               <SearchBar />
             </div>
 
