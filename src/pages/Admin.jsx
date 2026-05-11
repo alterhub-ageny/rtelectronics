@@ -522,6 +522,7 @@ function UsersTab({ addToast }) {
 function CategoriesTab({ addToast }) {
   const [cats, setCats] = useState([]);
   const [editing, setEditing] = useState(null);
+  const [filterFeatured, setFilterFeatured] = useState("all");
 
   const load = useCallback(async () => { try { setCats(await getCategories()); } catch {} }, []);
 
@@ -540,34 +541,69 @@ function CategoriesTab({ addToast }) {
     try { await adminDeleteCategory(id); addToast("Category deleted", "success"); load(); } catch (e) { addToast(e.message, "error"); }
   };
 
+  const filtered = cats.filter((c) => filterFeatured === "all" || (filterFeatured === "featured" && c.featured) || (filterFeatured === "standard" && !c.featured));
+
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex gap-2 flex-wrap">
+          <button onClick={() => setFilterFeatured("all")} className={`px-3 py-1.5 rounded-lg text-xs transition-all ${filterFeatured === "all" ? "bg-rt-accent/20 text-rt-accent border border-rt-accent/30" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}>All ({cats.length})</button>
+          <button onClick={() => setFilterFeatured("featured")} className={`px-3 py-1.5 rounded-lg text-xs transition-all ${filterFeatured === "featured" ? "bg-rt-accent/20 text-rt-accent border border-rt-accent/30" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}>Featured</button>
+          <button onClick={() => setFilterFeatured("standard")} className={`px-3 py-1.5 rounded-lg text-xs transition-all ${filterFeatured === "standard" ? "bg-rt-accent/20 text-rt-accent border border-rt-accent/30" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}>Standard</button>
+        </div>
         <button onClick={() => setEditing({})} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all"><Plus size={16} /> Add Category</button>
       </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {cats.map((c) => (
-          <div key={c.id} className="glass rounded-2xl p-4 border border-white/5 hover:border-white/10 transition-all">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-white font-medium text-sm">{c.name}</h3>
-              <div className="flex gap-1">
+        {filtered.map((c) => (
+          <div key={c.id} className={`glass rounded-2xl p-5 border transition-all group hover:border-white/20 ${c.featured ? "border-rt-accent/20" : "border-white/5"}`}>
+            <div className="flex items-start justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-rt-accent/10 to-rt-accent2/10 border border-white/10 flex items-center justify-center">
+                  {c.icon ? (
+                    <span className="text-rt-accent text-lg font-display font-bold">{c.icon.charAt(0)}</span>
+                  ) : (
+                    <FolderTree size={20} className="text-rt-accent" />
+                  )}
+                </div>
+                <div>
+                  <h3 className="text-white font-medium">{c.name}</h3>
+                  <p className="text-xs text-white/30 font-mono">/{c.slug}</p>
+                </div>
+              </div>
+              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <button onClick={() => setEditing(c)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-rt-accent"><Edit3 size={14} /></button>
                 <button onClick={() => handleDelete(c.id)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-red-400"><Trash2 size={14} /></button>
               </div>
             </div>
-            <p className="text-xs text-white/30">{c.slug} · {c.description || "No description"}</p>
+            <p className="text-sm text-white/50 mb-3 line-clamp-2">{c.description || "No description"}</p>
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-white/40"><Package size={12} className="inline mr-1" />{c.productCount || 0} products</span>
+              {c.featured ? (
+                <span className="px-2 py-0.5 rounded-full bg-rt-accent/10 text-rt-accent flex items-center gap-1"><Star size={10} /> Featured</span>
+              ) : (
+                <span className="text-white/20">Standard</span>
+              )}
+            </div>
+            <div className="mt-2 text-[10px] text-white/20">Order: {c.order || 0}</div>
           </div>
         ))}
       </div>
+
       <AnimatePresence>
         {editing !== null && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setEditing(null)}>
-            <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-md glass rounded-2xl border border-white/10 p-6" onClick={(e) => e.stopPropagation()}>
+            <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-lg glass rounded-2xl border border-white/10 p-6" onClick={(e) => e.stopPropagation()}>
               <h2 className="text-lg font-display font-bold text-white mb-4">{editing?.id ? "Edit" : "New"} Category</h2>
-              <form onSubmit={(e) => { e.preventDefault(); const fd = new FormData(e.target); handleSave({ name: fd.get("name"), slug: fd.get("slug"), description: fd.get("description") }); }} className="space-y-3">
-                <input name="name" defaultValue={editing?.name} placeholder="Name" required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
-                <input name="slug" defaultValue={editing?.slug} placeholder="Slug" required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
-                <input name="description" defaultValue={editing?.description} placeholder="Description" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
+              <form onSubmit={(e) => { e.preventDefault(); const fd = new FormData(e.target); handleSave({ name: fd.get("name"), slug: fd.get("slug"), description: fd.get("description"), icon: fd.get("icon"), order: Number(fd.get("order") || 0), featured: fd.get("featured") === "on" }); }} className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="col-span-2"><label className="text-xs text-white/40 block mb-1">Name</label><input name="name" defaultValue={editing?.name} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
+                  <div><label className="text-xs text-white/40 block mb-1">Slug</label><input name="slug" defaultValue={editing?.slug} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
+                  <div><label className="text-xs text-white/40 block mb-1">Icon (name)</label><input name="icon" defaultValue={editing?.icon || ""} placeholder="Monitor, Smartphone..." className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
+                  <div className="col-span-2"><label className="text-xs text-white/40 block mb-1">Description</label><textarea name="description" rows={2} defaultValue={editing?.description || ""} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50 resize-none" /></div>
+                  <div><label className="text-xs text-white/40 block mb-1">Sort Order</label><input name="order" type="number" defaultValue={editing?.order || 0} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
+                  <div className="flex items-end pb-2"><label className="flex items-center gap-2 text-sm text-white/50"><input name="featured" type="checkbox" defaultChecked={editing?.featured || false} className="accent-rt-accent" /> Featured category</label></div>
+                </div>
                 <div className="flex justify-end gap-3 pt-2">
                   <button type="button" onClick={() => setEditing(null)} className="px-4 py-2 rounded-xl border border-white/10 text-white/50 hover:text-white transition-all text-sm">Cancel</button>
                   <button type="submit" className="px-6 py-2 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all">Save</button>

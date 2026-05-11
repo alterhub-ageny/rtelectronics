@@ -26,7 +26,7 @@ app.use(limiter);
 /* ─────── CATEGORIES ─────── */
 app.get("/api/categories", async (req, res) => {
   try {
-    const { rows } = await query('SELECT * FROM categories ORDER BY "order" ASC');
+    const { rows } = await query('SELECT c.*, COALESCE(p."count",0) as "productCount" FROM categories c LEFT JOIN (SELECT category, COUNT(*) as "count" FROM products GROUP BY category) p ON c.slug = p.category ORDER BY c."order" ASC');
     res.json(rows);
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
