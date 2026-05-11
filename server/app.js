@@ -53,24 +53,34 @@ async function seedSettings() {
 
 async function seedFull() {
   try {
+    // Skip if seed already complete (25+ orders)
     const { rows: existing } = await query("SELECT COUNT(*) FROM orders");
-    if (parseInt(existing[0].count) > 0) return;
+    if (parseInt(existing[0].count) >= 25) return;
 
-    // Create test users
+    // Clear partial seed data from any previous failed run
+    await query("DELETE FROM stock_log; DELETE FROM orders; DELETE FROM expenses; DELETE FROM coupons; DELETE FROM suppliers;").catch(()=>{});
+
+    const now = new Date().toISOString();
+    const hashedPw = await bcrypt.hash("password123", 10);
+
+    // Batch insert test users
     const testUsers = [
       { name: "John Smith", email: "john@example.com" },
       { name: "Sarah Johnson", email: "sarah@example.com" },
       { name: "Mike Chen", email: "mike@example.com" },
     ];
+    const userInserts = [], userParams = [];
     for (const u of testUsers) {
       const ex = await query("SELECT id FROM users WHERE email = $1", [u.email]);
       if (!ex.rows.length) {
-        const hashed = await bcrypt.hash("password123", 10);
-        await query(
-          'INSERT INTO users (id, name, email, password, role, avatar, addresses, wishlist, "createdAt") VALUES ($1,$2,$3,$4,$5,$6,$7::jsonb,$8::jsonb,$9)',
-          [uuidv4(), u.name, u.email, hashed, "user", `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(u.name)}`, '[]', '[]', new Date().toISOString()]
-        );
+        const idx = userParams.length;
+        userParams.push(uuidv4(), u.name, u.email, hashedPw, "user",
+          `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(u.name)}`, '[]', '[]', now);
+        userInserts.push(`($${idx+1},$${idx+2},$${idx+3},$${idx+4},$${idx+5},$${idx+6},$${idx+7}::jsonb,$${idx+8}::jsonb,$${idx+9})`);
       }
+    }
+    if (userInserts.length) {
+      await query(`INSERT INTO users (id,name,email,password,role,avatar,addresses,wishlist,"createdAt") VALUES ${userInserts.join(",")} ON CONFLICT DO NOTHING`, userParams);
     }
 
     const { rows: userRows } = await query("SELECT id FROM users LIMIT 10");
@@ -78,8 +88,10 @@ async function seedFull() {
     const { rows: prodRows } = await query("SELECT id, name, price FROM products");
     if (!prodRows.length) return;
 
-    // 25 orders over 25 days
+    // Batch orders + stock_log
     const statuses = ["confirmed", "processing", "shipped", "delivered", "delivered"];
+    const orderValParts = [], orderParams = [];
+    const stockValParts = [], stockParams = [];
     for (let i = 0; i < 25; i++) {
       const userId = userRows[i % userRows.length].id;
       const items = [];
@@ -91,23 +103,24 @@ async function seedFull() {
         total += prod.price * qty;
       }
       const shipping = total > 100 ? 0 : 9.99;
-      const daysAgo = i;
-      const date = new Date(Date.now() - daysAgo * 86400000);
+      const date = new Date(Date.now() - i * 86400000);
       const status = statuses[Math.min(i, statuses.length - 1)];
       const oid = `ord-${uuidv4().slice(0, 8)}`;
-      await query(
-        `INSERT INTO orders (id, "userId", items, total, shipping, tax, address, status, "statusHistory", "createdAt") VALUES ($1,$2,$3::jsonb,$4,$5,$6,$7::jsonb,$8,$9::jsonb,$10)`,
-        [oid, userId, JSON.stringify(items), Math.round(total * 100) / 100, shipping, Math.round(total * 0.08 * 100) / 100,
-         JSON.stringify({ name: "Test User", city: "San Francisco", state: "CA" }),
-         status, JSON.stringify([{ status, date: date.toISOString() }]), date.toISOString()]
-      );
+      const oi = orderParams.length;
+      orderParams.push(oid, userId, JSON.stringify(items), Math.round(total * 100) / 100, shipping, Math.round(total * 0.08 * 100) / 100,
+        JSON.stringify({ name: "Test User", city: "San Francisco", state: "CA" }), status,
+        JSON.stringify([{ status, date: date.toISOString() }]), date.toISOString());
+      orderValParts.push(`($${oi+1},$${oi+2},$${oi+3}::jsonb,$${oi+4},$${oi+5},$${oi+6},$${oi+7}::jsonb,$${oi+8},$${oi+9}::jsonb,$${oi+10})`);
       for (const item of items) {
-        await query('INSERT INTO stock_log (id, "productId", type, quantity, note, "createdAt") VALUES ($1,$2,$3,$4,$5,$6)',
-          [uuidv4(), item.id, "out", item.quantity, `Order ${oid}`, date.toISOString()]);
+        const si = stockParams.length;
+        stockParams.push(uuidv4(), item.id, "out", item.quantity, `Order ${oid}`, date.toISOString());
+        stockValParts.push(`($${si+1},$${si+2},$${si+3},$${si+4},$${si+5},$${si+6})`);
       }
     }
+    await query(`INSERT INTO orders (id,"userId",items,total,shipping,tax,address,status,"statusHistory","createdAt") VALUES ${orderValParts.join(",")}`, orderParams);
+    await query(`INSERT INTO stock_log (id,"productId",type,quantity,note,"createdAt") VALUES ${stockValParts.join(",")}`, stockParams);
 
-    // Expenses for 30 days
+    // Batch expenses
     const eTemplates = [
       { title: "Office Rent", category: "rent", amount: 4500, r: true },
       { title: "Cloud & Hosting", category: "software", amount: 1200, r: true },
@@ -117,46 +130,58 @@ async function seedFull() {
       { title: "Shipping", category: "shipping", amount: 2000, r: false },
       { title: "Utilities", category: "utilities", amount: 900, r: true },
     ];
+    const expValParts = [], expParams = [];
     for (let d = 0; d < 30; d++) {
       const date = new Date(Date.now() - d * 86400000).toISOString().slice(0, 10);
       for (const e of eTemplates) {
         if (e.r || d % 5 === 0) {
-          await query(
-            'INSERT INTO expenses (id, title, category, amount, description, date, recurring, "createdAt") VALUES ($1,$2,$3,$4,$5,$6,$7,$8)',
-            [uuidv4(), e.title, e.category, Math.round(e.amount * (0.85 + Math.random() * 0.3) * 100) / 100, "", date, e.r, new Date().toISOString()]
-          );
+          const ei = expParams.length;
+          expParams.push(uuidv4(), e.title, e.category,
+            Math.round(e.amount * (0.85 + Math.random() * 0.3) * 100) / 100, "", date, e.r, now);
+          expValParts.push(`($${ei+1},$${ei+2},$${ei+3},$${ei+4},$${ei+5},$${ei+6},$${ei+7},$${ei+8})`);
         }
       }
     }
+    if (expValParts.length) {
+      await query(`INSERT INTO expenses (id,title,category,amount,description,date,recurring,"createdAt") VALUES ${expValParts.join(",")}`, expParams);
+    }
 
-    // Coupons
+    // Batch coupons
     const coupons = [
       { code: "WELCOME10", discount: 10, type: "percent", minOrder: 50, maxUses: 100, expiresAt: "2026-12-31" },
       { code: "SAVE50", discount: 50, type: "flat", minOrder: 200, maxUses: 50, expiresAt: "2026-09-30" },
       { code: "FREESHIP", discount: 0, type: "free_shipping", minOrder: 0, maxUses: 200, expiresAt: "2026-08-31" },
     ];
+    const coupValParts = [], coupParams = [];
     for (const c of coupons) {
       const ex = await query("SELECT id FROM coupons WHERE code = $1", [c.code]);
       if (!ex.rows.length) {
-        await query(
-          'INSERT INTO coupons (id, code, discount, type, "minOrder", "maxUses", used, active, "expiresAt") VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)',
-          [uuidv4(), c.code, c.discount, c.type, c.minOrder, c.maxUses, 0, true, c.expiresAt]
-        );
+        const ci = coupParams.length;
+        coupParams.push(uuidv4(), c.code, c.discount, c.type, c.minOrder, c.maxUses, 0, true, c.expiresAt);
+        coupValParts.push(`($${ci+1},$${ci+2},$${ci+3},$${ci+4},$${ci+5},$${ci+6},$${ci+7},$${ci+8},$${ci+9})`);
       }
     }
+    if (coupValParts.length) {
+      await query(`INSERT INTO coupons (id,code,discount,type,"minOrder","maxUses",used,active,"expiresAt") VALUES ${coupValParts.join(",")}`, coupParams);
+    }
 
-    // Suppliers
+    // Batch suppliers
     const suppliers = [
       { name: "TechSupply Global", contact: "David Park", email: "david@techsupply.com" },
       { name: "AudioCraft Pro", contact: "Lisa Martinez", email: "lisa@audiocraft.com" },
       { name: "GameRig Systems", contact: "Tom Nguyen", email: "tom@gamerig.com" },
     ];
+    const supValParts = [], supParams = [];
     for (const s of suppliers) {
       const ex = await query("SELECT id FROM suppliers WHERE name = $1", [s.name]);
       if (!ex.rows.length) {
-        await query('INSERT INTO suppliers (id, name, contact, email, "createdAt") VALUES ($1,$2,$3,$4,$5)',
-          [uuidv4(), s.name, s.contact, s.email, new Date().toISOString()]);
+        const si = supParams.length;
+        supParams.push(uuidv4(), s.name, s.contact, s.email, now);
+        supValParts.push(`($${si+1},$${si+2},$${si+3},$${si+4},$${si+5})`);
       }
+    }
+    if (supValParts.length) {
+      await query(`INSERT INTO suppliers (id,name,contact,email,"createdAt") VALUES ${supValParts.join(",")}`, supParams);
     }
 
     console.log("Full seed complete");
