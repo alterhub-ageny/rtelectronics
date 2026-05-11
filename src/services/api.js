@@ -73,12 +73,14 @@ export const adminGetProducts = (params) => fetchJSON(`/admin/products?${new URL
 export const adminCreateProduct = (data) => fetchJSON("/admin/products", { method: "POST", body: JSON.stringify(data) });
 export const adminUpdateProduct = (id, data) => fetchJSON(`/admin/products/${id}`, { method: "PUT", body: JSON.stringify(data) });
 export const adminDeleteProduct = (id) => fetchJSON(`/admin/products/${id}`, { method: "DELETE" });
+export const adminBulkDeleteProducts = (ids) => fetchJSON("/admin/products/bulk-delete", { method: "POST", body: JSON.stringify({ ids }) });
 export const adminGetStats = () => fetchJSON("/admin/stats");
 export const adminGetUsers = (params) => fetchJSON(`/admin/users?${new URLSearchParams(params)}`);
 export const adminUpdateUser = (id, data) => fetchJSON(`/admin/users/${id}`, { method: "PUT", body: JSON.stringify(data) });
 export const adminDeleteUser = (id) => fetchJSON(`/admin/users/${id}`, { method: "DELETE" });
 export const adminGetContacts = () => fetchJSON("/admin/contacts");
 export const adminMarkContactRead = (id) => fetchJSON(`/admin/contacts/${id}/read`, { method: "PUT" });
+export const adminDeleteContact = (id) => fetchJSON(`/admin/contacts/${id}`, { method: "DELETE" });
 export const adminGetSubscribers = () => fetchJSON("/admin/subscribers");
 export const adminGetReviews = (params) => fetchJSON(`/admin/reviews?${new URLSearchParams(params)}`);
 export const adminDeleteReview = (id) => fetchJSON(`/admin/reviews/${id}`, { method: "DELETE" });
@@ -86,5 +88,40 @@ export const adminGetCoupons = () => fetchJSON("/coupons");
 export const adminCreateCoupon = (data) => fetchJSON("/coupons", { method: "POST", body: JSON.stringify(data) });
 export const adminUpdateCoupon = (id, data) => fetchJSON(`/admin/coupons/${id}`, { method: "PUT", body: JSON.stringify(data) });
 export const adminDeleteCoupon = (id) => fetchJSON(`/admin/coupons/${id}`, { method: "DELETE" });
-export const adminGetSalesHistory = () => fetchJSON("/admin/sales-history");
+export const adminGetSalesHistory = (days) => fetchJSON(`/admin/sales-history${days ? `?days=${days}` : ""}`);
 export const adminSeed = () => fetchJSON("/admin/seed", { method: "POST" });
+
+/* Admin: Categories */
+export const adminCreateCategory = (data) => fetchJSON("/admin/categories", { method: "POST", body: JSON.stringify(data) });
+export const adminUpdateCategory = (id, data) => fetchJSON(`/admin/categories/${id}`, { method: "PUT", body: JSON.stringify(data) });
+export const adminDeleteCategory = (id) => fetchJSON(`/admin/categories/${id}`, { method: "DELETE" });
+
+/* Admin: Stock */
+export const adminGetLowStock = (threshold) => fetchJSON(`/admin/stock/low?threshold=${threshold || 5}`);
+export const adminGetStockLog = () => fetchJSON("/admin/stock/log");
+export const adminAdjustStock = (data) => fetchJSON("/admin/stock/adjust", { method: "POST", body: JSON.stringify(data) });
+
+/* Admin: Expenses */
+export const adminGetExpenses = () => fetchJSON("/admin/expenses");
+export const adminCreateExpense = (data) => fetchJSON("/admin/expenses", { method: "POST", body: JSON.stringify(data) });
+export const adminUpdateExpense = (id, data) => fetchJSON(`/admin/expenses/${id}`, { method: "PUT", body: JSON.stringify(data) });
+export const adminDeleteExpense = (id) => fetchJSON(`/admin/expenses/${id}`, { method: "DELETE" });
+
+/* Admin: Suppliers */
+export const adminGetSuppliers = () => fetchJSON("/admin/suppliers");
+export const adminCreateSupplier = (data) => fetchJSON("/admin/suppliers", { method: "POST", body: JSON.stringify(data) });
+export const adminUpdateSupplier = (id, data) => fetchJSON(`/admin/suppliers/${id}`, { method: "PUT", body: JSON.stringify(data) });
+export const adminDeleteSupplier = (id) => fetchJSON(`/admin/suppliers/${id}`, { method: "DELETE" });
+
+/* Admin: Settings */
+export const adminGetSettings = () => fetchJSON("/admin/settings");
+export const adminUpdateSettings = (data) => fetchJSON("/admin/settings", { method: "PUT", body: JSON.stringify(data) });
+
+/* Admin: Pages */
+export const adminGetPages = () => fetchJSON("/admin/pages");
+export const adminUpdatePage = (id, data) => fetchJSON(`/admin/pages/${id}`, { method: "PUT", body: JSON.stringify(data) });
+
+/* Admin: Notifications */
+export const adminGetNotifications = (unread) => fetchJSON(`/admin/notifications${unread ? "?unread=true" : ""}`);
+export const adminCreateNotification = (data) => fetchJSON("/admin/notifications", { method: "POST", body: JSON.stringify(data) });
+export const adminMarkNotificationRead = (id) => fetchJSON(`/admin/notifications/${id}/read`, { method: "PUT" });

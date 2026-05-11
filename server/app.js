@@ -199,6 +199,11 @@ app.post("/api/orders", authMiddleware, async (req, res) => {
 
     for (const item of items) {
       await query("UPDATE products SET stock = GREATEST(0, stock - $1) WHERE id = $2", [item.quantity, item.id]);
+      await query(
+        `INSERT INTO stock_log (id, "productId", type, quantity, note, "createdAt")
+         VALUES ($1,$2,$3,$4,$5,$6)`,
+        [uuidv4(), item.id, "out", item.quantity, `Order ${id}`, now]
+      );
     }
 
     const { rows } = await query("SELECT * FROM orders WHERE id = $1", [id]);
@@ -213,6 +218,16 @@ app.put("/api/orders/:id/cancel", authMiddleware, async (req, res) => {
     if (rows[0].status !== "confirmed" && rows[0].status !== "processing") return res.status(400).json({ error: "Order cannot be cancelled" });
 
     const statusHistory = [...(rows[0].statusHistory || []), { status: "cancelled", date: new Date().toISOString() }];
+
+    for (const item of rows[0].items || []) {
+      await query("UPDATE products SET stock = stock + $1 WHERE id = $2", [item.quantity, item.id]);
+      await query(
+        `INSERT INTO stock_log (id, "productId", type, quantity, note, "createdAt")
+         VALUES ($1,$2,$3,$4,$5,$6)`,
+        [uuidv4(), item.id, "return", item.quantity, `Cancelled order ${rows[0].id}`, new Date().toISOString()]
+      );
+    }
+
     const { rows: updated } = await query(
       'UPDATE orders SET status = $1, "statusHistory" = $2::jsonb WHERE id = $3 RETURNING *',
       ["cancelled", JSON.stringify(statusHistory), req.params.id]
@@ -434,6 +449,45 @@ app.delete("/api/admin/products/:id", authMiddleware, adminMiddleware, async (re
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+app.post("/api/admin/products/bulk-delete", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { ids } = req.body;
+    if (!ids?.length) return res.status(400).json({ error: "No IDs provided" });
+    await query("DELETE FROM products WHERE id = ANY($1)", [ids]);
+    res.json({ success: true, deleted: ids.length });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+/* ─────── ADMIN: CATEGORIES ─────── */
+app.post("/api/admin/categories", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const cat = { id: uuidv4(), ...req.body };
+    await query(
+      'INSERT INTO categories (id, name, slug, description, icon, image, featured, "order") VALUES ($1,$2,$3,$4,$5,$6,$7,$8)',
+      [cat.id, cat.name, cat.slug, cat.description || null, cat.icon || null, cat.image || null, cat.featured || false, cat.order || 0]
+    );
+    res.status(201).json(cat);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.put("/api/admin/categories/:id", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { rows } = await query(
+      'UPDATE categories SET name=$1, slug=$2, description=$3, icon=$4, image=$5, featured=$6, "order"=$7 WHERE id=$8 RETURNING *',
+      [req.body.name, req.body.slug, req.body.description || null, req.body.icon || null, req.body.image || null, req.body.featured || false, req.body.order || 0, req.params.id]
+    );
+    if (!rows.length) return res.status(404).json({ error: "Not found" });
+    res.json(rows[0]);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.delete("/api/admin/categories/:id", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    await query("DELETE FROM categories WHERE id = $1", [req.params.id]);
+    res.json({ success: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 /* ─────── PROMOTIONS ─────── */
 app.get("/api/promotions", async (req, res) => {
   try {
@@ -446,15 +500,44 @@ app.get("/api/promotions", async (req, res) => {
 app.get("/api/admin/stats", authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const { rows: orders } = await query("SELECT COALESCE(SUM(total),0) as \"totalRevenue\", COUNT(*) as \"totalOrders\" FROM orders");
+    const { rows: weeklyRevenue } = await query("SELECT COALESCE(SUM(total),0) as revenue FROM orders WHERE \"createdAt\" >= NOW() - INTERVAL '7 days'");
     const { rows: products } = await query("SELECT COUNT(*) FROM products");
     const { rows: users } = await query("SELECT COUNT(*) FROM users");
     const { rows: pending } = await query("SELECT COUNT(*) FROM orders WHERE status IN ('confirmed','processing')");
+    const { rows: shipped } = await query("SELECT COUNT(*) FROM orders WHERE status = 'shipped'");
+    const { rows: delivered } = await query("SELECT COUNT(*) FROM orders WHERE status = 'delivered'");
+    const { rows: cancelled } = await query("SELECT COUNT(*) FROM orders WHERE status = 'cancelled'");
+    const { rows: categories } = await query("SELECT COUNT(*) FROM categories");
+    const { rows: reviews } = await query("SELECT COUNT(*) FROM reviews");
+    const { rows: subscribers } = await query("SELECT COUNT(*) FROM subscribers");
+    const { rows: contacts } = await query("SELECT COUNT(*) FROM contacts WHERE read = false");
+    const { rows: avgOrder } = await query("SELECT COALESCE(AVG(total),0) as avg FROM orders");
+    const { rows: expenses } = await query("SELECT COALESCE(SUM(amount),0) as total FROM expenses WHERE date >= '2024-01-01'");
+    const { rows: lowStock } = await query("SELECT COUNT(*) FROM products WHERE stock > 0 AND stock <= 5");
+    const { rows: outOfStock } = await query("SELECT COUNT(*) FROM products WHERE stock = 0");
+    const { rows: todayOrders } = await query("SELECT COUNT(*) as count, COALESCE(SUM(total),0) as revenue FROM orders WHERE \"createdAt\"::date = CURRENT_DATE");
+
     res.json({
       totalOrders: parseInt(orders[0].totalOrders),
       totalRevenue: parseFloat(orders[0].totalRevenue),
+      weeklyRevenue: parseFloat(weeklyRevenue[0].revenue),
       totalProducts: parseInt(products[0].count),
       totalUsers: parseInt(users[0].count),
       pendingOrders: parseInt(pending[0].count),
+      shippedOrders: parseInt(shipped[0].count),
+      deliveredOrders: parseInt(delivered[0].count),
+      cancelledOrders: parseInt(cancelled[0].count),
+      totalCategories: parseInt(categories[0].count),
+      totalReviews: parseInt(reviews[0].count),
+      totalSubscribers: parseInt(subscribers[0].count),
+      unreadContacts: parseInt(contacts[0].count),
+      averageOrderValue: parseFloat(avgOrder[0].avg),
+      totalExpenses: parseFloat(expenses[0].total),
+      lowStockProducts: parseInt(lowStock[0].count),
+      outOfStockProducts: parseInt(outOfStock[0].count),
+      todayOrders: parseInt(todayOrders[0].count),
+      todayRevenue: parseFloat(todayOrders[0].revenue),
+      netProfit: parseFloat(orders[0].totalRevenue) - parseFloat(expenses[0].total),
     });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
@@ -477,7 +560,7 @@ app.get("/api/admin/users", authMiddleware, adminMiddleware, async (req, res) =>
   try {
     const p = Number(req.query.page) || 1;
     const offset = (p - 1) * 50;
-    const { rows: items } = await query('SELECT id, name, email, role, avatar, addresses, wishlist, "createdAt" FROM users ORDER BY "createdAt" DESC LIMIT 50 OFFSET $1', [offset]);
+    const { rows: items } = await query('SELECT id, name, email, role, avatar, addresses, wishlist, banned, "createdAt" FROM users ORDER BY "createdAt" DESC LIMIT 50 OFFSET $1', [offset]);
     const { rows: count } = await query("SELECT COUNT(*) FROM users");
     const total = parseInt(count[0].count);
     res.json({ items, total, page: p, totalPages: Math.ceil(total / 50) });
@@ -495,7 +578,7 @@ app.put("/api/admin/users/:id", authMiddleware, adminMiddleware, async (req, res
     if (banned !== undefined) { sets.push(`banned = $${idx++}`); params.push(banned); }
     if (!sets.length) return res.status(400).json({ error: "Nothing to update" });
     params.push(req.params.id);
-    const { rows } = await query(`UPDATE users SET ${sets.join(", ")} WHERE id = $${idx} RETURNING id, name, email, role, avatar, addresses, wishlist, "createdAt"`, params);
+    const { rows } = await query(`UPDATE users SET ${sets.join(", ")} WHERE id = $${idx} RETURNING id, name, email, role, avatar, addresses, wishlist, banned, "createdAt"`, params);
     if (!rows.length) return res.status(404).json({ error: "User not found" });
     res.json(rows[0]);
   } catch (e) { res.status(500).json({ error: e.message }); }
@@ -521,6 +604,13 @@ app.put("/api/admin/contacts/:id/read", authMiddleware, adminMiddleware, async (
     const { rows } = await query("UPDATE contacts SET read = true WHERE id = $1 RETURNING *", [req.params.id]);
     if (!rows.length) return res.status(404).json({ error: "Not found" });
     res.json(rows[0]);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.delete("/api/admin/contacts/:id", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    await query("DELETE FROM contacts WHERE id = $1", [req.params.id]);
+    res.json({ success: true });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -575,15 +665,219 @@ app.delete("/api/admin/coupons/:id", authMiddleware, adminMiddleware, async (req
 /* ─────── ADMIN: SALES HISTORY ─────── */
 app.get("/api/admin/sales-history", authMiddleware, adminMiddleware, async (req, res) => {
   try {
-    const { rows } = await query("SELECT * FROM orders");
-    const days = 7;
+    const days = Number(req.query.days) || 30;
+    const { rows: orders } = await query("SELECT * FROM orders");
+    const { rows: allExpenses } = await query("SELECT * FROM expenses");
+
     const history = Array.from({ length: days }, (_, i) => {
       const d = new Date(Date.now() - i * 86400000);
       const dayStr = d.toISOString().slice(0, 10);
-      const dayOrders = rows.filter((o) => o.createdAt?.startsWith(dayStr));
-      return { date: dayStr, revenue: dayOrders.reduce((s, o) => s + (o.total || 0), 0), orders: dayOrders.length };
+      const dayOrders = orders.filter((o) => o.createdAt?.startsWith(dayStr));
+      const dayExpenses = allExpenses.filter((e) => e.date?.startsWith(dayStr));
+      const revenue = dayOrders.reduce((s, o) => s + (o.total || 0), 0);
+      const cost = dayExpenses.reduce((s, e) => s + (e.amount || 0), 0);
+      return { date: dayStr, revenue, expenses: cost, profit: revenue - cost, orders: dayOrders.length };
     }).reverse();
+
     res.json(history);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+/* ─────── ADMIN: STOCK ─────── */
+app.get("/api/admin/stock/low", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const threshold = Number(req.query.threshold) || 5;
+    const { rows } = await query("SELECT * FROM products WHERE stock <= $1 ORDER BY stock ASC", [threshold]);
+    res.json(rows);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.get("/api/admin/stock/log", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { rows } = await query('SELECT * FROM stock_log ORDER BY "createdAt" DESC LIMIT 200');
+    res.json(rows);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post("/api/admin/stock/adjust", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { productId, quantity, type, note } = req.body;
+    if (!productId || quantity === undefined) return res.status(400).json({ error: "productId and quantity required" });
+
+    const { rows: existing } = await query("SELECT * FROM products WHERE id = $1", [productId]);
+    if (!existing.length) return res.status(404).json({ error: "Product not found" });
+
+    if (type === "set") {
+      await query("UPDATE products SET stock = $1 WHERE id = $2", [Math.max(0, quantity), productId]);
+    } else if (type === "add") {
+      await query("UPDATE products SET stock = stock + $1 WHERE id = $2", [quantity, productId]);
+    } else if (type === "remove") {
+      await query("UPDATE products SET stock = GREATEST(0, stock - $1) WHERE id = $2", [quantity, productId]);
+    }
+
+    const logId = uuidv4();
+    await query(
+      `INSERT INTO stock_log (id, "productId", type, quantity, note, "createdAt") VALUES ($1,$2,$3,$4,$5,$6)`,
+      [logId, productId, type, quantity, note || `${type} adjustment`, new Date().toISOString()]
+    );
+
+    const { rows: updated } = await query("SELECT * FROM products WHERE id = $1", [productId]);
+    res.json({ product: updated[0], log: { id: logId, productId, type, quantity, note } });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+/* ─────── ADMIN: EXPENSES ─────── */
+app.get("/api/admin/expenses", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { rows } = await query('SELECT * FROM expenses ORDER BY date DESC, "createdAt" DESC');
+    res.json(rows);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post("/api/admin/expenses", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const exp = { id: uuidv4(), ...req.body, createdAt: new Date().toISOString() };
+    await query(
+      'INSERT INTO expenses (id, title, category, amount, description, date, recurring, "createdAt") VALUES ($1,$2,$3,$4,$5,$6,$7,$8)',
+      [exp.id, exp.title, exp.category || "other", exp.amount, exp.description || null, exp.date, exp.recurring || false, exp.createdAt]
+    );
+    res.status(201).json(exp);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.put("/api/admin/expenses/:id", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { rows } = await query(
+      'UPDATE expenses SET title=$1, category=$2, amount=$3, description=$4, date=$5, recurring=$6 WHERE id=$7 RETURNING *',
+      [req.body.title, req.body.category || "other", req.body.amount, req.body.description || null, req.body.date, req.body.recurring || false, req.params.id]
+    );
+    if (!rows.length) return res.status(404).json({ error: "Not found" });
+    res.json(rows[0]);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.delete("/api/admin/expenses/:id", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    await query("DELETE FROM expenses WHERE id = $1", [req.params.id]);
+    res.json({ success: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+/* ─────── ADMIN: SUPPLIERS ─────── */
+app.get("/api/admin/suppliers", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { rows } = await query('SELECT * FROM suppliers ORDER BY name');
+    res.json(rows);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post("/api/admin/suppliers", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const sup = { id: uuidv4(), ...req.body, createdAt: new Date().toISOString() };
+    await query(
+      'INSERT INTO suppliers (id, name, contact, email, phone, address, notes, "createdAt") VALUES ($1,$2,$3,$4,$5,$6,$7,$8)',
+      [sup.id, sup.name, sup.contact || null, sup.email || null, sup.phone || null, sup.address || null, sup.notes || null, sup.createdAt]
+    );
+    res.status(201).json(sup);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.put("/api/admin/suppliers/:id", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { rows } = await query(
+      'UPDATE suppliers SET name=$1, contact=$2, email=$3, phone=$4, address=$5, notes=$6 WHERE id=$7 RETURNING *',
+      [req.body.name, req.body.contact || null, req.body.email || null, req.body.phone || null, req.body.address || null, req.body.notes || null, req.params.id]
+    );
+    if (!rows.length) return res.status(404).json({ error: "Not found" });
+    res.json(rows[0]);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.delete("/api/admin/suppliers/:id", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    await query("DELETE FROM suppliers WHERE id = $1", [req.params.id]);
+    res.json({ success: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+/* ─────── ADMIN: SETTINGS ─────── */
+app.get("/api/admin/settings", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { rows } = await query("SELECT * FROM settings ORDER BY key");
+    const obj = {};
+    for (const row of rows) obj[row.key] = { value: row.value, type: row.type };
+    res.json(obj);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.put("/api/admin/settings", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const entries = Object.entries(req.body);
+    for (const [key, val] of entries) {
+      await query('INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2', [key, String(val)]);
+    }
+    const { rows } = await query("SELECT * FROM settings ORDER BY key");
+    const obj = {};
+    for (const row of rows) obj[row.key] = { value: row.value, type: row.type };
+    res.json(obj);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+/* ─────── ADMIN: PAGES ─────── */
+app.get("/api/pages/:slug", async (req, res) => {
+  try {
+    const { rows } = await query("SELECT * FROM pages WHERE slug = $1 AND published = true", [req.params.slug]);
+    res.json(rows[0] || null);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.get("/api/admin/pages", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { rows } = await query("SELECT * FROM pages ORDER BY slug");
+    res.json(rows);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.put("/api/admin/pages/:id", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { rows } = await query(
+      'UPDATE pages SET title=$1, slug=$2, content=$3, published=$4 WHERE id=$5 RETURNING *',
+      [req.body.title, req.body.slug, req.body.content || "", req.body.published !== false, req.params.id]
+    );
+    if (!rows.length) return res.status(404).json({ error: "Not found" });
+    res.json(rows[0]);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+/* ─────── ADMIN: NOTIFICATIONS ─────── */
+app.get("/api/admin/notifications", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const unreadFirst = req.query.unread === "true";
+    const { rows } = await query(
+      unreadFirst
+        ? 'SELECT * FROM notifications ORDER BY read ASC, "createdAt" DESC LIMIT 50'
+        : 'SELECT * FROM notifications ORDER BY "createdAt" DESC LIMIT 50'
+    );
+    res.json(rows);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post("/api/admin/notifications", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const notif = { id: uuidv4(), ...req.body, read: false, createdAt: new Date().toISOString() };
+    await query(
+      'INSERT INTO notifications (id, type, title, message, read, "createdAt") VALUES ($1,$2,$3,$4,$5,$6)',
+      [notif.id, notif.type || "info", notif.title, notif.message || null, false, notif.createdAt]
+    );
+    res.status(201).json(notif);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.put("/api/admin/notifications/:id/read", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { rows } = await query("UPDATE notifications SET read = true WHERE id = $1 RETURNING *", [req.params.id]);
+    if (!rows.length) return res.status(404).json({ error: "Not found" });
+    res.json(rows[0]);
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 

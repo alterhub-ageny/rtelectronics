@@ -116,3 +116,90 @@ CREATE INDEX IF NOT EXISTS idx_orders_userId ON orders("userId");
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 CREATE INDEX IF NOT EXISTS idx_reviews_productId ON reviews("productId");
 CREATE INDEX IF NOT EXISTS idx_coupons_code ON coupons(code);
+
+CREATE TABLE IF NOT EXISTS stock_log (
+  id TEXT PRIMARY KEY,
+  "productId" TEXT NOT NULL,
+  type TEXT NOT NULL,
+  quantity INTEGER NOT NULL,
+  note TEXT,
+  "createdAt" TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS expenses (
+  id TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  category TEXT NOT NULL DEFAULT 'other',
+  amount DOUBLE PRECISION NOT NULL,
+  description TEXT,
+  date DATE NOT NULL,
+  recurring BOOLEAN DEFAULT false,
+  "createdAt" TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS suppliers (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  contact TEXT,
+  email TEXT,
+  phone TEXT,
+  address TEXT,
+  notes TEXT,
+  "createdAt" TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS settings (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL,
+  type TEXT DEFAULT 'text',
+  "createdAt" TIMESTAMPTZ DEFAULT NOW()
+);
+
+INSERT INTO settings (key, value, type) VALUES
+  ('store_name', 'RT ELECTRONICS', 'text'),
+  ('store_email', 'support@rtelectronics.com', 'text'),
+  ('store_phone', '+1 (555) 123-4567', 'text'),
+  ('store_address', '123 Tech Street, Silicon Valley, CA 94025', 'text'),
+  ('currency', 'USD', 'text'),
+  ('tax_rate', '0.08', 'number'),
+  ('free_shipping_min', '100', 'number'),
+  ('shipping_rate', '10', 'number'),
+  ('low_stock_threshold', '5', 'number'),
+  ('order_prefix', 'RT-', 'text'),
+  ('facebook_url', '', 'text'),
+  ('twitter_url', '', 'text'),
+  ('instagram_url', '', 'text'),
+  ('about_text', 'RT Electronics is your premier destination for cutting-edge technology and electronics.', 'textarea'),
+  ('announcement', '', 'text'),
+  ('announcement_active', 'false', 'boolean'),
+  ('maintenance_mode', 'false', 'boolean')
+ON CONFLICT (key) DO NOTHING;
+
+CREATE TABLE IF NOT EXISTS notifications (
+  id TEXT PRIMARY KEY,
+  type TEXT NOT NULL DEFAULT 'info',
+  title TEXT NOT NULL,
+  message TEXT,
+  read BOOLEAN DEFAULT false,
+  "createdAt" TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS pages (
+  id TEXT PRIMARY KEY,
+  slug TEXT UNIQUE NOT NULL,
+  title TEXT NOT NULL,
+  content TEXT DEFAULT '',
+  published BOOLEAN DEFAULT false,
+  "createdAt" TIMESTAMPTZ DEFAULT NOW()
+);
+
+INSERT INTO pages (id, slug, title, content, published) VALUES
+  ('about-page', 'about', 'About Us', '', true),
+  ('faq-page', 'faq', 'Frequently Asked Questions', '', true),
+  ('privacy-page', 'privacy', 'Privacy Policy', '', true),
+  ('terms-page', 'terms', 'Terms of Service', '', true)
+ON CONFLICT (slug) DO NOTHING;
+
+CREATE INDEX IF NOT EXISTS idx_stock_log_productId ON stock_log("productId");
+CREATE INDEX IF NOT EXISTS idx_expenses_date ON expenses(date);
+CREATE INDEX IF NOT EXISTS idx_notifications_read ON notifications(read);
