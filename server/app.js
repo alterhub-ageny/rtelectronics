@@ -13,8 +13,9 @@ import { generateToken, authMiddleware, adminMiddleware } from "./middleware/aut
 import { migrate } from "./migrate.js";
 import { seed } from "./seed.js";
 
-// Run migrations and seed on startup
-migrate().then(() => seed());
+// Run migrations and seed on startup (blocking to avoid race with first request)
+await migrate();
+await seed();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
