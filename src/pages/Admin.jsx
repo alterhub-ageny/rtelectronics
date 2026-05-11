@@ -29,13 +29,14 @@ const TABS = [
 ];
 
 export default function Admin() {
-  const { user, isAdmin, logout } = useAuth();
+  const { user, loading, isAdmin, logout } = useAuth();
   const addToast = useToast();
   const navigate = useNavigate();
   const [tab, setTab] = useState("dashboard");
   const [sidebar, setSidebar] = useState(false);
 
-  useEffect(() => { if (!user) navigate("/login"); else if (!isAdmin) navigate("/"); }, [user, isAdmin]);
+  useEffect(() => { if (!loading && !user) navigate("/login"); else if (!loading && !isAdmin) navigate("/"); }, [user, isAdmin, loading]);
+  if (loading) return <div className="min-h-screen bg-rt-darker flex items-center justify-center"><div className="w-8 h-8 border-2 border-rt-accent border-t-transparent rounded-full animate-spin" /></div>;
   if (!user || !isAdmin) return null;
 
   return (
