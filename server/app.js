@@ -868,8 +868,8 @@ app.get("/api/admin/sales-history", authMiddleware, adminMiddleware, async (req,
     const history = Array.from({ length: days }, (_, i) => {
       const d = new Date(Date.now() - i * 86400000);
       const dayStr = d.toISOString().slice(0, 10);
-      const dayOrders = orders.filter((o) => o.createdAt?.startsWith(dayStr));
-      const dayExpenses = allExpenses.filter((e) => e.date?.startsWith(dayStr));
+      const dayOrders = orders.filter((o) => { try { return String(o.createdAt).startsWith(dayStr) || o.createdAt?.toISOString().startsWith(dayStr); } catch { return false; } });
+      const dayExpenses = allExpenses.filter((e) => { try { return String(e.date).startsWith(dayStr); } catch { return false; } });
       const revenue = dayOrders.reduce((s, o) => s + (o.total || 0), 0);
       const cost = dayExpenses.reduce((s, e) => s + (e.amount || 0), 0);
       return { date: dayStr, revenue, expenses: cost, profit: revenue - cost, orders: dayOrders.length };
