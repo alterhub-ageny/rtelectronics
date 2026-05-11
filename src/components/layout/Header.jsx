@@ -45,7 +45,7 @@ export default function Header() {
               <Link key={cat.id} to={`/products?category=${cat.slug}`}
                 className="px-3 py-2 text-sm text-white/60 hover:text-rt-accent rounded-lg hover:bg-white/5 transition-all duration-300"
               >
-                {cat.name}
+                {cat.name === "Headphones & Audio" ? "Audio" : cat.name === "Gaming PCs" ? "Gaming" : cat.name}
               </Link>
             ))}
           </nav>
