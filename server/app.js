@@ -10,6 +10,11 @@ import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcryptjs";
 import { query } from "./db.js";
 import { generateToken, authMiddleware, adminMiddleware } from "./middleware/auth.js";
+import { migrate } from "./migrate.js";
+import { seed } from "./seed.js";
+
+// Run migrations and seed on startup
+migrate().then(() => seed());
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
