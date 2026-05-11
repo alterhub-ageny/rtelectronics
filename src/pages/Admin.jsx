@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
@@ -92,27 +92,6 @@ function StatusBadge({ status }) {
   );
 }
 
-function AnimatedCounter({ value, prefix = "", suffix = "", decimals = 0 }) {
-  const [display, setDisplay] = useState(0);
-  const ref = useRef(null);
-  useEffect(() => {
-    if (ref.current) cancelAnimationFrame(ref.current);
-    const start = performance.now();
-    const from = display;
-    const to = Number(value) || 0;
-    const dur = 800;
-    function tick(now) {
-      const p = Math.min((now - start) / dur, 1);
-      const ease = 1 - Math.pow(1 - p, 3);
-      setDisplay(from + (to - from) * ease);
-      if (p < 1) ref.current = requestAnimationFrame(tick);
-    }
-    ref.current = requestAnimationFrame(tick);
-    return () => { if (ref.current) cancelAnimationFrame(ref.current); };
-  }, [value]);
-  return <>{prefix}{display.toFixed(decimals)}{suffix}</>;
-}
-
 const TABS = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "products", label: "Products", icon: Package },
@@ -184,9 +163,7 @@ export default function Admin() {
                 tab === t.id ? "text-rt-accent" : "text-white/50 hover:text-white hover:bg-white/5"
               }`}
             >
-              {tab === t.id && (
-                <motion.div layoutId="activeTab" className="absolute inset-0 bg-rt-accent/10 border border-rt-accent/30 rounded-xl" transition={{ type: "spring", stiffness: 400, damping: 30 }} />
-              )}
+              {tab === t.id && <div className="absolute inset-0 bg-rt-accent/10 border border-rt-accent/30 rounded-xl" />}
               <span className="relative z-10 flex items-center gap-3">
                 <t.icon size={16} />
                 {t.label}
@@ -277,7 +254,7 @@ function KpiCard({ title, value, icon: Icon, trend, subtitle, color = "text-rt-a
         </div>
         {chart}
       </div>
-      <p className="text-2xl font-display font-bold text-white mb-0.5 relative"><AnimatedCounter value={value} prefix={typeof value === "string" && value.startsWith("$") ? "$" : ""} suffix="" /></p>
+      <p className="text-2xl font-display font-bold text-white mb-0.5 relative">{value}</p>
       <p className="text-xs text-white/40 relative">{title}</p>
       {trend !== undefined && (
         <div className={`flex items-center gap-1 mt-1.5 text-xs relative ${trend >= 0 ? "text-emerald-400" : "text-red-400"}`}>
