@@ -58,7 +58,11 @@ async function seedFull() {
     if (parseInt(existing[0].count) >= 25) return;
 
     // Clear partial seed data from any previous failed run
-    await query("DELETE FROM stock_log; DELETE FROM orders; DELETE FROM expenses; DELETE FROM coupons; DELETE FROM suppliers;").catch(()=>{});
+    await query("DELETE FROM stock_log").catch(()=>{});
+    await query("DELETE FROM orders").catch(()=>{});
+    await query("DELETE FROM expenses").catch(()=>{});
+    await query("DELETE FROM coupons").catch(()=>{});
+    await query("DELETE FROM suppliers").catch(()=>{});
 
     const now = new Date().toISOString();
     const hashedPw = await bcrypt.hash("password123", 10);
