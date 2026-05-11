@@ -192,12 +192,17 @@ async function seedFull() {
   } catch (e) { console.error("Seed error:", e.message); }
 }
 
-initDb();
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
+
+// Ensure DB tables + seed complete before handling first request
+let dbReady = initDb();
+app.use(async (req, res, next) => {
+  if (dbReady) { await dbReady; dbReady = null; }
+  next();
+});
 
 app.use(helmet({ crossOriginResourcePolicy: false, contentSecurityPolicy: false }));
 app.use(cors());
