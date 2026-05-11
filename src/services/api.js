@@ -1,0 +1,90 @@
+const BASE = "/api";
+
+function getToken() {
+  try { return localStorage.getItem("rt-token"); } catch { return null; }
+}
+
+async function fetchJSON(url, options = {}) {
+  const headers = { "Content-Type": "application/json" };
+  const token = getToken();
+  if (token) headers.Authorization = `Bearer ${token}`;
+
+  const res = await fetch(`${BASE}${url}`, { headers, ...options });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || `API Error: ${res.status}`);
+  return data;
+}
+
+export const getCategories = () => fetchJSON("/categories");
+
+export const getProducts = (params = {}) => {
+  const q = new URLSearchParams();
+  Object.entries(params).forEach(([k, v]) => { if (v !== undefined && v !== null && v !== "") q.append(k, v); });
+  return fetchJSON(`/products${q.toString() ? `?${q}` : ""}`);
+};
+
+export const getProduct = (id) => fetchJSON(`/products?id=${id}`);
+export const getFeatured = () => fetchJSON("/products?featured=true");
+export const getPromotions = () => fetchJSON("/promotions");
+
+export const getProductsByIds = (ids) => {
+  if (!ids?.length) return Promise.resolve([]);
+  return fetchJSON(`/products?ids=${ids.join(",")}`);
+};
+
+/* Auth */
+export const register = (data) => fetchJSON("/auth/register", { method: "POST", body: JSON.stringify(data) });
+export const login = (data) => fetchJSON("/auth/login", { method: "POST", body: JSON.stringify(data) });
+export const getMe = () => fetchJSON("/auth/me");
+export const updateProfile = (data) => fetchJSON("/auth/profile", { method: "PUT", body: JSON.stringify(data) });
+export const addAddress = (data) => fetchJSON("/auth/addresses", { method: "POST", body: JSON.stringify(data) });
+export const deleteAddress = (id) => fetchJSON(`/auth/addresses/${id}`, { method: "DELETE" });
+
+/* Orders */
+export const getOrders = () => fetchJSON("/orders");
+export const getOrder = (id) => fetchJSON(`/orders/${id}`);
+export const createOrder = (data) => fetchJSON("/orders", { method: "POST", body: JSON.stringify(data) });
+export const cancelOrder = (id) => fetchJSON(`/orders/${id}/cancel`, { method: "PUT" });
+
+/* Reviews */
+export const getReviews = (productId) => fetchJSON(`/reviews?productId=${productId}`);
+export const submitReview = (data) => fetchJSON("/reviews", { method: "POST", body: JSON.stringify(data) });
+
+/* Wishlist */
+export const getWishlist = () => fetchJSON("/wishlist");
+export const addToWishlist = (productId) => fetchJSON(`/wishlist/${productId}`, { method: "POST" });
+export const removeFromWishlist = (productId) => fetchJSON(`/wishlist/${productId}`, { method: "DELETE" });
+
+/* Coupons */
+export const validateCoupon = (code, orderTotal) =>
+  fetchJSON("/coupons/validate", { method: "POST", body: JSON.stringify({ code, orderTotal }) });
+
+/* Contact */
+export const submitContact = (data) => fetchJSON("/contact", { method: "POST", body: JSON.stringify(data) });
+
+/* Newsletter */
+export const subscribeNewsletter = (email) =>
+  fetchJSON("/newsletter", { method: "POST", body: JSON.stringify({ email }) });
+
+/* Admin */
+export const adminGetOrders = (params) => fetchJSON(`/admin/orders?${new URLSearchParams(params)}`);
+export const adminUpdateOrderStatus = (id, data) => fetchJSON(`/admin/orders/${id}/status`, { method: "PUT", body: JSON.stringify(data) });
+export const adminGetProducts = (params) => fetchJSON(`/admin/products?${new URLSearchParams(params)}`);
+export const adminCreateProduct = (data) => fetchJSON("/admin/products", { method: "POST", body: JSON.stringify(data) });
+export const adminUpdateProduct = (id, data) => fetchJSON(`/admin/products/${id}`, { method: "PUT", body: JSON.stringify(data) });
+export const adminDeleteProduct = (id) => fetchJSON(`/admin/products/${id}`, { method: "DELETE" });
+export const adminGetStats = () => fetchJSON("/admin/stats");
+export const adminGetUsers = (params) => fetchJSON(`/admin/users?${new URLSearchParams(params)}`);
+export const adminUpdateUser = (id, data) => fetchJSON(`/admin/users/${id}`, { method: "PUT", body: JSON.stringify(data) });
+export const adminDeleteUser = (id) => fetchJSON(`/admin/users/${id}`, { method: "DELETE" });
+export const adminGetContacts = () => fetchJSON("/admin/contacts");
+export const adminMarkContactRead = (id) => fetchJSON(`/admin/contacts/${id}/read`, { method: "PUT" });
+export const adminGetSubscribers = () => fetchJSON("/admin/subscribers");
+export const adminGetReviews = (params) => fetchJSON(`/admin/reviews?${new URLSearchParams(params)}`);
+export const adminDeleteReview = (id) => fetchJSON(`/admin/reviews/${id}`, { method: "DELETE" });
+export const adminGetCoupons = () => fetchJSON("/coupons");
+export const adminCreateCoupon = (data) => fetchJSON("/coupons", { method: "POST", body: JSON.stringify(data) });
+export const adminUpdateCoupon = (id, data) => fetchJSON(`/admin/coupons/${id}`, { method: "PUT", body: JSON.stringify(data) });
+export const adminDeleteCoupon = (id) => fetchJSON(`/admin/coupons/${id}`, { method: "DELETE" });
+export const adminGetSalesHistory = () => fetchJSON("/admin/sales-history");
+export const adminSeed = () => fetchJSON("/admin/seed", { method: "POST" });
