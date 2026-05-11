@@ -50,6 +50,9 @@ export default {
         "radial-glow":
           "radial-gradient(circle at 50% 50%, rgba(255, 42, 42, 0.1) 0%, transparent 70%)",
       },
+      maxWidth: {
+        site: "1440px",
+      },
       backgroundSize: {
         grid: "60px 60px",
       },

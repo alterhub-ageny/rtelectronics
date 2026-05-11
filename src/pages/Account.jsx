@@ -58,7 +58,7 @@ export default function Account() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+    <div className="max-w-site mx-auto px-4 sm:px-6 py-10">
       <div className="flex items-center gap-4 mb-8">
         <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-rt-accent/20 to-rt-accent2/20 border border-white/10 flex items-center justify-center overflow-hidden">
           {user.avatar ? <img src={user.avatar} alt="" className="w-full h-full object-cover" /> : <User size={28} className="text-rt-accent" />}

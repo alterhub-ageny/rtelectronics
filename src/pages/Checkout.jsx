@@ -93,7 +93,7 @@ export default function Checkout() {
   const update = (f) => (e) => setForm({ ...form, [f]: e.target.value });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+    <div className="max-w-site mx-auto px-4 sm:px-6 py-10">
       <Link to="/cart" className="inline-flex items-center gap-2 text-white/40 hover:text-rt-accent transition-colors mb-8 text-sm">
         <ArrowLeft size={16} /> Back to Cart
       </Link>

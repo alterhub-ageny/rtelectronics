@@ -19,7 +19,7 @@ const values = [
 
 export default function About() {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+    <div className="max-w-site mx-auto px-4 sm:px-6 py-10">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-16">
         <span className="text-rt-accent text-sm font-mono tracking-widest uppercase">About Us</span>
         <h1 className="text-4xl md:text-6xl font-display font-bold text-white mt-3 mb-4">

@@ -31,7 +31,7 @@ export default function RecentlyViewed() {
   if (products.length === 0) return null;
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+    <section className="max-w-site mx-auto px-4 sm:px-6 py-10">
       <div className="flex items-center gap-2 mb-6">
         <Clock size={18} className="text-rt-accent" />
         <h2 className="text-lg font-display font-bold text-white">Recently Viewed</h2>

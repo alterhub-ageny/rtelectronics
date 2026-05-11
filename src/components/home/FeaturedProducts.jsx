@@ -14,7 +14,7 @@ export default function FeaturedProducts() {
   if (!products.length) return null;
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 py-20">
+    <section className="max-w-site mx-auto px-4 sm:px-6 py-20">
       <div className="flex items-end justify-between mb-10">
         <div>
           <span className="text-rt-accent text-sm font-mono tracking-widest uppercase">Featured</span>

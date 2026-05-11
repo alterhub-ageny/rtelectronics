@@ -12,7 +12,7 @@ export default function PromoSection() {
   if (!promotions.length) return null;
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 py-20">
+    <section className="max-w-site mx-auto px-4 sm:px-6 py-20">
       <Carousel items={promotions} />
     </section>
   );

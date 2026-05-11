@@ -30,7 +30,7 @@ export default function Contact() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+    <div className="max-w-site mx-auto px-4 sm:px-6 py-10">
       <div className="text-center mb-12">
         <span className="text-rt-accent text-sm font-mono tracking-widest uppercase">Contact</span>
         <h1 className="section-title mt-2">Get in Touch</h1>

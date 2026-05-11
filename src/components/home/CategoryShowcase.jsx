@@ -9,7 +9,7 @@ export default function CategoryShowcase() {
   const { categories } = useCategories();
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 py-20">
+    <section className="max-w-site mx-auto px-4 sm:px-6 py-20">
       <div className="text-center mb-12">
         <span className="text-rt-accent text-sm font-mono tracking-widest uppercase">Categories</span>
         <h2 className="section-title mt-2">Shop by Category</h2>

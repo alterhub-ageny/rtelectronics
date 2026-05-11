@@ -39,7 +39,7 @@ export default function ProductDetailPage() {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+      <div className="max-w-site mx-auto px-4 sm:px-6 py-10">
         <div className="grid lg:grid-cols-2 gap-12">
           <div className="aspect-square rounded-3xl bg-white/5 animate-pulse" />
           <div className="space-y-4"> <div className="h-8 bg-white/5 rounded w-3/4" /> <div className="h-4 bg-white/5 rounded w-1/4" /> <div className="h-32 bg-white/5 rounded" /> </div>
@@ -80,7 +80,7 @@ export default function ProductDetailPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+    <div className="max-w-site mx-auto px-4 sm:px-6 py-10">
       <Breadcrumbs items={[
         { label: "Products", href: "/products" },
         { label: product.category, href: `/products?category=${product.category}` },

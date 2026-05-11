@@ -10,7 +10,7 @@ export default function HeroSection() {
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-rt-accent/5 rounded-full blur-[120px]" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-rt-accent2/5 rounded-full blur-[120px]" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10 py-20">
+      <div className="max-w-site mx-auto px-4 sm:px-6 relative z-10 py-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
             <motion.div

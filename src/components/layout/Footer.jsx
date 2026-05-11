@@ -8,7 +8,7 @@ export default function Footer() {
   return (
     <footer className="relative border-t border-white/5 bg-rt-darker/80">
       <div className="absolute inset-0 bg-grid-pattern bg-grid opacity-[0.02]" />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16 relative">
+      <div className="max-w-site mx-auto px-4 sm:px-6 py-16 relative">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           <div>
             <Link to="/" className="flex items-center gap-3 mb-6">

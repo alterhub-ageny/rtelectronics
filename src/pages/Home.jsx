@@ -37,7 +37,7 @@ export default function Home() {
         <PromoSection />
       </AnimatedSection>
 
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-20">
+      <section className="max-w-site mx-auto px-4 sm:px-6 py-20">
         <div className="glass rounded-3xl p-10 md:p-16 text-center border border-white/5 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-rt-accent/5 via-transparent to-rt-accent2/5" />
           <div className="relative z-10">
