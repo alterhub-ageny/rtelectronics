@@ -8,11 +8,11 @@ export default {
           dark: "#0a0a1a",
           darker: "#060612",
           card: "#111128",
-          accent: "#ff2a2a",
-          accent2: "#cc0000",
-          accent3: "#ff6b6b",
+          accent: "rgb(var(--rt-accent) / <alpha-value>)",
+          accent2: "rgb(var(--rt-accent2) / <alpha-value>)",
+          accent3: "rgb(var(--rt-accent3) / <alpha-value>)",
           gold: "#ffd700",
-          glow: "rgba(255, 42, 42, 0.3)",
+          glow: "rgb(var(--rt-glow) / <alpha-value>)",
         },
       },
       fontFamily: {
@@ -28,8 +28,8 @@ export default {
       },
       keyframes: {
         "glow-pulse": {
-          "0%, 100%": { boxShadow: "0 0 20px rgba(255, 42, 42, 0.2)" },
-          "50%": { boxShadow: "0 0 40px rgba(255, 42, 42, 0.6)" },
+          "0%, 100%": { boxShadow: "var(--rt-glow-pulse-from)" },
+          "50%": { boxShadow: "var(--rt-glow-pulse-to)" },
         },
         float: {
           "0%, 100%": { transform: "translateY(0px)" },
@@ -46,9 +46,9 @@ export default {
       },
       backgroundImage: {
         "grid-pattern":
-          "linear-gradient(rgba(255, 42, 42, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 42, 42, 0.03) 1px, transparent 1px)",
+          "linear-gradient(var(--rt-grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--rt-grid-color) 1px, transparent 1px)",
         "radial-glow":
-          "radial-gradient(circle at 50% 50%, rgba(255, 42, 42, 0.1) 0%, transparent 70%)",
+          "radial-gradient(circle at 50% 50%, var(--rt-radial-glow-color) 0%, transparent 70%)",
       },
       maxWidth: {
         site: "1440px",

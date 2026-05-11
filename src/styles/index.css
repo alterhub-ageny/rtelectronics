@@ -3,18 +3,54 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --rt-accent: 255 42 42;
+    --rt-accent2: 204 0 0;
+    --rt-accent3: 255 107 107;
+    --rt-glow: 255 42 42;
+    --rt-glow-pulse-from: 0 0 20px rgba(255, 42, 42, 0.2);
+    --rt-glow-pulse-to: 0 0 40px rgba(255, 42, 42, 0.6);
+    --rt-grid-color: rgba(255, 42, 42, 0.03);
+    --rt-radial-glow-color: rgba(255, 42, 42, 0.1);
+    --rt-body-grad-1: rgba(255, 42, 42, 0.05);
+    --rt-body-grad-2: rgba(204, 0, 0, 0.05);
+    --rt-selection: rgba(255, 42, 42, 0.3);
+    --rt-neon-shadow: rgba(255, 42, 42, 0.2);
+    --rt-neon-inset: rgba(255, 42, 42, 0.05);
+    --rt-text-glow-1: rgba(255, 42, 42, 0.3);
+    --rt-text-glow-2: rgba(255, 42, 42, 0.1);
+  }
+
+  [data-theme="soft"] {
+    --rt-accent: 99 102 241;
+    --rt-accent2: 79 70 229;
+    --rt-accent3: 129 140 248;
+    --rt-glow: 99 102 241;
+    --rt-glow-pulse-from: 0 0 20px rgba(99, 102, 241, 0.2);
+    --rt-glow-pulse-to: 0 0 40px rgba(99, 102, 241, 0.6);
+    --rt-grid-color: rgba(99, 102, 241, 0.03);
+    --rt-radial-glow-color: rgba(99, 102, 241, 0.1);
+    --rt-body-grad-1: rgba(99, 102, 241, 0.05);
+    --rt-body-grad-2: rgba(79, 70, 229, 0.05);
+    --rt-selection: rgba(99, 102, 241, 0.3);
+    --rt-neon-shadow: rgba(99, 102, 241, 0.2);
+    --rt-neon-inset: rgba(99, 102, 241, 0.05);
+    --rt-text-glow-1: rgba(99, 102, 241, 0.3);
+    --rt-text-glow-2: rgba(99, 102, 241, 0.1);
+  }
+
   * { @apply m-0 p-0 box-border; }
   body {
     @apply bg-rt-darker text-white font-sans overflow-x-hidden;
     background-image:
-      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(255, 42, 42, 0.05) 0%, transparent 70%),
-      radial-gradient(ellipse 80% 50% at 50% 120%, rgba(204, 0, 0, 0.05) 0%, transparent 70%);
+      radial-gradient(ellipse 80% 50% at 50% -20%, var(--rt-body-grad-1) 0%, transparent 70%),
+      radial-gradient(ellipse 80% 50% at 50% 120%, var(--rt-body-grad-2) 0%, transparent 70%);
   }
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: #060612; }
   ::-webkit-scrollbar-thumb { background: #1a1a3a; border-radius: 3px; }
   ::-webkit-scrollbar-thumb:hover { background: #2a2a5a; }
-  ::selection { background: rgba(255, 42, 42, 0.3); color: white; }
+  ::selection { background: var(--rt-selection); color: white; }
 }
 
 @layer components {
@@ -28,7 +64,7 @@
     @apply bg-clip-text text-transparent bg-gradient-to-r from-rt-accent via-rt-accent2 to-rt-accent3;
   }
   .text-glow {
-    text-shadow: 0 0 40px rgba(255, 42, 42, 0.3), 0 0 80px rgba(255, 42, 42, 0.1);
+    text-shadow: 0 0 40px var(--rt-text-glow-1), 0 0 80px var(--rt-text-glow-2);
   }
   .btn-primary {
     @apply relative px-8 py-3 bg-gradient-to-r from-rt-accent to-rt-accent2 text-white font-semibold rounded-xl
@@ -58,12 +94,12 @@
     @apply text-4xl md:text-5xl font-display font-bold text-white;
   }
   .neon-border {
-    box-shadow: 0 0 15px rgba(255, 42, 42, 0.2), inset 0 0 15px rgba(255, 42, 42, 0.05);
+    box-shadow: 0 0 15px var(--rt-neon-shadow), inset 0 0 15px var(--rt-neon-inset);
   }
   .grid-bg {
     background-image:
-      linear-gradient(rgba(255, 42, 42, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 42, 42, 0.03) 1px, transparent 1px);
+      linear-gradient(var(--rt-grid-color) 1px, transparent 1px),
+      linear-gradient(90deg, var(--rt-grid-color) 1px, transparent 1px);
     background-size: 60px 60px;
   }
 }

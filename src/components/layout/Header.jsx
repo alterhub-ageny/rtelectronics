@@ -1,16 +1,18 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingCart, Menu, X, Zap, User, Package, Heart, LogOut, ChevronDown } from "lucide-react";
+import { ShoppingCart, Menu, X, Zap, User, Package, Heart, LogOut, ChevronDown, Sun } from "lucide-react";
 import { useCategories } from "../../hooks/useCategories";
 import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
+import { useTheme } from "../../context/ThemeContext";
 import SearchBar from "../ui/SearchBar";
 
 export default function Header() {
   const { categories } = useCategories();
   const { totalItems } = useCart();
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [userMenu, setUserMenu] = useState(false);
@@ -97,6 +99,12 @@ export default function Header() {
               </Link>
             )}
 
+            <button onClick={toggleTheme}
+              className="p-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-rt-accent/40 hover:bg-white/10 transition-all duration-300 group"
+              title={theme === "red" ? "Switch to soft theme" : "Switch to red theme"}
+            >
+              <Sun size={20} className="text-white/70 group-hover:text-rt-accent transition-colors" />
+            </button>
             <button onClick={() => navigate("/cart")}
               className="relative p-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-rt-accent/40 hover:bg-white/10 transition-all duration-300 group"
             >
