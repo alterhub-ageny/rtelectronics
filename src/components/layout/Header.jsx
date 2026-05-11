@@ -25,13 +25,6 @@ export default function Header() {
     return () => { window.removeEventListener("scroll", onScroll); document.removeEventListener("mousedown", handler); };
   }, []);
 
-  const navLinks = [
-    { label: "Products", href: "/products" },
-    { label: "About", href: "/about" },
-    { label: "Contact", href: "/contact" },
-    { label: "FAQ", href: "/faq" },
-  ];
-
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? "bg-rt-darker/90 backdrop-blur-xl border-b border-white/5" : "bg-transparent"}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -48,20 +41,16 @@ export default function Header() {
           </Link>
 
           <nav className="hidden lg:flex items-center gap-1">
-            {categories.slice(0, 4).map((cat) => (
+            {categories.slice(0, 6).map((cat) => (
               <Link key={cat.id} to={`/products?category=${cat.slug}`}
                 className="px-3 py-2 text-sm text-white/60 hover:text-rt-accent rounded-lg hover:bg-white/5 transition-all duration-300"
               >
                 {cat.name}
               </Link>
             ))}
-            {navLinks.map((l) => (
-              <Link key={l.href} to={l.href}
-                className="px-3 py-2 text-sm text-white/60 hover:text-rt-accent rounded-lg hover:bg-white/5 transition-all duration-300 hidden xl:block"
-              >
-                {l.label}
-              </Link>
-            ))}
+            <Link to="/products" className="px-3 py-2 text-sm text-white/60 hover:text-rt-accent rounded-lg hover:bg-white/5 transition-all duration-300">
+              All Products
+            </Link>
           </nav>
 
           <div className="flex items-center gap-3">
