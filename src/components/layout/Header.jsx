@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingCart, Menu, X, Zap, User, Package, Heart, LogOut, ChevronDown, Sun, Laptop, Smartphone, Gamepad2, Tablet, Headphones, Mouse, Gem, Gift } from "lucide-react";
+import { ShoppingCart, Menu, X, Zap, User, Package, Heart, LogOut, ChevronDown, Sun, Laptop, Smartphone, Gamepad2, Tablet, Headphones, Mouse, Gem, Gift, Watch } from "lucide-react";
 
 const NAV_ICONS = {
   laptop: Laptop, smartphone: Smartphone, "gamepad-2": Gamepad2, tablet: Tablet,
-  headphones: Headphones, keyboard: Mouse, dices: Gem, gift: Gift,
+  headphones: Headphones, keyboard: Mouse, dices: Gem, gift: Gift, watch: Watch,
 };
 const NAV_LABELS = {
   "Headphones & Audio": "Audio", "Gaming PCs": "Gaming", "Game Top-Ups": "Top-Ups",

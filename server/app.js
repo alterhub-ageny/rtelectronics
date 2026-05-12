@@ -10,6 +10,7 @@ import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcryptjs";
 import { query } from "./db.js";
 import { generateToken, authMiddleware, adminMiddleware } from "./middleware/auth.js";
+import { seed as seedRealData } from "./seed.js";
 
 // Auto-migrate and seed on cold start
 const SCHEMA_SQL = `
@@ -41,6 +42,8 @@ async function initDb() {
     const stmts = SCHEMA_SQL.split(";").filter(Boolean);
     for (const s of stmts) { try { await query(s); } catch {} }
     await seedSettings();
+    // Seed real product/category data
+    await seedRealData();
     // Seed full data synchronously (serverless can't rely on setTimeout)
     await seedFull();
     console.log("DB initialized");
