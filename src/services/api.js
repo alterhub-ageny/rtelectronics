@@ -8,8 +8,9 @@ async function fetchJSON(url, options = {}) {
   const headers = { "Content-Type": "application/json" };
   const token = getToken();
   if (token) headers.Authorization = `Bearer ${token}`;
+  const extra = url.startsWith("/admin/") ? { cache: "no-store" } : {};
 
-  const res = await fetch(`${BASE}${url}`, { headers, ...options });
+  const res = await fetch(`${BASE}${url}`, { headers, ...extra, ...options });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || `API Error: ${res.status}`);
   return data;

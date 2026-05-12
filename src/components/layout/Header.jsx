@@ -1,7 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingCart, Menu, X, Zap, User, Package, Heart, LogOut, ChevronDown, Sun } from "lucide-react";
+import { ShoppingCart, Menu, X, Zap, User, Package, Heart, LogOut, ChevronDown, Sun, Laptop, Smartphone, Gamepad2, Tablet, Headphones, Mouse, Gem, Gift } from "lucide-react";
+
+const NAV_ICONS = {
+  laptop: Laptop, smartphone: Smartphone, "gamepad-2": Gamepad2, tablet: Tablet,
+  headphones: Headphones, keyboard: Mouse, dices: Gem, gift: Gift,
+};
+const NAV_LABELS = {
+  "Headphones & Audio": "Audio", "Gaming PCs": "Gaming", "Game Top-Ups": "Top-Ups",
+};
 import { useCategories } from "../../hooks/useCategories";
 import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
@@ -31,25 +39,29 @@ export default function Header() {
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? "bg-rt-darker/90 backdrop-blur-xl border-b border-white/5" : "bg-transparent"}`}>
       <div className="max-w-site mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-20">
-          <Link to="/" className="flex items-center gap-3 group">
+          <Link to="/" className="flex items-center gap-2 group shrink-0">
             <div className="relative">
-              <Zap size={32} className="text-rt-accent transition-transform duration-500 group-hover:rotate-12 group-hover:scale-110" />
+              <Zap size={18} className="text-rt-accent transition-transform duration-500 group-hover:rotate-12 group-hover:scale-110" />
               <div className="absolute inset-0 bg-rt-accent blur-xl opacity-30 group-hover:opacity-60 transition-opacity" />
             </div>
-            <span className="text-2xl font-display font-bold tracking-wider">
+            <span className="text-lg font-display font-bold tracking-wider leading-none">
               <span className="text-white">RT</span>
-              <span className="text-rt-accent"> ELECTRONICS</span>
             </span>
           </Link>
 
-          <nav className="hidden lg:flex items-center gap-1">
-            {categories.slice(0, 6).map((cat) => (
-              <Link key={cat.id} to={`/products?category=${cat.slug}`}
-                className="px-3 py-2 text-sm text-white/60 hover:text-rt-accent rounded-lg hover:bg-white/5 transition-all duration-300"
-              >
-                {cat.name === "Headphones & Audio" ? "Audio" : cat.name === "Gaming PCs" ? "Gaming" : cat.name}
-              </Link>
-            ))}
+          <nav className="hidden lg:flex items-center gap-0.5 overflow-x-auto mx-2 scrollbar-none">
+            {categories.map((cat) => {
+              const Icon = NAV_ICONS[cat.icon] || Package;
+              const label = NAV_LABELS[cat.name] || cat.name;
+              return (
+                <Link key={cat.id} to={`/products?category=${cat.slug}`}
+                  className="flex items-center gap-1 px-2 py-1.5 text-xs text-white/60 hover:text-rt-accent rounded-lg hover:bg-white/5 transition-all duration-300 whitespace-nowrap"
+                >
+                  <Icon size={12} />
+                  {label}
+                </Link>
+              );
+            })}
           </nav>
 
           <div className="flex items-center gap-3">

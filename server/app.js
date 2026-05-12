@@ -318,8 +318,8 @@ app.put("/api/auth/profile", authMiddleware, async (req, res) => {
     const updates = [];
     const params = [];
     let idx = 1;
-    if (name) { updates.push(`name = $${idx++}`); params.push(name); }
-    if (avatar) { updates.push(`avatar = $${idx++}`); params.push(avatar); }
+    if (name !== undefined) { updates.push(`name = $${idx++}`); params.push(name); }
+    if (avatar !== undefined) { updates.push(`avatar = $${idx++}`); params.push(avatar); }
     if (!updates.length) return res.status(400).json({ error: "Nothing to update" });
     params.push(req.user.id);
     const { rows } = await query(`UPDATE users SET ${updates.join(", ")} WHERE id = $${idx} RETURNING id, name, email, role, avatar, addresses, wishlist, "createdAt"`, params);

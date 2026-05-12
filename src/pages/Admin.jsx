@@ -1072,6 +1072,9 @@ function SettingsTab({ addToast }) {
     const fd = new FormData(e.target);
     const data = {};
     for (const key of fd.keys()) { data[key] = fd.get(key); }
+    for (const key of Object.keys(settings)) {
+      if (settings[key]?.type === "boolean" && !(key in data)) data[key] = "false";
+    }
     try { await adminUpdateSettings(data); addToast("Settings saved", "success"); load(); } catch (err) { addToast(err.message, "error"); }
     setSaving(false);
   };

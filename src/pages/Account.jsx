@@ -14,12 +14,14 @@ export default function Account() {
   const [orders, setOrders] = useState([]);
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
   const [newAddr, setNewAddr] = useState({ label: "", street: "", city: "", zip: "", phone: "" });
   const [showAddr, setShowAddr] = useState(false);
 
   useEffect(() => {
     if (!user) { navigate("/login"); return; }
     setName(user.name);
+    setAvatarUrl(user.avatar || "");
     getOrders().then(setOrders).catch(() => {});
   }, [user]);
 
@@ -27,7 +29,7 @@ export default function Account() {
 
   const handleUpdate = async () => {
     try {
-      await updateProfile({ name });
+      await updateProfile({ name, avatar: avatarUrl || undefined });
       await refreshUser();
       addToast("Profile updated", "success");
       setEditing(false);
@@ -98,9 +100,19 @@ export default function Account() {
           </div>
           {editing ? (
             <div className="space-y-4">
+              <div className="flex items-center gap-4 mb-2">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-rt-accent/20 to-rt-accent2/20 border border-white/10 flex items-center justify-center overflow-hidden shrink-0">
+                  {avatarUrl ? <img src={avatarUrl} alt="" className="w-full h-full object-cover" onError={(e) => { e.target.style.display = "none"; }} /> : <User size={24} className="text-rt-accent" />}
+                </div>
+                <div className="text-xs text-white/30">Enter an image URL below</div>
+              </div>
               <div>
                 <label className="text-xs text-white/50 mb-1.5 block">Name</label>
                 <input value={name} onChange={(e) => setName(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-rt-accent/50" />
+              </div>
+              <div>
+                <label className="text-xs text-white/50 mb-1.5 block">Avatar URL</label>
+                <input value={avatarUrl} onChange={(e) => setAvatarUrl(e.target.value)} placeholder="https://example.com/avatar.jpg" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
               </div>
               <button onClick={handleUpdate} className="btn-primary">Save Changes</button>
             </div>
