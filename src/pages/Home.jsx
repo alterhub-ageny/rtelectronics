@@ -120,7 +120,7 @@ export default function Home() {
                 <button
                   type="submit"
                   disabled={contactSending}
-                  className="btn-primary w-full flex items-center justify-center gap-2 py-3"
+                  className="btn-crystal w-full flex items-center justify-center gap-2 py-3"
                 >
                   {contactSending ? (
                     <><span className="spinner-crystal" /> SENDING</>
@@ -162,8 +162,8 @@ export default function Home() {
                   required
                   className="input-crystal flex-1"
                 />
-                <button type="submit" className="btn-primary px-6 py-2.5 whitespace-nowrap">
-                  SUBSCRIBE
+                <button type="submit" className="btn-crystal text-[10px] px-6 py-3 whitespace-nowrap">
+                  SYNCHRONIZE
                 </button>
               </form>
             )}

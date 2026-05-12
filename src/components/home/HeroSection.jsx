@@ -64,7 +64,7 @@ export default function HeroSection() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 0.1 }}
-              className="text-5xl md:text-7xl lg:text-8xl font-bold leading-[0.9] mb-6"
+              className="text-5xl md:text-7xl lg:text-8xl font-display font-bold leading-[0.9] mb-6"
             >
               <span className="text-white tracking-[-0.03em]">CRYSTAL</span>
               <br />
@@ -90,16 +90,16 @@ export default function HeroSection() {
               transition={{ duration: 0.8, delay: 0.3 }}
               className="flex flex-wrap gap-3"
             >
-              <Link to="/products" className="btn-primary text-sm flex items-center gap-2 px-6 py-3">
-                EXPLORE
-                <ArrowRight size={14} />
+              <Link to="/products" className="btn-crystal text-[10px] flex items-center gap-2 px-6 py-3">
+                <span className="tracking-[0.15em]">EXPLORE</span>
+                <ArrowRight size={12} />
               </Link>
               <Link
                 to="/products?category=gaming-pcs"
-                className="btn-secondary text-sm px-6 py-3 flex items-center gap-2"
+                className="btn-ghost text-[10px] px-6 py-3 flex items-center gap-2"
               >
-                <Cpu size={14} />
-                GAMING
+                <Cpu size={12} />
+                <span className="tracking-[0.15em]">GAMING</span>
               </Link>
             </motion.div>
 
