@@ -68,15 +68,15 @@ export default function Home() {
       <AnimatedSection>
         <section className="max-w-site mx-auto px-4 sm:px-6 py-24">
           <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-rt-accent/[0.06] bg-rt-accent/[0.02] mb-4">
-              <span className="w-1 h-1 rounded-full bg-rt-accent/40 animate-neural-pulse" />
-              <span className="text-rt-accent/40 text-[9px] font-mono tracking-[0.2em] uppercase">Connect</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-rt-accent/20 bg-rt-accent/10 mb-4">
+              <span className="w-1.5 h-1.5 rounded-full bg-rt-accent" />
+              <span className="text-rt-accent text-[10px] font-mono tracking-[0.15em] uppercase">Connect</span>
             </div>
             <h2 className="section-crystal-title text-3xl md:text-4xl mb-3">
               TRANSMIT SIGNAL
             </h2>
-            <p className="text-white/15 text-sm font-mono max-w-lg mx-auto tracking-wider">
-              Crystal neural network responds within 24 cycles.
+            <p className="text-white/40 text-sm max-w-lg mx-auto">
+              Our team typically responds within 24 hours.
             </p>
           </div>
 
@@ -87,11 +87,11 @@ export default function Home() {
                 animate={{ opacity: 1, scale: 1 }}
                 className="crystal rounded-2xl p-10 text-center"
               >
-                <div className="w-14 h-14 rounded-xl bg-rt-accent/[0.04] border border-rt-accent/[0.08] flex items-center justify-center mx-auto mb-4">
-                  <Check size={24} className="text-rt-accent/40" />
+                <div className="w-14 h-14 rounded-xl bg-rt-accent/10 border border-rt-accent/20 flex items-center justify-center mx-auto mb-4">
+                  <Check size={24} className="text-rt-accent" />
                 </div>
-                <h3 className="text-lg font-display font-bold text-white/60 mb-2 tracking-wider">Signal Received</h3>
-                <p className="text-white/20 text-xs font-mono">Neural decode in progress.</p>
+                <h3 className="text-lg font-bold text-white/80 mb-2">Transmission Complete</h3>
+                <p className="text-white/40 text-xs">We'll decode your message shortly.</p>
               </motion.div>
             ) : (
               <form onSubmit={handleContact} className="crystal rounded-2xl p-6 space-y-3">
@@ -100,14 +100,14 @@ export default function Home() {
                     value={contact.name}
                     onChange={(e) => setContact({ ...contact, name: e.target.value })}
                     placeholder="Name *"
-                    className="input-crystal text-xs"
+                    className="input-crystal"
                   />
                   <input
                     type="email"
                     value={contact.email}
                     onChange={(e) => setContact({ ...contact, email: e.target.value })}
                     placeholder="Email *"
-                    className="input-crystal text-xs"
+                    className="input-crystal"
                   />
                 </div>
                 <textarea
@@ -115,17 +115,17 @@ export default function Home() {
                   onChange={(e) => setContact({ ...contact, message: e.target.value })}
                   rows={3}
                   placeholder="Message *"
-                  className="input-crystal text-xs resize-none"
+                  className="input-crystal resize-none"
                 />
                 <button
                   type="submit"
                   disabled={contactSending}
-                  className="btn-crystal w-full flex items-center justify-center gap-2 text-[10px] py-3"
+                  className="btn-primary w-full flex items-center justify-center gap-2 py-3"
                 >
                   {contactSending ? (
-                    <><span className="spinner-crystal w-3 h-3" /> TRANSMITTING</>
+                    <><span className="spinner-crystal" /> SENDING</>
                   ) : (
-                    <><Send size={12} /> SEND SIGNAL</>
+                    <><Send size={14} /> SEND MESSAGE</>
                   )}
                 </button>
               </form>
@@ -135,22 +135,22 @@ export default function Home() {
       </AnimatedSection>
 
       <section className="max-w-site mx-auto px-4 sm:px-6 pb-24">
-        <div className="cta-crystal rounded-[24px] p-10 md:p-14 text-center border border-white/[0.02] relative overflow-hidden">
+        <div className="cta-crystal rounded-[24px] p-10 md:p-14 text-center relative overflow-hidden">
           <div className="relative z-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-rt-accent/[0.06] bg-rt-accent/[0.02] mb-4">
-              <Sparkles size={9} className="text-rt-accent/40" />
-              <span className="text-rt-accent/40 text-[9px] font-mono tracking-[0.2em] uppercase">Subscribe</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-rt-accent/20 bg-rt-accent/10 mb-4">
+              <Sparkles size={10} className="text-rt-accent" />
+              <span className="text-rt-accent text-[10px] font-mono tracking-[0.15em] uppercase">Subscribe</span>
             </div>
             <h2 className="section-crystal-title text-2xl md:text-4xl mb-3">
               JOIN THE CRYSTAL
             </h2>
-            <p className="text-white/15 text-xs font-mono mb-6 max-w-md mx-auto tracking-wider">
-              Early access to drops, crystalline insights, and member-only frequencies.
+            <p className="text-white/40 text-sm mb-6 max-w-md mx-auto">
+              Early access to drops, insights, and exclusive offers.
             </p>
             {subscribed ? (
-              <div className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-rt-accent/[0.04] border border-rt-accent/[0.08]">
-                <Check size={14} className="text-rt-accent/40" />
-                <span className="text-rt-accent/40 text-xs font-mono">SIGNAL LOCKED</span>
+              <div className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-rt-accent/10 border border-rt-accent/20">
+                <Check size={14} className="text-rt-accent" />
+                <span className="text-rt-accent text-sm font-medium">SIGNAL LOCKED</span>
               </div>
             ) : (
               <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 max-w-sm mx-auto">
@@ -158,12 +158,12 @@ export default function Home() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="ENTER CRYSTAL ADDRESS"
+                  placeholder="Enter your email"
                   required
-                  className="input-crystal text-xs text-center sm:text-left font-mono tracking-wider"
+                  className="input-crystal flex-1"
                 />
-                <button type="submit" className="btn-crystal text-[10px] px-6 py-3 whitespace-nowrap">
-                  SYNCHRONIZE
+                <button type="submit" className="btn-primary px-6 py-2.5 whitespace-nowrap">
+                  SUBSCRIBE
                 </button>
               </form>
             )}
@@ -174,9 +174,9 @@ export default function Home() {
       {isAdmin && (
         <Link
           to="/admin"
-          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-2.5 rounded-xl crystal text-rt-accent text-[10px] font-display font-bold tracking-wider group"
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-2.5 rounded-xl card-edge text-rt-accent text-xs font-semibold"
         >
-          <Zap size={12} className="group-hover:rotate-12 transition-transform" />
+          <Zap size={14} />
           ADMIN
         </Link>
       )}

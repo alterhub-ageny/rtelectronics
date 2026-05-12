@@ -78,7 +78,7 @@ export default function Header() {
                 <Link
                   key={cat.id}
                   to={`/products?category=${cat.slug}`}
-                  className="relative group/nav flex items-center gap-1 px-2 py-1 text-[10px] text-white/30 hover:text-rt-accent rounded-lg transition-all duration-500 whitespace-nowrap font-grotesk"
+                  className="relative group/nav flex items-center gap-1 px-2 py-1 text-[11px] text-white/60 hover:text-rt-accent rounded-lg transition-all duration-500 whitespace-nowrap"
                 >
                   <Icon size={9} className="transition-all duration-500 group-hover/nav:scale-125 group-hover/nav:rotate-12" />
                   <span className="relative tracking-wider uppercase">
@@ -108,7 +108,7 @@ export default function Header() {
                       <User size={12} className="text-white/40" />
                     )}
                   </div>
-                  <span className="text-white/40 text-[10px] hidden sm:block max-w-[70px] truncate font-grotesk">
+                  <span className="text-white/60 text-xs hidden sm:block max-w-[70px] truncate">
                     {user.name}
                   </span>
                 </button>
@@ -149,7 +149,7 @@ export default function Header() {
             ) : (
               <Link
                 to="/login"
-                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-white/[0.04] text-white/30 hover:text-rt-accent hover:border-rt-accent/20 text-[10px] font-medium transition-all duration-500 font-grotesk"
+                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-white/10 text-white/60 hover:text-rt-accent hover:border-rt-accent/30 text-xs font-medium transition-all duration-500"
               >
                 <User size={12} /> Sign In
               </Link>

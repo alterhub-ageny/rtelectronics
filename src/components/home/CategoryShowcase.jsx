@@ -11,19 +11,19 @@ export default function CategoryShowcase() {
   return (
     <section className="max-w-site mx-auto px-4 sm:px-6 py-20">
       <div className="text-center mb-14">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-rt-accent/[0.06] bg-rt-accent/[0.02] mb-4">
-          <span className="w-1 h-1 rounded-full bg-rt-accent/40 animate-neural-pulse" />
-          <span className="text-rt-accent/40 text-[9px] font-mono tracking-[0.2em] uppercase">Domains</span>
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-rt-accent/10 bg-rt-accent/5 mb-4">
+          <span className="w-1.5 h-1.5 rounded-full bg-rt-accent" />
+          <span className="text-rt-accent text-[10px] font-mono tracking-[0.15em] uppercase">Categories</span>
         </div>
         <h2 className="section-crystal-title text-3xl md:text-4xl mb-3">
           EXPLORE DIMENSIONS
         </h2>
-        <p className="text-white/15 text-xs font-mono max-w-md mx-auto tracking-wider">
-          Navigate our crystalline tech ecosystems.
+        <p className="text-white/40 text-xs font-mono max-w-md mx-auto">
+          Navigate our tech ecosystems.
         </p>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
         {categories.map((cat, i) => {
           const Icon = ICON_MAP[cat.icon] || Laptop;
           return (
@@ -36,17 +36,17 @@ export default function CategoryShowcase() {
             >
               <Link
                 to={`/products?category=${cat.slug}`}
-                className="group card-crystal p-5 flex flex-col items-center text-center h-full"
+                className="group card-edge p-6 flex flex-col items-center text-center h-full"
               >
-                <div className="w-11 h-11 rounded-xl bg-white/[0.02] border border-white/[0.04] flex items-center justify-center mb-3 group-hover:scale-110 group-hover:border-rt-accent/20 transition-all duration-700">
-                  <Icon size={17} className="text-white/30 group-hover:text-rt-accent/60 transition-colors duration-500" />
+                <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:border-rt-accent/30 transition-all duration-500">
+                  <Icon size={20} className="text-white/50 group-hover:text-rt-accent transition-colors duration-500" />
                 </div>
-                <h3 className="text-white/50 font-display text-[11px] font-bold mb-1 group-hover:text-rt-accent/70 transition-colors tracking-wider uppercase">
+                <h3 className="text-white/80 font-semibold text-sm mb-1 group-hover:text-rt-accent transition-colors">
                   {cat.name}
                 </h3>
-                <p className="text-white/15 text-[8px] font-mono leading-relaxed line-clamp-2 tracking-wider">{cat.description}</p>
+                <p className="text-white/30 text-[11px] leading-relaxed line-clamp-2">{cat.description}</p>
                 <div className="mt-auto pt-3">
-                  <ArrowRight size={11} className="text-white/15 group-hover:text-rt-accent/40 transition-colors" />
+                  <ArrowRight size={13} className="text-white/20 group-hover:text-rt-accent/60 transition-colors" />
                 </div>
               </Link>
             </motion.div>
