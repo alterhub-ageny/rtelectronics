@@ -294,45 +294,17 @@ function KpiCard({ title, value, icon: Icon, trend, subtitle, color = "text-rt-a
 
 /* ─────── DASHBOARD TAB ─────── */
 function DashboardTab() {
-  const [stats, setStats] = useState(null);
-  const [history, setHistory] = useState([]);
-  const [period, setPeriod] = useState(7);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  const load = useCallback(async () => {
-    setLoading(true); setError(null);
-    try { const [s, h] = await Promise.all([adminGetStats(), adminGetSalesHistory(period)]); setStats(s); setHistory(h || []); } catch (e) { setError(e.message); }
-    setLoading(false);
-  }, [period]);
-
-  useEffect(() => { load(); }, [load]);
-  useEffect(() => { console.log("Dashboard state:", { loading, stats, error, history }); }, [loading, stats, error, history]);
-
-  if (loading && !stats) return (
-    <div className="flex flex-col items-center justify-center py-20 gap-4">
-      <div className="relative">
-        <div className="w-12 h-12 border-2 border-rt-accent/30 border-t-rt-accent rounded-full animate-spin" />
-        <div className="absolute inset-0 bg-rt-accent/10 blur-xl rounded-full animate-pulse" />
-      </div>
-      <p className="text-white/30 text-sm animate-pulse">Loading dashboard...</p>
-    </div>
-  );
-
-  if (error && !stats) return (
-    <div className="flex flex-col items-center justify-center py-20 gap-4">
-      <div className="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
-        <AlertTriangle size={28} className="text-red-400" />
-      </div>
-      <p className="text-red-400 text-sm">{error}</p>
-      <button onClick={load} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all"><RefreshCw size={14} /> Retry</button>
-    </div>
-  );
+  const [text, setText] = useState("loading...");
+  useEffect(() => {
+    Promise.all([adminGetStats(), adminGetSalesHistory(7)])
+      .then(([s, h]) => setText(JSON.stringify({ stats: s, history: h }, null, 2)))
+      .catch((e) => setText("Error: " + e.message));
+  }, []);
 
   return (
     <div className="space-y-4">
       <div className="glass rounded-2xl p-5 border border-white/5 relative">
-        <pre className="text-xs text-white/70 font-mono whitespace-pre-wrap break-all">{JSON.stringify({ stats, history }, null, 2)}</pre>
+        <pre className="text-xs text-white/70 font-mono whitespace-pre-wrap break-all">{text}</pre>
       </div>
     </div>
   );
