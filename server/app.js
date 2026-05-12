@@ -28,9 +28,12 @@ CREATE TABLE IF NOT EXISTS suppliers (id TEXT PRIMARY KEY, name TEXT NOT NULL, c
 CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT NOT NULL, type TEXT DEFAULT 'text');
 CREATE TABLE IF NOT EXISTS notifications (id TEXT PRIMARY KEY, type TEXT NOT NULL DEFAULT 'info', title TEXT NOT NULL, message TEXT, read BOOLEAN DEFAULT false, "createdAt" TIMESTAMPTZ DEFAULT NOW());
 CREATE TABLE IF NOT EXISTS pages (id TEXT PRIMARY KEY, slug TEXT UNIQUE NOT NULL, title TEXT NOT NULL, content TEXT DEFAULT '', published BOOLEAN DEFAULT false, "createdAt" TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS chat_conversations (id TEXT PRIMARY KEY, "userId" TEXT, name TEXT NOT NULL, email TEXT NOT NULL, subject TEXT, status TEXT DEFAULT 'open', unread INTEGER DEFAULT 0, "lastMessage" TEXT, "lastMessageAt" TIMESTAMPTZ, "createdAt" TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS chat_messages (id TEXT PRIMARY KEY, "conversationId" TEXT NOT NULL, sender TEXT NOT NULL DEFAULT 'user', name TEXT NOT NULL, message TEXT NOT NULL, "createdAt" TIMESTAMPTZ DEFAULT NOW());
 CREATE INDEX IF NOT EXISTS idx_categories_slug ON categories(slug);
 CREATE INDEX IF NOT EXISTS idx_stock_log_productId ON stock_log("productId");
 CREATE INDEX IF NOT EXISTS idx_expenses_date ON expenses(date);
+CREATE INDEX IF NOT EXISTS idx_chat_messages_conversation ON chat_messages("conversationId");
 `;
 
 async function initDb() {
@@ -580,6 +583,67 @@ app.post("/api/contact", async (req, res) => {
       [uuidv4(), name, email, subject || null, message, false, new Date().toISOString()]
     );
     res.status(201).json({ success: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+/* ─────── CHAT ─────── */
+app.post("/api/chat/conversations", async (req, res) => {
+  try {
+    const { name, email, subject } = req.body;
+    if (!name || !email) return res.status(400).json({ error: "Name and email required" });
+    const existing = await query(`SELECT * FROM chat_conversations WHERE email=$1 AND status='open' ORDER BY "createdAt" DESC LIMIT 1`, [email]);
+    if (existing.rows.length) return res.json(existing.rows[0]);
+    const id = uuidv4();
+    await query(`INSERT INTO chat_conversations (id, name, email, subject, status, "createdAt") VALUES ($1,$2,$3,$4,'open',$5)`, [id, name, email, subject || null, new Date().toISOString()]);
+    res.status(201).json({ id, name, email, subject, status: "open" });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post("/api/chat/messages", async (req, res) => {
+  try {
+    const { conversationId, message, name } = req.body;
+    if (!conversationId || !message || !name) return res.status(400).json({ error: "conversationId, name, and message required" });
+    const id = uuidv4();
+    await query(`INSERT INTO chat_messages (id, "conversationId", sender, name, message, "createdAt") VALUES ($1,$2,'user',$3,$4,$5)`, [id, conversationId, name, message, new Date().toISOString()]);
+    await query(`UPDATE chat_conversations SET "lastMessage"=$1, "lastMessageAt"=$2, unread=unread+1 WHERE id=$3`, [message, new Date().toISOString(), conversationId]);
+    res.status(201).json({ id, message, sender: "user" });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.get("/api/chat/messages/:conversationId", async (req, res) => {
+  try {
+    const r = await query(`SELECT c.*, COALESCE(json_agg(json_build_object('id',m.id,'sender',m.sender,'name',m.name,'message',m.message,'createdAt',m."createdAt")) FILTER (WHERE m.id IS NOT NULL), '[]'::json) AS messages FROM chat_conversations c LEFT JOIN chat_messages m ON m."conversationId"=c.id WHERE c.id=$1 GROUP BY c.id`, [req.params.conversationId]);
+    if (!r.rows.length) return res.status(404).json({ error: "Not found" });
+    res.json(r.rows[0]);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.get("/api/admin/chat/conversations", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const r = await query(`SELECT * FROM chat_conversations ORDER BY "lastMessageAt" DESC NULLS LAST, "createdAt" DESC`);
+    res.json(r.rows);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.get("/api/admin/chat/messages/:conversationId", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const [conv, msgs] = await Promise.all([
+      query(`SELECT * FROM chat_conversations WHERE id=$1`, [req.params.conversationId]),
+      query(`SELECT * FROM chat_messages WHERE "conversationId"=$1 ORDER BY "createdAt" ASC`, [req.params.conversationId])
+    ]);
+    if (!conv.rows.length) return res.status(404).json({ error: "Not found" });
+    res.json({ ...conv.rows[0], messages: msgs.rows });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post("/api/admin/chat/reply", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { conversationId, message } = req.body;
+    if (!conversationId || !message) return res.status(400).json({ error: "conversationId and message required" });
+    const id = uuidv4();
+    await query(`INSERT INTO chat_messages (id, "conversationId", sender, name, message, "createdAt") VALUES ($1,$2,'admin','Support',$3,$4)`, [id, conversationId, message, new Date().toISOString()]);
+    await query(`UPDATE chat_conversations SET "lastMessage"=$1, "lastMessageAt"=$2 WHERE id=$3`, [message, new Date().toISOString(), conversationId]);
+    res.status(201).json({ id, message, sender: "admin" });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 

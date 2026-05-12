@@ -28,6 +28,7 @@ import {
   adminGetProducts, adminCreateProduct, adminUpdateProduct, adminDeleteProduct, adminBulkDeleteProducts,
   adminGetUsers, adminUpdateUser, adminDeleteUser,
   adminGetContacts, adminMarkContactRead, adminDeleteContact,
+  adminGetChatConversations, adminGetChatMessages, adminReplyChat,
   adminGetSubscribers, adminGetReviews, adminDeleteReview,
   adminGetCoupons, adminCreateCoupon, adminUpdateCoupon, adminDeleteCoupon,
   adminGetSalesHistory, adminGetLowStock, adminGetStockLog, adminAdjustStock,
@@ -45,7 +46,7 @@ import {
   Crown, User, LogOut, DollarSign, TrendingUp, TrendingDown, AlertTriangle,
   Box, Truck, Settings, FileText, Bell, FolderTree, RefreshCw, Download,
   Filter, MoreHorizontal, Eye, EyeOff, Copy, Save, Clock, Archive, Zap,
-  BarChart3, PieChart, Activity, Layers, MapPin, Phone, Globe, Sun,
+  BarChart3, PieChart, Activity, Layers, MapPin, Phone, Globe, Sun, MessageCircle, Send,
 } from "lucide-react";
 
 /* ─────── COLOR MAPS FOR FUTURISTIC CODING ─────── */
@@ -977,29 +978,120 @@ function CouponForm({ editing, onSave, onClose }) {
 
 /* ─────── MESSAGES TAB ─────── */
 function MessagesTab({ addToast }) {
+  const [sub, setSub] = useState("contacts");
   const [messages, setMessages] = useState([]);
   const load = useCallback(async () => { try { setMessages(await adminGetContacts()); } catch {} }, []);
   useEffect(() => { load(); }, [load]);
   const markRead = async (id) => { try { await adminMarkContactRead(id); load(); } catch (e) { addToast(e.message, "error"); } };
   const handleDelete = async (id) => { if (!confirm("Delete this message?")) return; try { await adminDeleteContact(id); addToast("Deleted", "success"); load(); } catch (e) { addToast(e.message, "error"); } };
+
+  const [convs, setConvs] = useState([]);
+  const [selConv, setSelConv] = useState(null);
+  const [convMsgs, setConvMsgs] = useState([]);
+  const [reply, setReply] = useState("");
+  const [replySending, setReplySending] = useState(false);
+  const loadConvs = useCallback(async () => { try { setConvs(await adminGetChatConversations()); } catch {} }, []);
+  useEffect(() => { loadConvs(); }, [loadConvs]);
+  const openConv = async (c) => {
+    setSelConv(c);
+    try { const d = await adminGetChatMessages(c.id); setConvMsgs(d.messages || []); } catch {}
+  };
+  const handleReply = async (e) => {
+    e.preventDefault(); if (!reply.trim()) return;
+    setReplySending(true);
+    try { await adminReplyChat(selConv.id, reply.trim()); setReply(""); const d = await adminGetChatMessages(selConv.id); setConvMsgs(d.messages || []); addToast("Reply sent", "success"); } catch (err) { addToast(err.message, "error"); }
+    setReplySending(false);
+  };
+  const closeConv = () => { setSelConv(null); setConvMsgs([]); };
+
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
-      {!messages.length && <div className="text-center py-12 text-white/30">No messages</div>}
-      {messages.map((m) => (
-        <motion.div key={m.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className={`glass rounded-2xl p-5 border transition-all relative overflow-hidden ${m.read ? "border-white/5 opacity-70" : "border-rt-accent/20"}`} onClick={() => !m.read && markRead(m.id)}>
-          {!m.read && <div className="absolute top-0 left-0 w-1 h-full bg-rt-accent" />}
-          <div className="flex items-start justify-between mb-2">
-            <div><span className="text-white font-medium text-sm">{m.name}</span><span className="text-white/30 text-xs ml-2">{m.email}</span></div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-white/30">{m.createdAt?.slice(0, 16)}</span>
-              <button onClick={(e) => { e.stopPropagation(); handleDelete(m.id); }} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-red-400"><Trash2 size={14} /></button>
-            </div>
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+      <div className="flex items-center gap-2 mb-4">
+        <button onClick={() => setSub("contacts")} className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${sub === "contacts" ? "bg-rt-accent text-white" : "bg-white/5 text-white/50 hover:text-white"}`}><MessageSquare size={14} className="inline mr-1.5" />Contact Messages</button>
+        <button onClick={() => setSub("chat")} className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${sub === "chat" ? "bg-rt-accent text-white" : "bg-white/5 text-white/50 hover:text-white"}`}><MessageCircle size={14} className="inline mr-1.5" />Live Chat ({convs.filter(c => c.status === "open").length})</button>
+      </div>
+
+      {sub === "contacts" ? (
+        <div className="space-y-3">
+          {!messages.length && <div className="text-center py-12 text-white/30">No messages</div>}
+          {messages.map((m) => (
+            <motion.div key={m.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className={`glass rounded-2xl p-5 border transition-all relative overflow-hidden ${m.read ? "border-white/5 opacity-70" : "border-rt-accent/20"}`} onClick={() => !m.read && markRead(m.id)}>
+              {!m.read && <div className="absolute top-0 left-0 w-1 h-full bg-rt-accent" />}
+              <div className="flex items-start justify-between mb-2">
+                <div><span className="text-white font-medium text-sm">{m.name}</span><span className="text-white/30 text-xs ml-2">{m.email}</span></div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-white/30">{m.createdAt?.slice(0, 16)}</span>
+                  <button onClick={(e) => { e.stopPropagation(); handleDelete(m.id); }} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-red-400"><Trash2 size={14} /></button>
+                </div>
+              </div>
+              {m.subject && <p className="text-sm text-white/70 font-medium mb-1">{m.subject}</p>}
+              <p className="text-sm text-white/50">{m.message}</p>
+              {!m.read && <div className="mt-2"><span className="text-[10px] px-2 py-0.5 rounded-full bg-rt-accent/10 text-rt-accent border border-rt-accent/20">New</span></div>}
+            </motion.div>
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            {!convs.length && <div className="text-center py-12 text-white/30">No chat conversations</div>}
+            {convs.map((c) => (
+              <motion.div key={c.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
+                className={`glass rounded-2xl p-4 border cursor-pointer transition-all ${selConv?.id === c.id ? "border-rt-accent/40 bg-white/[0.05]" : "border-white/5 hover:border-white/10"}`}
+                onClick={() => openConv(c)}
+              >
+                <div className="flex items-start justify-between">
+                  <div>
+                    <span className="text-white font-medium text-sm">{c.name}</span>
+                    <span className="text-white/30 text-xs ml-2">{c.email}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {c.status === "open" && <span className="w-2 h-2 rounded-full bg-emerald-400" />}
+                    <span className="text-[10px] text-white/30">{c.createdAt?.slice(0, 10)}</span>
+                  </div>
+                </div>
+                {c.subject && <p className="text-xs text-white/50 mt-1">{c.subject}</p>}
+                {c.lastMessage && <p className="text-xs text-white/30 mt-1 truncate">{c.lastMessage}</p>}
+                {c.unread > 0 && <span className="text-[10px] px-2 py-0.5 rounded-full bg-rt-accent/10 text-rt-accent border border-rt-accent/20 mt-2 inline-block">{c.unread} new</span>}
+              </motion.div>
+            ))}
           </div>
-          {m.subject && <p className="text-sm text-white/70 font-medium mb-1">{m.subject}</p>}
-          <p className="text-sm text-white/50">{m.message}</p>
-          {!m.read && <div className="mt-2"><span className="text-[10px] px-2 py-0.5 rounded-full bg-rt-accent/10 text-rt-accent border border-rt-accent/20">New</span></div>}
-        </motion.div>
-      ))}
+
+          <div>
+            {!selConv ? (
+              <div className="glass rounded-2xl border border-white/5 p-12 text-center">
+                <MessageCircle size={32} className="mx-auto mb-3 text-white/20" />
+                <p className="text-white/30 text-sm">Select a conversation to view messages</p>
+              </div>
+            ) : (
+              <div className="glass rounded-2xl border border-white/5 flex flex-col h-[400px]">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
+                  <div>
+                    <span className="text-white font-medium text-sm">{selConv.name}</span>
+                    <span className="text-white/30 text-xs ml-2">{selConv.email}</span>
+                  </div>
+                  <button onClick={closeConv} className="p-1 rounded-lg hover:bg-white/10 text-white/40 hover:text-white"><X size={14} /></button>
+                </div>
+                <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                  {!convMsgs.length && <div className="text-center py-8 text-white/30 text-sm">No messages</div>}
+                  {convMsgs.map((m) => (
+                    <div key={m.id} className={`flex ${m.sender === "admin" ? "justify-start" : "justify-end"}`}>
+                      <div className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm ${m.sender === "admin" ? "bg-white/10 text-white/80 rounded-tl-md" : "bg-rt-accent/20 text-white border border-rt-accent/20 rounded-tr-md"}`}>
+                        <p className="text-[10px] text-white/40 mb-0.5">{m.sender === "admin" ? "Support" : m.name}</p>
+                        <p>{m.message}</p>
+                        <p className="text-[10px] text-white/30 mt-1 text-right">{m.createdAt?.slice(11, 16)}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <form onSubmit={handleReply} className="flex items-center gap-2 p-3 border-t border-white/10">
+                  <input value={reply} onChange={(e) => setReply(e.target.value)} placeholder="Type a reply..." className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
+                  <button type="submit" disabled={replySending || !reply.trim()} className="p-2.5 rounded-xl bg-rt-accent text-white disabled:opacity-30 hover:bg-rt-accent2 transition-all"><Send size={16} /></button>
+                </form>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 }

@@ -122,6 +122,16 @@ export const adminUpdateSettings = (data) => fetchJSON("/admin/settings", { meth
 export const adminGetPages = () => fetchJSON("/admin/pages");
 export const adminUpdatePage = (id, data) => fetchJSON(`/admin/pages/${id}`, { method: "PUT", body: JSON.stringify(data) });
 
+/* Chat */
+export const createChatConversation = (data) => fetchJSON("/chat/conversations", { method: "POST", body: JSON.stringify(data) });
+export const sendChatMessage = (data) => fetchJSON("/chat/messages", { method: "POST", body: JSON.stringify(data) });
+export const getChatMessages = (conversationId) => fetchJSON(`/chat/messages/${conversationId}`);
+
+/* Admin: Chat */
+export const adminGetChatConversations = () => fetchJSON("/admin/chat/conversations");
+export const adminGetChatMessages = (conversationId) => fetchJSON(`/admin/chat/messages/${conversationId}`);
+export const adminReplyChat = (conversationId, message) => fetchJSON("/admin/chat/reply", { method: "POST", body: JSON.stringify({ conversationId, message }) });
+
 /* Admin: Notifications */
 export const adminGetNotifications = (unread) => fetchJSON(`/admin/notifications${unread ? "?unread=true" : ""}`);
 export const adminCreateNotification = (data) => fetchJSON("/admin/notifications", { method: "POST", body: JSON.stringify(data) });
