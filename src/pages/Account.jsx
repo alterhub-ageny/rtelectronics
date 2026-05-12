@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { User, Package, Heart, MapPin, LogOut, Edit3, Plus, Trash2, Mail, Calendar } from "lucide-react";
+import { User, Package, Heart, MapPin, LogOut, Edit3, Plus, Trash2, Mail, Calendar, Image } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
 import { updateProfile, addAddress, deleteAddress, getOrders } from "../services/api";
+import AvatarPicker from "../components/ui/AvatarPicker";
 
 export default function Account() {
   const { user, logout, refreshUser } = useAuth();
@@ -101,17 +102,23 @@ export default function Account() {
           {editing ? (
             <div className="space-y-4">
               <div className="flex items-center gap-4 mb-2">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-rt-accent/20 to-rt-accent2/20 border border-white/10 flex items-center justify-center overflow-hidden shrink-0">
-                  {avatarUrl ? <img src={avatarUrl} alt="" className="w-full h-full object-cover" onError={(e) => { e.target.style.display = "none"; }} /> : <User size={24} className="text-rt-accent" />}
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-rt-accent/20 to-rt-accent2/20 border border-white/10 flex items-center justify-center overflow-hidden shrink-0">
+                  {avatarUrl ? <img src={avatarUrl} alt="" className="w-full h-full object-cover" onError={(e) => { e.target.style.display = "none"; }} /> : <User size={28} className="text-rt-accent" />}
                 </div>
-                <div className="text-xs text-white/30">Enter an image URL below</div>
+                <div className="flex-1">
+                  <p className="text-white font-medium">Choose an avatar</p>
+                  <p className="text-xs text-white/30">Pick a style and gender below</p>
+                </div>
+              </div>
+              <div className="glass rounded-2xl p-4 border border-white/5">
+                <AvatarPicker current={avatarUrl} onSelect={setAvatarUrl} />
               </div>
               <div>
                 <label className="text-xs text-white/50 mb-1.5 block">Name</label>
                 <input value={name} onChange={(e) => setName(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-rt-accent/50" />
               </div>
               <div>
-                <label className="text-xs text-white/50 mb-1.5 block">Avatar URL</label>
+                <label className="text-xs text-white/50 mb-1.5 block">Or paste an image URL</label>
                 <input value={avatarUrl} onChange={(e) => setAvatarUrl(e.target.value)} placeholder="https://example.com/avatar.jpg" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
               </div>
               <button onClick={handleUpdate} className="btn-primary">Save Changes</button>
