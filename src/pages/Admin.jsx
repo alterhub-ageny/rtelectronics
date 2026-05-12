@@ -1,8 +1,28 @@
-import { useState, useEffect, useCallback } from "react";
+import { Component, useState, useEffect, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
+
+class ErrorBoundary extends Component {
+  constructor(props) { super(props); this.state = { error: null }; }
+  static getDerivedStateFromError(e) { return { error: e }; }
+  componentDidCatch(e, info) { console.error("ErrorBoundary caught:", e, info); }
+  render() {
+    if (this.state.error) {
+      return (
+        <div className="flex flex-col items-center justify-center py-20 gap-4">
+          <div className="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+            <AlertTriangle size={28} className="text-red-400" />
+          </div>
+          <p className="text-red-400 text-sm max-w-md text-center">{this.state.error.message}</p>
+          <button onClick={() => this.setState({ error: null })} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all">Retry</button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 import {
   adminGetStats, adminGetOrders, adminUpdateOrderStatus,
   adminGetProducts, adminCreateProduct, adminUpdateProduct, adminDeleteProduct, adminBulkDeleteProducts,
@@ -195,12 +215,17 @@ export default function Admin() {
           </div>
         </header>
         <div className="p-4 lg:p-8">
-          <TabContent />
+          <ErrorBoundary key={tab}>
+            <TabContent />
+          </ErrorBoundary>
         </div>
       </main>
     </div>
   );
 }
+
+/* ─────── SAFE NUMBER FORMAT ─────── */
+const sf = (n, d = 2) => { try { return Number(n).toFixed(d); } catch { return "0.00"; } };
 
 /* ─────── SPARKLINE ─────── */
 function Sparkline({ data, color = "#ff2a2a", height = 40 }) {
@@ -282,6 +307,7 @@ function DashboardTab() {
   }, [period]);
 
   useEffect(() => { load(); }, [load]);
+  useEffect(() => { console.log("Dashboard state:", { loading, stats, error, history }); }, [loading, stats, error, history]);
 
   if (loading && !stats) return (
     <div className="flex flex-col items-center justify-center py-20 gap-4">
@@ -303,76 +329,12 @@ function DashboardTab() {
     </div>
   );
 
-  const profitMargin = stats.totalRevenue > 0 ? ((stats.netProfit / stats.totalRevenue) * 100) : 0;
-
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4">
-        <KpiCard title="Today" value={`$${stats.todayRevenue.toFixed(2)}`} icon={BarChart3} color="text-emerald-400" subtitle={`${stats.todayOrders} orders`} />
-        <KpiCard title="Total Revenue" value={`$${stats.totalRevenue.toFixed(2)}`} icon={TrendingUp} color="text-green-400" />
-        <KpiCard title="Total Expenses" value={`$${stats.totalExpenses.toFixed(2)}`} icon={TrendingDown} color="text-orange-400" />
-        <KpiCard title="Net Profit" value={`$${stats.netProfit.toFixed(2)}`} icon={DollarSign} color={stats.netProfit >= 0 ? "text-emerald-400" : "text-red-400"} subtitle={`${profitMargin.toFixed(1)}% margin`} />
-      </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4">
-        <KpiCard title="Total Orders" value={stats.totalOrders} icon={ShoppingCart} trend={0} subtitle="all time" />
-        <KpiCard title="Pending" value={stats.pendingOrders} icon={Clock} color="text-yellow-400" />
-        <KpiCard title="Low Stock" value={stats.lowStockProducts} icon={AlertTriangle} color="text-orange-400" subtitle={`${stats.outOfStockProducts} out of stock`} />
-        <KpiCard title="Avg Order" value={`$${stats.averageOrderValue.toFixed(2)}`} icon={Activity} />
-      </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4">
-        <KpiCard title="Products" value={stats.totalProducts} icon={Package} />
-        <KpiCard title="Users" value={stats.totalUsers} icon={Users} />
-        <KpiCard title="Reviews" value={stats.totalReviews} icon={Star} />
-        <KpiCard title="Subscribers" value={stats.totalSubscribers} icon={Mail} />
-      </div>
-      <div className="glass rounded-2xl p-5 border border-white/5 relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-rt-accent/50 to-transparent" />
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-white font-display font-semibold">Revenue vs Expenses</h3>
-          <div className="flex gap-1">
-            {[7, 30].map((d) => (
-              <button key={d} onClick={() => setPeriod(d)} className={`px-3 py-1 text-xs rounded-lg transition-all ${period === d ? "bg-rt-accent text-white shadow-lg shadow-rt-accent/25" : "bg-white/5 text-white/50 hover:text-white"}`}>{d}d</button>
-            ))}
-          </div>
-        </div>
-        <div className="flex gap-4 flex-wrap">
-          <div className="flex-1 min-w-[250px]">
-            <BarChart data={history.map((h) => ({ label: h.date?.slice(5), value: h.revenue }))} color="#22c55e" />
-            <p className="text-xs text-emerald-400/50 text-center mt-1">Revenue</p>
-          </div>
-          <div className="flex-1 min-w-[250px]">
-            <BarChart data={history.map((h) => ({ label: h.date?.slice(5), value: h.expenses }))} color="#f97316" />
-            <p className="text-xs text-orange-400/50 text-center mt-1">Expenses</p>
-          </div>
-          <div className="flex-1 min-w-[250px]">
-            <BarChart data={history.map((h) => ({ label: h.date?.slice(5), value: Math.max(0, h.profit) }))} color="#a855f7" />
-            <p className="text-xs text-violet-400/50 text-center mt-1">Profit</p>
-          </div>
-        </div>
-      </div>
+    <div className="space-y-4">
       <div className="glass rounded-2xl p-5 border border-white/5 relative">
-        <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-rt-accent/50 to-transparent" />
-        <h3 className="text-white font-display font-semibold mb-3">Recent Sales ({period}d)</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead><tr className="text-white/30 text-xs uppercase border-b border-white/5">
-              <th className="text-left py-2 pr-4">Date</th><th className="text-right pr-4">Orders</th><th className="text-right pr-4">Revenue</th><th className="text-right pr-4">Costs</th><th className="text-right">Profit</th>
-            </tr></thead>
-            <tbody>
-              {[...history].reverse().map((h) => (
-                <tr key={h.date} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                  <td className="py-2 pr-4 text-white/70 font-mono text-xs">{h.date}</td>
-                  <td className="py-2 pr-4 text-right text-white/70">{h.orders}</td>
-                  <td className="py-2 pr-4 text-right text-emerald-400 font-mono">${h.revenue.toFixed(2)}</td>
-                  <td className="py-2 pr-4 text-right text-orange-400 font-mono">${h.expenses.toFixed(2)}</td>
-                  <td className={`py-2 text-right font-mono ${h.profit >= 0 ? "text-rt-accent" : "text-red-400"}`}>${h.profit.toFixed(2)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <pre className="text-xs text-white/70 font-mono whitespace-pre-wrap break-all">{JSON.stringify({ stats, history }, null, 2)}</pre>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
