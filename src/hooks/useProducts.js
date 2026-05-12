@@ -10,7 +10,7 @@ export function useProducts(params = {}) {
     let cancelled = false;
     setLoading(true);
     getProducts(params)
-      .then((data) => { if (!cancelled) setProducts(data); })
+      .then((data) => { if (!cancelled) setProducts(data.items || data); })
       .catch((err) => { if (!cancelled) setError(err.message); })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };

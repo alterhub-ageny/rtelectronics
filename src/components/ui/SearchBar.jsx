@@ -24,7 +24,7 @@ export default function SearchBar() {
     debounceRef.current = setTimeout(async () => {
       try {
         const data = await getProducts({ search: val });
-        setResults(data.slice(0, 6));
+        setResults((data.items || data).slice(0, 6));
         setOpen(true);
       } catch {}
     }, 300);
