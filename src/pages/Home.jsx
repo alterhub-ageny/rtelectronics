@@ -1,16 +1,19 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { subscribeNewsletter } from "../services/api";
 import HeroSection from "../components/home/HeroSection";
 import FeaturedProducts from "../components/home/FeaturedProducts";
 import CategoryShowcase from "../components/home/CategoryShowcase";
 import PromoSection from "../components/home/PromoSection";
 import AnimatedSection from "../components/ui/AnimatedSection";
+import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
 
 export default function Home() {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
   const addToast = useToast();
+  const { user, isAdmin } = useAuth();
 
   const handleSubscribe = async (e) => {
     e.preventDefault();
@@ -59,6 +62,15 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {isAdmin && (
+        <Link to="/admin"
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-rt-accent to-rt-accent2 text-white text-sm font-bold shadow-lg shadow-rt-accent/30 hover:shadow-rt-accent/50 hover:scale-105 transition-all duration-300 group"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:rotate-90 transition-transform"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+          Admin Panel
+        </Link>
+      )}
     </>
   );
 }

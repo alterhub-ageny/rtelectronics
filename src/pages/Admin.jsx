@@ -296,13 +296,14 @@ function KpiCard({ title, value, icon: Icon, trend, subtitle, color = "text-rt-a
 function DashboardTab() {
   const [stats, setStats] = useState(null);
   const [history, setHistory] = useState([]);
+  const [settings, setSettings] = useState({});
   const [period, setPeriod] = useState(7);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     setLoading(true); setError(null);
-    try { const [s, h] = await Promise.all([adminGetStats(), adminGetSalesHistory(period)]); setStats(s); setHistory(h || []); } catch (e) { setError(e.message); }
+    try { const [s, h, cfg] = await Promise.all([adminGetStats(), adminGetSalesHistory(period), adminGetSettings()]); setStats(s); setHistory(h || []); const flat = {}; Object.entries(cfg).forEach(([k, v]) => { flat[k] = v?.value ?? v; }); setSettings(flat); } catch (e) { setError(e.message); }
     setLoading(false);
   }, [period]);
 
@@ -362,15 +363,15 @@ function DashboardTab() {
         </div>
         <div className="flex gap-4 flex-wrap">
           <div className="flex-1 min-w-[250px]">
-            <BarChart data={history.map((h) => ({ label: h.date?.slice(5), value: h.revenue }))} color="#22c55e" />
+            <BarChart data={history.map((h) => ({ label: h.date?.slice(5), value: h.revenue }))} color={settings.chart_revenue_color || "#22c55e"} />
             <p className="text-xs text-emerald-400/50 text-center mt-1">Revenue</p>
           </div>
           <div className="flex-1 min-w-[250px]">
-            <BarChart data={history.map((h) => ({ label: h.date?.slice(5), value: h.expenses }))} color="#f97316" />
+            <BarChart data={history.map((h) => ({ label: h.date?.slice(5), value: h.expenses }))} color={settings.chart_expenses_color || "#f97316"} />
             <p className="text-xs text-orange-400/50 text-center mt-1">Expenses</p>
           </div>
           <div className="flex-1 min-w-[250px]">
-            <BarChart data={history.map((h) => ({ label: h.date?.slice(5), value: Math.max(0, h.profit) }))} color="#a855f7" />
+            <BarChart data={history.map((h) => ({ label: h.date?.slice(5), value: Math.max(0, h.profit) }))} color={settings.chart_profit_color || "#a855f7"} />
             <p className="text-xs text-violet-400/50 text-center mt-1">Profit</p>
           </div>
         </div>
@@ -1075,6 +1076,7 @@ function SettingsTab({ addToast }) {
     { title: "Social", keys: ["facebook_url", "twitter_url", "instagram_url"] },
     { title: "Content", keys: ["about_text"] },
     { title: "Site", keys: ["announcement", "announcement_active", "maintenance_mode"] },
+    { title: "Charts", keys: ["chart_revenue_color", "chart_expenses_color", "chart_profit_color", "chart_bar_animated"] },
   ];
   const labels = {
     store_name: "Store Name", store_email: "Store Email", store_phone: "Store Phone",
@@ -1084,6 +1086,8 @@ function SettingsTab({ addToast }) {
     facebook_url: "Facebook URL", twitter_url: "Twitter URL", instagram_url: "Instagram URL",
     about_text: "About Text", announcement: "Announcement", announcement_active: "Show Announcement",
     maintenance_mode: "Maintenance Mode",
+    chart_revenue_color: "Revenue Bar Color", chart_expenses_color: "Expenses Bar Color",
+    chart_profit_color: "Profit Bar Color", chart_bar_animated: "Animated Bars",
   };
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
