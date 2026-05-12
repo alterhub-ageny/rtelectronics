@@ -246,12 +246,12 @@ function Sparkline({ data, color = "#ff2a2a", height = 40 }) {
 /* ─────── BAR CHART ─────── */
 function BarChart({ data, height = 160, color = "#ff2a2a" }) {
   if (!data?.length) return null;
-  const max = Math.max(...data.map((d) => d.value || d), 1);
+  const max = Math.max(...data.map((d) => d.value ?? 0), 1);
   const w = Math.max(300, data.length * 30);
   return (
     <svg width="100%" height={height} viewBox={`0 0 ${w} ${height}`} preserveAspectRatio="xMidYMid meet">
       {data.map((d, i) => {
-        const v = d.value || d;
+        const v = d.value ?? 0;
         const barH = (v / max) * (height - 20);
         const x = (i / data.length) * w + 4;
         const bw = Math.max(8, w / data.length - 8);
