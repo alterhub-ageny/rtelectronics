@@ -294,17 +294,108 @@ function KpiCard({ title, value, icon: Icon, trend, subtitle, color = "text-rt-a
 
 /* ─────── DASHBOARD TAB ─────── */
 function DashboardTab() {
-  const [text, setText] = useState("loading...");
-  useEffect(() => {
-    Promise.all([adminGetStats(), adminGetSalesHistory(7)])
-      .then(([s, h]) => setText(JSON.stringify({ stats: s, history: h }, null, 2)))
-      .catch((e) => setText("Error: " + e.message));
-  }, []);
+  const [stats, setStats] = useState(null);
+  const [history, setHistory] = useState([]);
+  const [period, setPeriod] = useState(7);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const load = useCallback(async () => {
+    setLoading(true); setError(null);
+    try { const [s, h] = await Promise.all([adminGetStats(), adminGetSalesHistory(period)]); setStats(s); setHistory(h || []); } catch (e) { setError(e.message); }
+    setLoading(false);
+  }, [period]);
+
+  useEffect(() => { load(); }, [load]);
+
+  if (loading && !stats) return (
+    <div className="flex flex-col items-center justify-center py-20 gap-4">
+      <div className="relative">
+        <div className="w-12 h-12 border-2 border-rt-accent/30 border-t-rt-accent rounded-full animate-spin" />
+        <div className="absolute inset-0 bg-rt-accent/10 blur-xl rounded-full animate-pulse" />
+      </div>
+      <p className="text-white/30 text-sm animate-pulse">Loading dashboard...</p>
+    </div>
+  );
+
+  if (error && !stats) return (
+    <div className="flex flex-col items-center justify-center py-20 gap-4">
+      <div className="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+        <AlertTriangle size={28} className="text-red-400" />
+      </div>
+      <p className="text-red-400 text-sm">{error}</p>
+      <button onClick={load} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all"><RefreshCw size={14} /> Retry</button>
+    </div>
+  );
+
+  const profitMargin = stats.totalRevenue > 0 ? ((stats.netProfit / stats.totalRevenue) * 100) : 0;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4">
+        <KpiCard title="Today" value={`$${sf(stats.todayRevenue)}`} icon={BarChart3} color="text-emerald-400" subtitle={`${stats.todayOrders} orders`} />
+        <KpiCard title="Total Revenue" value={`$${sf(stats.totalRevenue)}`} icon={TrendingUp} color="text-green-400" />
+        <KpiCard title="Total Expenses" value={`$${sf(stats.totalExpenses)}`} icon={TrendingDown} color="text-orange-400" />
+        <KpiCard title="Net Profit" value={`$${sf(stats.netProfit)}`} icon={DollarSign} color={stats.netProfit >= 0 ? "text-emerald-400" : "text-red-400"} subtitle={`${sf(profitMargin, 1)}% margin`} />
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4">
+        <KpiCard title="Total Orders" value={stats.totalOrders} icon={ShoppingCart} trend={0} subtitle="all time" />
+        <KpiCard title="Pending" value={stats.pendingOrders} icon={Clock} color="text-yellow-400" />
+        <KpiCard title="Low Stock" value={stats.lowStockProducts} icon={AlertTriangle} color="text-orange-400" subtitle={`${stats.outOfStockProducts} out of stock`} />
+        <KpiCard title="Avg Order" value={`$${sf(stats.averageOrderValue)}`} icon={Activity} />
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4">
+        <KpiCard title="Products" value={stats.totalProducts} icon={Package} />
+        <KpiCard title="Users" value={stats.totalUsers} icon={Users} />
+        <KpiCard title="Reviews" value={stats.totalReviews} icon={Star} />
+        <KpiCard title="Subscribers" value={stats.totalSubscribers} icon={Mail} />
+      </div>
+      <div className="glass rounded-2xl p-5 border border-white/5 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-rt-accent/50 to-transparent" />
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-white font-display font-semibold">Revenue vs Expenses</h3>
+          <div className="flex gap-1">
+            {[7, 30].map((d) => (
+              <button key={d} onClick={() => setPeriod(d)} className={`px-3 py-1 text-xs rounded-lg transition-all ${period === d ? "bg-rt-accent text-white shadow-lg shadow-rt-accent/25" : "bg-white/5 text-white/50 hover:text-white"}`}>{d}d</button>
+            ))}
+          </div>
+        </div>
+        <div className="flex gap-4 flex-wrap">
+          <div className="flex-1 min-w-[250px]">
+            <BarChart data={history.map((h) => ({ label: h.date?.slice(5), value: h.revenue }))} color="#22c55e" />
+            <p className="text-xs text-emerald-400/50 text-center mt-1">Revenue</p>
+          </div>
+          <div className="flex-1 min-w-[250px]">
+            <BarChart data={history.map((h) => ({ label: h.date?.slice(5), value: h.expenses }))} color="#f97316" />
+            <p className="text-xs text-orange-400/50 text-center mt-1">Expenses</p>
+          </div>
+          <div className="flex-1 min-w-[250px]">
+            <BarChart data={history.map((h) => ({ label: h.date?.slice(5), value: Math.max(0, h.profit) }))} color="#a855f7" />
+            <p className="text-xs text-violet-400/50 text-center mt-1">Profit</p>
+          </div>
+        </div>
+      </div>
       <div className="glass rounded-2xl p-5 border border-white/5 relative">
-        <pre className="text-xs text-white/70 font-mono whitespace-pre-wrap break-all">{text}</pre>
+        <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-rt-accent/50 to-transparent" />
+        <h3 className="text-white font-display font-semibold mb-3">Recent Sales ({period}d)</h3>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead><tr className="text-white/30 text-xs uppercase border-b border-white/5">
+              <th className="text-left py-2 pr-4">Date</th><th className="text-right pr-4">Orders</th><th className="text-right pr-4">Revenue</th><th className="text-right pr-4">Costs</th><th className="text-right">Profit</th>
+            </tr></thead>
+            <tbody>
+              {[...history].reverse().map((h) => (
+                <tr key={h.date} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                  <td className="py-2 pr-4 text-white/70 font-mono text-xs">{h.date}</td>
+                  <td className="py-2 pr-4 text-right text-white/70">{h.orders}</td>
+                  <td className="py-2 pr-4 text-right text-emerald-400 font-mono">${sf(h.revenue)}</td>
+                  <td className="py-2 pr-4 text-right text-orange-400 font-mono">${sf(h.expenses)}</td>
+                  <td className={`py-2 text-right font-mono ${h.profit >= 0 ? "text-rt-accent" : "text-red-400"}`}>${sf(h.profit)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
