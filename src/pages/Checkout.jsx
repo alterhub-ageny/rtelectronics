@@ -78,12 +78,14 @@ export default function Checkout() {
   if (done) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] px-4">
-        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="w-20 h-20 rounded-full bg-rt-accent3/20 border border-rt-accent3/40 flex items-center justify-center mb-6">
-          <Check size={36} className="text-rt-accent3" />
+        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="crystal rounded-[24px] p-10 text-center max-w-sm">
+          <div className="w-16 h-16 rounded-2xl bg-rt-accent/10 border border-rt-accent/20 flex items-center justify-center mx-auto mb-4">
+            <Check size={28} className="text-rt-accent" />
+          </div>
+          <h2 className="text-xl font-display font-bold text-white/90 mb-2">ORDER CONFIRMED</h2>
+          <p className="text-white/30 text-xs font-mono mb-6">Your transmission has been received. Confirmation signal incoming.</p>
+          <Link to="/products" className="btn-crystal text-xs inline-flex items-center gap-2 px-5 py-2.5">CONTINUE</Link>
         </motion.div>
-        <h2 className="text-3xl font-display font-bold text-white mb-2">Order Confirmed!</h2>
-        <p className="text-white/50 mb-8 text-center max-w-md">Thank you for your purchase. You'll receive a confirmation email shortly.</p>
-        <Link to="/products" className="btn-primary">Continue Shopping</Link>
       </div>
     );
   }
@@ -94,54 +96,63 @@ export default function Checkout() {
 
   return (
     <div className="max-w-site mx-auto px-4 sm:px-6 py-10">
-      <Link to="/cart" className="inline-flex items-center gap-2 text-white/40 hover:text-rt-accent transition-colors mb-8 text-sm">
-        <ArrowLeft size={16} /> Back to Cart
+      <Link to="/cart" className="inline-flex items-center gap-1.5 text-white/30 hover:text-rt-accent transition-colors mb-6 text-[11px] font-mono">
+        <ArrowLeft size={13} /> BACK TO CART
       </Link>
-      <h1 className="section-title mb-10">Checkout</h1>
 
-      <form onSubmit={handleSubmit} className="grid lg:grid-cols-5 gap-8">
-        <div className="lg:col-span-3 space-y-6">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-2xl p-6 border border-white/5">
-            <h2 className="text-lg font-display font-bold text-white mb-5">Shipping Information</h2>
-            <div className="grid sm:grid-cols-2 gap-4">
+      <div className="mb-8">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-rt-accent/20 bg-rt-accent/5 mb-4">
+          <span className="w-1.5 h-1.5 rounded-full bg-rt-accent" />
+          <span className="text-rt-accent text-[10px] font-mono tracking-[0.15em] uppercase">Checkout</span>
+        </div>
+        <h1 className="text-2xl md:text-3xl font-display font-bold text-white/90">
+          COMPLETE <span className="text-crystal">ORDER</span>
+        </h1>
+      </div>
+
+      <form onSubmit={handleSubmit} className="grid lg:grid-cols-5 gap-6">
+        <div className="lg:col-span-3 space-y-4">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="crystal rounded-2xl p-5">
+            <h2 className="text-sm font-display font-bold text-white/80 tracking-wider mb-5">SHIPPING DATA</h2>
+            <div className="grid sm:grid-cols-2 gap-3">
               <div className="sm:col-span-2">
-                <label className="text-xs text-white/50 mb-1.5 block">Full Name *</label>
-                <input required value={form.name} onChange={update("name")} placeholder="John Doe" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/20 focus:outline-none focus:border-rt-accent/50 transition-all" />
+                <label className="text-[10px] text-white/30 font-mono tracking-wider mb-1.5 block">FULL NAME *</label>
+                <input required value={form.name} onChange={update("name")} placeholder="John Doe" className="input-crystal text-xs py-2.5" />
               </div>
               <div className="sm:col-span-2">
-                <label className="text-xs text-white/50 mb-1.5 block">Email *</label>
-                <input required type="email" value={form.email} onChange={update("email")} placeholder="john@example.com" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/20 focus:outline-none focus:border-rt-accent/50 transition-all" />
+                <label className="text-[10px] text-white/30 font-mono tracking-wider mb-1.5 block">EMAIL *</label>
+                <input required type="email" value={form.email} onChange={update("email")} placeholder="john@example.com" className="input-crystal text-xs py-2.5" />
               </div>
               <div className="sm:col-span-2">
-                <label className="text-xs text-white/50 mb-1.5 block">Address *</label>
-                <input required value={form.address} onChange={update("address")} placeholder="123 Tech Street" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/20 focus:outline-none focus:border-rt-accent/50 transition-all" />
+                <label className="text-[10px] text-white/30 font-mono tracking-wider mb-1.5 block">ADDRESS *</label>
+                <input required value={form.address} onChange={update("address")} placeholder="123 Tech Street" className="input-crystal text-xs py-2.5" />
               </div>
               <div>
-                <label className="text-xs text-white/50 mb-1.5 block">City *</label>
-                <input required value={form.city} onChange={update("city")} placeholder="New York" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/20 focus:outline-none focus:border-rt-accent/50 transition-all" />
+                <label className="text-[10px] text-white/30 font-mono tracking-wider mb-1.5 block">CITY *</label>
+                <input required value={form.city} onChange={update("city")} placeholder="New York" className="input-crystal text-xs py-2.5" />
               </div>
               <div>
-                <label className="text-xs text-white/50 mb-1.5 block">ZIP Code *</label>
-                <input required value={form.zip} onChange={update("zip")} placeholder="10001" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/20 focus:outline-none focus:border-rt-accent/50 transition-all" />
+                <label className="text-[10px] text-white/30 font-mono tracking-wider mb-1.5 block">ZIP *</label>
+                <input required value={form.zip} onChange={update("zip")} placeholder="10001" className="input-crystal text-xs py-2.5" />
               </div>
             </div>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="glass rounded-2xl p-6 border border-white/5">
-            <h2 className="text-lg font-display font-bold text-white mb-5 flex items-center gap-2">
-              <Truck size={18} className="text-rt-accent" /> Shipping Method
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="crystal rounded-2xl p-5">
+            <h2 className="text-sm font-display font-bold text-white/80 tracking-wider mb-4 flex items-center gap-2">
+              <Truck size={14} className="text-rt-accent" /> SHIPPING
             </h2>
-            <div className="space-y-3">
+            <div className="space-y-2">
               {SHIPPING_METHODS.map((s) => (
-                <label key={s.id} className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all ${
-                  shippingMethod === s.id ? "border-rt-accent/40 bg-rt-accent/5" : "border-white/10 bg-white/5 hover:border-white/20"
+                <label key={s.id} className={`flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all ${
+                  shippingMethod === s.id ? "border-rt-accent/30 bg-rt-accent/8" : "border-white/[0.06] bg-white/[0.02] hover:border-white/20"
                 }`}>
                   <input type="radio" name="shipping" value={s.id} checked={shippingMethod === s.id} onChange={() => setShippingMethod(s.id)} className="accent-rt-accent" />
                   <div className="flex-1">
-                    <p className="text-white font-medium text-sm">{s.label}</p>
-                    <p className="text-white/40 text-xs">{s.time}</p>
+                    <p className="text-white/60 text-xs font-medium">{s.label}</p>
+                    <p className="text-white/20 text-[10px] font-mono">{s.time}</p>
                   </div>
-                  <span className="text-white font-mono text-sm">
+                  <span className="text-white/50 text-xs font-mono">
                     {freeShipping && s.id === "standard" ? "FREE" : `$${s.cost}`}
                   </span>
                 </label>
@@ -149,83 +160,83 @@ export default function Checkout() {
             </div>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass rounded-2xl p-6 border border-white/5">
-            <h2 className="text-lg font-display font-bold text-white mb-5 flex items-center gap-2">
-              <Gift size={18} className="text-rt-accent" /> Extras
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="crystal rounded-2xl p-5">
+            <h2 className="text-sm font-display font-bold text-white/80 tracking-wider mb-4 flex items-center gap-2">
+              <Gift size={14} className="text-rt-accent" /> EXTRAS
             </h2>
-            <label className="flex items-center gap-3 mb-4 cursor-pointer">
-              <input type="checkbox" checked={giftWrap} onChange={() => setGiftWrap(!giftWrap)} className="accent-rt-accent w-4 h-4" />
+            <label className="flex items-center gap-3 mb-3 cursor-pointer p-3 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+              <input type="checkbox" checked={giftWrap} onChange={() => setGiftWrap(!giftWrap)} className="accent-rt-accent w-3.5 h-3.5" />
               <div>
-                <p className="text-white text-sm">Gift Wrap <span className="text-white/40 font-normal">(+$4.99)</span></p>
-                <p className="text-white/30 text-xs">Eco-friendly premium gift wrapping</p>
+                <p className="text-white/60 text-xs">Gift Wrap <span className="text-white/20">(+$4.99)</span></p>
+                <p className="text-white/20 text-[10px] font-mono">Eco-friendly premium wrapping</p>
               </div>
             </label>
             <div>
-              <label className="text-xs text-white/50 mb-1.5 block flex items-center gap-1"><FileText size={14} /> Order Notes (optional)</label>
-              <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} placeholder="Special instructions for delivery..."
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/20 focus:outline-none focus:border-rt-accent/50 transition-all resize-none" />
+              <label className="text-[10px] text-white/30 font-mono tracking-wider mb-1.5 block flex items-center gap-1"><FileText size={11} /> NOTES</label>
+              <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} placeholder="Special instructions..."
+                className="input-crystal text-xs py-2 resize-none" />
             </div>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="glass rounded-2xl p-6 border border-white/5">
-            <h2 className="text-lg font-display font-bold text-white mb-5 flex items-center gap-2">
-              <CreditCard size={18} className="text-rt-accent" /> Payment
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="crystal rounded-2xl p-5">
+            <h2 className="text-sm font-display font-bold text-white/80 tracking-wider mb-4 flex items-center gap-2">
+              <CreditCard size={14} className="text-rt-accent" /> PAYMENT
             </h2>
             <div>
-              <label className="text-xs text-white/50 mb-1.5 block">Card Number</label>
+              <label className="text-[10px] text-white/30 font-mono tracking-wider mb-1.5 block">CARD NUMBER</label>
               <div className="relative">
                 <input required value={form.card} onChange={update("card")} placeholder="4242 4242 4242 4242" maxLength={19}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/20 focus:outline-none focus:border-rt-accent/50 transition-all pl-12" />
-                <CreditCard size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" />
+                  className="input-crystal text-xs py-2.5 pl-10" />
+                <CreditCard size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/20" />
               </div>
             </div>
           </motion.div>
         </div>
 
         <div className="lg:col-span-2">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="space-y-6 sticky top-28">
-            {/* Coupon */}
-            <div className="glass rounded-2xl p-5 border border-white/5">
-              <h3 className="text-white font-semibold mb-3 flex items-center gap-2"><Percent size={16} className="text-rt-accent" /> Coupon Code</h3>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="space-y-4 sticky top-28">
+            <div className="crystal rounded-2xl p-5">
+              <h3 className="text-white/60 text-xs font-display font-bold tracking-wider mb-3 flex items-center gap-2">
+                <Percent size={12} className="text-rt-accent" /> COUPON
+              </h3>
               <div className="flex gap-2">
-                <input value={couponCode} onChange={(e) => setCouponCode(e.target.value)} placeholder="Enter code"
-                  className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
-                <button type="button" onClick={handleApplyCoupon} className="px-4 py-2.5 rounded-xl bg-rt-accent/10 border border-rt-accent/20 text-rt-accent text-sm font-medium hover:bg-rt-accent/20 transition-all">Apply</button>
+                <input value={couponCode} onChange={(e) => setCouponCode(e.target.value)} placeholder="ENTER CODE"
+                  className="flex-1 input-crystal text-[11px] py-2" />
+                <button type="button" onClick={handleApplyCoupon} className="px-3.5 py-2 rounded-xl bg-rt-accent/10 border border-rt-accent/20 text-rt-accent text-[11px] font-medium hover:bg-rt-accent/20 transition-all">APPLY</button>
               </div>
-              {coupon && <p className="text-rt-accent3 text-xs mt-2">Coupon applied!</p>}
-              {couponErr && <p className="text-red-400 text-xs mt-2">{couponErr}</p>}
+              {coupon && <p className="text-rt-accent/60 text-[10px] mt-2 font-mono">// Coupon applied</p>}
+              {couponErr && <p className="text-red-400 text-[10px] mt-2 font-mono">! {couponErr}</p>}
             </div>
 
-            {/* Summary */}
-            <div className="glass rounded-2xl p-6 border border-white/5">
-              <h3 className="text-lg font-display font-bold text-white mb-5">Order Summary</h3>
-              <div className="space-y-3 mb-6 max-h-60 overflow-y-auto pr-2">
+            <div className="crystal rounded-2xl p-5">
+              <h3 className="text-sm font-display font-bold text-white/80 tracking-wider mb-4">SUMMARY</h3>
+              <div className="space-y-2.5 mb-4 max-h-48 overflow-y-auto pr-1">
                 {items.map((item) => (
-                  <div key={item.id} className="flex items-center gap-3">
-                    <img src={item.images[0]} alt={item.name} className="w-12 h-12 object-cover rounded-lg shrink-0" />
+                  <div key={item.id} className="flex items-center gap-2.5 bg-white/[0.02] rounded-xl p-2">
+                    <img src={item.images?.[0] || ""} alt={item.name} className="w-8 h-8 object-cover rounded-lg shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-white text-sm truncate">{item.name}</p>
-                      <p className="text-white/40 text-xs">Qty: {item.quantity}</p>
+                      <p className="text-white/50 text-[11px] truncate">{item.name}</p>
+                      <p className="text-white/20 text-[9px] font-mono">x{item.quantity}</p>
                     </div>
-                    <span className="text-white font-mono text-sm">${(item.price * item.quantity).toLocaleString()}</span>
+                    <span className="text-white/50 text-[11px] font-mono">${(item.price * item.quantity).toLocaleString()}</span>
                   </div>
                 ))}
               </div>
-              <div className="space-y-2 text-sm border-t border-white/10 pt-4">
-                <div className="flex justify-between"><span className="text-white/50">Subtotal</span><span className="text-white font-mono">${totalPrice.toLocaleString()}</span></div>
-                <div className="flex justify-between"><span className="text-white/50">Shipping</span><span className={freeShipping ? "text-rt-accent3 font-mono" : "text-white font-mono"}>{freeShipping ? "FREE" : `$${effectiveShipping.toFixed(2)}`}</span></div>
-                <div className="flex justify-between"><span className="text-white/50">Tax</span><span className="text-white font-mono">${tax.toFixed(2)}</span></div>
-                {giftWrap && <div className="flex justify-between"><span className="text-white/50">Gift Wrap</span><span className="text-white font-mono">$4.99</span></div>}
-                {coupon && <div className="flex justify-between"><span className="text-rt-accent3/70">Discount ({coupon.code})</span><span className="text-rt-accent3 font-mono">-${couponDiscount.toFixed(2)}</span></div>}
-                <div className="flex justify-between border-t border-white/10 pt-2 mt-2">
-                  <span className="text-white font-semibold">Total</span>
-                  <span className="text-rt-accent font-display font-bold text-xl">${total.toFixed(2)}</span>
+              <div className="space-y-1.5 text-xs border-t border-white/[0.04] pt-3">
+                <div className="flex justify-between"><span className="text-white/30 font-mono text-[11px]">Subtotal</span><span className="text-white/60 font-mono text-[11px]">${totalPrice.toLocaleString()}</span></div>
+                <div className="flex justify-between"><span className="text-white/30 font-mono text-[11px]">Shipping</span><span className={`font-mono text-[11px] ${freeShipping ? "text-rt-accent" : "text-white/60"}`}>{freeShipping ? "FREE" : `$${effectiveShipping.toFixed(2)}`}</span></div>
+                <div className="flex justify-between"><span className="text-white/30 font-mono text-[11px]">Tax</span><span className="text-white/60 font-mono text-[11px]">${tax.toFixed(2)}</span></div>
+                {giftWrap && <div className="flex justify-between"><span className="text-white/30 font-mono text-[11px]">Gift Wrap</span><span className="text-white/60 font-mono text-[11px]">$4.99</span></div>}
+                {coupon && <div className="flex justify-between"><span className="text-rt-accent/50 font-mono text-[11px]">Discount ({coupon.code})</span><span className="text-rt-accent font-mono text-[11px]">-${couponDiscount.toFixed(2)}</span></div>}
+                <div className="flex justify-between border-t border-white/[0.06] pt-2 mt-2">
+                  <span className="text-white/70 text-xs font-bold">TOTAL</span>
+                  <span className="text-rt-accent font-display font-bold text-base">${total.toFixed(2)}</span>
                 </div>
               </div>
-                  <button type="submit" disabled={submitting} className="w-full mt-6 btn-primary flex items-center justify-center gap-2 py-3.5">
-                {submitting ? "Processing..." : <><Lock size={18} /> Place Order - ${total.toFixed(2)}</>}
+              <button type="submit" disabled={submitting} className="w-full mt-4 btn-crystal text-xs py-3 flex items-center justify-center gap-2">
+                {submitting ? <><span className="spinner-crystal w-4 h-4" /> PROCESSING</> : <><Lock size={13} /> PLACE ORDER</>}
               </button>
-              <div className="mt-4"><TrustBadges /></div>
+              <div className="mt-3"><TrustBadges /></div>
             </div>
           </motion.div>
         </div>

@@ -15,13 +15,13 @@ export default function BackToTop() {
     <AnimatePresence>
       {show && (
         <motion.button
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.5 }}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-6 left-6 z-50 p-3 rounded-2xl glass border border-white/10 text-rt-accent hover:border-rt-accent/40 hover:bg-white/10 transition-all shadow-xl"
+          className="fixed bottom-6 left-6 z-50 w-11 h-11 rounded-2xl hologram flex items-center justify-center group cursor-pointer"
         >
-          <ArrowUp size={20} />
+          <ArrowUp size={18} className="text-rt-accent group-hover:scale-110 transition-transform" />
         </motion.button>
       )}
     </AnimatePresence>

@@ -1,149 +1,139 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { MessageCircle, X, Send } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
-import { useToast } from "../../context/ToastContext";
 import { createChatConversation, sendChatMessage, getChatMessages } from "../../services/api";
 
 const CONV_KEY = "rt-chat-conv";
 
 export default function ChatWidget() {
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [convId, setConvId] = useState(() => localStorage.getItem(CONV_KEY));
-  const [conv, setConv] = useState(null);
+  const [name, setName] = useState(user?.name || "");
+  const [email, setEmail] = useState(user?.email || "");
+  const [text, setText] = useState("");
   const [messages, setMessages] = useState([]);
-  const [form, setForm] = useState({ name: "", email: "", subject: "" });
-  const [input, setInput] = useState("");
-  const [sending, setSending] = useState(false);
   const [starting, setStarting] = useState(false);
-  const messagesEnd = useRef(null);
-  const { user } = useAuth();
-  const addToast = useToast();
+  const bottomRef = useRef();
 
-  useEffect(() => { if (open) document.body.style.overflow = "hidden"; else document.body.style.overflow = ""; return () => { document.body.style.overflow = ""; }; }, [open]);
-
-  const scrollToBottom = () => messagesEnd.current?.scrollIntoView({ behavior: "smooth" });
-  useEffect(() => { scrollToBottom(); }, [messages]);
+  const scroll = () => bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  useEffect(scroll, [messages]);
 
   const loadMessages = useCallback(async () => {
     if (!convId) return;
     try {
-      const data = await getChatMessages(convId);
-      setConv(data);
-      setMessages(data.messages || []);
+      const d = await getChatMessages(convId);
+      setMessages(d.messages || []);
     } catch {}
   }, [convId]);
 
-  useEffect(() => { if (convId && open) { loadMessages(); const iv = setInterval(loadMessages, 5000); return () => clearInterval(iv); } }, [convId, open, loadMessages]);
-
   useEffect(() => {
-    if (user && convId && open) {
-      const { name, email } = user;
-      setForm(f => ({ ...f, name: f.name || name, email: f.email || email }));
-    }
-  }, [user, convId, open]);
+    if (!open || !convId) return;
+    loadMessages();
+    const iv = setInterval(loadMessages, 5000);
+    return () => clearInterval(iv);
+  }, [open, convId, loadMessages]);
 
   const handleStart = async (e) => {
     e.preventDefault();
-    if (!form.name || !form.email) return;
+    if (!name || !email) return;
     setStarting(true);
     try {
-      const c = await createChatConversation(form);
-      setConvId(c.id);
-      localStorage.setItem(CONV_KEY, c.id);
-      setConv(c);
-      addToast("Chat started!", "success");
-    } catch (err) { addToast(err.message, "error"); }
+      const d = await createChatConversation({ name, email });
+      setConvId(d.id);
+      localStorage.setItem(CONV_KEY, d.id);
+    } catch {}
     setStarting(false);
   };
 
   const handleSend = async (e) => {
     e.preventDefault();
-    if (!input.trim() || !convId) return;
-    setSending(true);
+    if (!text.trim() || !convId) return;
+    const msg = text.trim();
+    setText("");
     try {
-      await sendChatMessage({ conversationId: convId, message: input.trim(), name: conv?.name || form.name });
-      setInput("");
+      await sendChatMessage({ conversationId: convId, name, message: msg });
       await loadMessages();
-    } catch (err) { addToast(err.message, "error"); }
-    setSending(false);
+    } catch {}
   };
-
-  const handleReset = () => {
-    localStorage.removeItem(CONV_KEY);
-    setConvId(null);
-    setConv(null);
-    setMessages([]);
-  };
-
-  const name = conv?.name || form.name || user?.name || "";
 
   return (
-    <>
-      {open && <div className="fixed inset-0 bg-black/40 z-50 lg:hidden" onClick={() => setOpen(false)} />}
-      <div className={`fixed bottom-6 z-50 transition-all duration-300 ${open ? "right-4 sm:right-6" : "left-6"}`}>
-        {!open ? (
-          <button onClick={() => setOpen(true)}
-            className="w-14 h-14 rounded-2xl bg-gradient-to-br from-rt-accent to-rt-accent2 text-white shadow-lg shadow-rt-accent/30 hover:shadow-rt-accent/50 hover:scale-105 transition-all flex items-center justify-center group"
+    <div className="fixed bottom-6 left-6 z-50 flex flex-col items-start">
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            className="mb-3 w-[320px] crystal rounded-2xl overflow-hidden shadow-2xl"
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:rotate-12 transition-transform"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          </button>
-        ) : (
-          <div className="w-[360px] sm:w-[400px] h-[520px] glass rounded-2xl border border-white/10 flex flex-col overflow-hidden shadow-2xl">
-            <div className="flex items-center justify-between px-5 py-3 border-b border-white/10 bg-white/[0.03]">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-rt-accent/10 border border-rt-accent/20 flex items-center justify-center">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-rt-accent"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                </div>
-                <div>
-                  <span className="text-white text-sm font-medium">Chat with us</span>
-                  {conv && <span className="text-[10px] text-emerald-400 ml-2">● Online</span>}
-                </div>
+            <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.02]">
+              <div className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-rt-accent/40 animate-neural-pulse" />
+                <span className="text-white/50 text-[11px] font-display font-bold tracking-wider">CHANNEL</span>
               </div>
-              <button onClick={() => setOpen(false)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+              <button onClick={() => setOpen(false)} className="p-1 rounded-lg hover:bg-white/[0.03] text-white/20 hover:text-white/40 transition-all">
+                <X size={13} />
+              </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-3">
-              {!conv ? (
-                <form onSubmit={handleStart} className="space-y-3 pt-4">
-                  <p className="text-white/50 text-sm mb-4">Hi! How can we help you today? Leave your details and we'll get back to you.</p>
-                  <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Your Name *" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
-                  <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="Your Email *" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
-                  <input value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} placeholder="Subject (optional)" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
-                  <button type="submit" disabled={starting} className="btn-primary w-full flex items-center justify-center gap-2 text-sm">
-                    {starting ? "Starting..." : <><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Start Chat</>}
-                  </button>
-                </form>
-              ) : (
-                <>
-                  {!messages.length && <div className="text-center py-8 text-white/30 text-sm">No messages yet. Send us a message!</div>}
+            {!convId ? (
+              <form onSubmit={handleStart} className="p-4 space-y-2.5">
+                <p className="text-white/20 text-[9px] font-mono mb-2 tracking-wider">Initialize neural channel:</p>
+                <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" required className="input-crystal text-[10px] py-2" />
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required className="input-crystal text-[10px] py-2" />
+                <button type="submit" disabled={starting} className="btn-crystal w-full text-[9px] py-2.5 flex items-center justify-center gap-1.5">
+                  {starting ? <span className="spinner-crystal w-2.5 h-2.5" /> : <><MessageCircle size={11} /> CONNECT</>}
+                </button>
+              </form>
+            ) : (
+              <div className="flex flex-col h-[300px]">
+                <div className="flex-1 overflow-y-auto p-3 space-y-2">
+                  {!messages.length && (
+                    <div className="text-center py-8">
+                      <p className="text-white/15 text-[9px] font-mono">Channel open. Send a message.</p>
+                    </div>
+                  )}
                   {messages.map((m) => (
                     <div key={m.id} className={`flex ${m.sender === "admin" ? "justify-start" : "justify-end"}`}>
-                      <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm ${m.sender === "admin" ? "bg-white/10 text-white/90 rounded-tl-md" : "bg-rt-accent/20 text-white border border-rt-accent/20 rounded-tr-md"}`}>
-                        <p className="text-xs text-white/40 mb-0.5">{m.sender === "admin" ? "Support" : name}</p>
-                        <p>{m.message}</p>
-                        <p className="text-[10px] text-white/30 mt-1 text-right">{m.createdAt?.slice(11, 16)}</p>
+                      <div
+                        className={`max-w-[85%] rounded-xl px-3 py-2 ${
+                          m.sender === "admin"
+                            ? "bg-white/[0.03] text-white/50"
+                            : "bg-rt-accent/[0.04] border border-rt-accent/[0.06] text-white/60"
+                        }`}
+                      >
+                        <p className="text-[8px] text-white/15 font-mono mb-0.5 tracking-wider">{m.sender === "admin" ? "SUPPORT" : name.toUpperCase()}</p>
+                        <p className="text-[11px]">{m.message}</p>
+                        <p className="text-[7px] text-white/15 mt-1 text-right font-mono">{m.createdAt?.slice(11, 16)}</p>
                       </div>
                     </div>
                   ))}
-                  <div ref={messagesEnd} />
-                </>
-              )}
-            </div>
-
-            {conv && (
-              <form onSubmit={handleSend} className="flex items-center gap-2 p-3 border-t border-white/10">
-                <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Type a message..." className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
-                <button type="submit" disabled={sending || !input.trim()} className="p-2.5 rounded-xl bg-rt-accent text-white disabled:opacity-30 hover:bg-rt-accent2 transition-all">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                </button>
-              </form>
+                  <div ref={bottomRef} />
+                </div>
+                <form onSubmit={handleSend} className="flex items-center gap-2 p-3 border-t border-white/[0.02]">
+                  <input value={text} onChange={(e) => setText(e.target.value)} placeholder="Type message..." className="flex-1 bg-white/[0.01] border border-white/[0.03] rounded-xl px-3 py-2 text-white/40 text-[11px] placeholder:text-white/10 focus:border-rt-accent/20 transition-all font-mono" />
+                  <button type="submit" disabled={!text.trim()} className="p-2 rounded-xl bg-rt-accent/[0.06] text-rt-accent/40 disabled:opacity-10 hover:bg-rt-accent/[0.1] hover:text-rt-accent/60 transition-all">
+                    <Send size={13} />
+                  </button>
+                </form>
+              </div>
             )}
-
-            {conv && (
-              <button onClick={handleReset} className="text-[10px] text-white/20 hover:text-white/40 text-center py-1.5 border-t border-white/5 transition-colors">Start new conversation</button>
-            )}
-          </div>
+          </motion.div>
         )}
-      </div>
-    </>
+      </AnimatePresence>
+
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-11 h-11 rounded-2xl crystal flex items-center justify-center group shadow-2xl hover:scale-105 transition-transform duration-500"
+      >
+        {open ? (
+          <X size={17} className="text-rt-accent/40" />
+        ) : (
+          <MessageCircle size={17} className="text-rt-accent/40 animate-neural-pulse" />
+        )}
+      </button>
+    </div>
   );
 }

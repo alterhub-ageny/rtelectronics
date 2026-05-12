@@ -5,24 +5,45 @@ import { Home, ArrowLeft } from "lucide-react";
 export default function NotFound() {
   return (
     <div className="min-h-[70vh] flex flex-col items-center justify-center px-4 text-center">
-      <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 200 }}
-        className="text-8xl md:text-9xl font-display font-bold text-gradient mb-4"
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ type: "spring", stiffness: 200 }}
+        className="text-7xl md:text-8xl font-display font-bold text-crystal text-glow-crystal mb-4"
       >
         404
       </motion.div>
-      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
-        className="text-xl md:text-2xl text-white/60 mb-2"
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        className="text-lg md:text-xl text-white/50 font-display mb-2"
       >
-        Page Not Found
+        SIGNAL LOST
       </motion.p>
-      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
-        className="text-white/40 mb-8 max-w-md"
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3 }}
+        className="text-white/20 text-xs font-mono mb-8 max-w-sm"
       >
-        The page you're looking for doesn't exist or has been moved.
+        The requested endpoint does not exist or has been relocated.
       </motion.p>
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="flex gap-4">
-        <Link to="/" className="btn-primary flex items-center gap-2"><Home size={18} /> Go Home</Link>
-        <button onClick={() => window.history.back()} className="btn-secondary flex items-center gap-2"><ArrowLeft size={18} /> Go Back</button>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="flex gap-3"
+      >
+        <Link to="/" className="btn-crystal text-xs flex items-center gap-2 px-5 py-2.5">
+          <Home size={14} /> RETURN
+        </Link>
+        <button
+          onClick={() => window.history.back()}
+          className="btn-ghost text-xs flex items-center gap-2 px-5 py-2.5"
+        >
+          <ArrowLeft size={14} /> BACK
+        </button>
       </motion.div>
     </div>
   );

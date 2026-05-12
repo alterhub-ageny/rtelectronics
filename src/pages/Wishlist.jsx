@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, ShoppingCart, Trash2, ArrowLeft } from "lucide-react";
+import { Heart, ShoppingCart, Trash2, ArrowLeft, Zap } from "lucide-react";
 import { useWishlist } from "../context/WishlistContext";
 import { useCart } from "../context/CartContext";
 import { useToast } from "../context/ToastContext";
@@ -29,43 +29,48 @@ export default function Wishlist() {
 
   return (
     <div className="max-w-site mx-auto px-4 sm:px-6 py-10">
-      <Link to="/products" className="inline-flex items-center gap-2 text-white/40 hover:text-rt-accent transition-colors mb-6 text-sm">
-        <ArrowLeft size={16} /> Continue Shopping
+      <Link to="/products" className="inline-flex items-center gap-1.5 text-white/30 hover:text-rt-accent transition-colors mb-6 text-[11px] font-mono">
+        <ArrowLeft size={13} /> BACK TO PRODUCTS
       </Link>
 
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="section-title flex items-center gap-3">
-            <Heart size={28} className="text-rt-accent" />
-            Wishlist
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-rt-accent/20 bg-rt-accent/5 mb-4">
+            <span className="w-1.5 h-1.5 rounded-full bg-rt-accent" />
+            <span className="text-rt-accent text-[10px] font-mono tracking-[0.15em] uppercase">Wishlist</span>
+          </div>
+          <h1 className="text-2xl md:text-3xl font-display font-bold text-white/90">
+            SAVED <span className="text-crystal">ITEMS</span>
           </h1>
-          <p className="text-white/40 mt-1">{products.length} saved items</p>
+          <p className="text-white/25 text-xs font-mono mt-1">{products.length} UNITS</p>
         </div>
         {products.length > 0 && (
-          <button onClick={handleAddAll} className="btn-primary text-sm flex items-center gap-2">
-            <ShoppingCart size={16} /> Add All to Cart
+          <button onClick={handleAddAll} className="btn-crystal text-[10px] flex items-center gap-2 px-5 py-2.5">
+            <Zap size={13} /> ADD ALL TO CART
           </button>
         )}
       </div>
 
       {products.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-32 text-white/40">
-          <Heart size={64} className="mb-6 opacity-30" />
-          <p className="text-2xl font-display text-white/30 mb-2">Your wishlist is empty</p>
-          <p className="text-sm mb-8">Save items you love by tapping the heart icon</p>
-          <Link to="/products" className="btn-primary">Browse Products</Link>
+        <div className="flex flex-col items-center justify-center py-24">
+          <div className="w-16 h-16 rounded-2xl bg-rt-accent/5 border border-rt-accent/10 flex items-center justify-center mb-4">
+            <Heart size={24} className="text-rt-accent/40" />
+          </div>
+          <p className="text-lg font-display font-bold text-white/50 mb-1">WISHLIST EMPTY</p>
+          <p className="text-white/20 text-xs font-mono mb-6">Save items by tapping the heart icon.</p>
+          <Link to="/products" className="btn-crystal text-xs px-5 py-2.5">BROWSE PRODUCTS</Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           <AnimatePresence mode="popLayout">
             {products.map((product) => (
               <motion.div key={product.id} layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="relative group">
                 <ProductCard product={product} />
                 <button
                   onClick={() => { toggle(product.id); addToast("Removed from wishlist", "info"); }}
-                  className="absolute top-4 right-4 z-20 p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-all opacity-0 group-hover:opacity-100"
+                  className="absolute top-3 right-3 z-20 w-7 h-7 rounded-lg bg-black/30 backdrop-blur-sm border border-white/10 flex items-center justify-center text-red-400/60 hover:text-red-400 hover:border-red-400/30 transition-all opacity-0 group-hover:opacity-100"
                 >
-                  <Trash2 size={16} />
+                  <Trash2 size={12} />
                 </button>
               </motion.div>
             ))}

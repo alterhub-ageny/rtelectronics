@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, X } from "lucide-react";
+import { Search, X, Zap } from "lucide-react";
 import { getProducts } from "../../services/api";
 
 export default function SearchBar() {
@@ -24,7 +24,7 @@ export default function SearchBar() {
     debounceRef.current = setTimeout(async () => {
       try {
         const data = await getProducts({ search: val });
-        setResults((data.items || data).slice(0, 6));
+        setResults((data.items || data).slice(0, 5));
         setOpen(true);
       } catch {}
     }, 300);
@@ -37,35 +37,44 @@ export default function SearchBar() {
   };
 
   return (
-    <div ref={ref} className="relative w-full max-w-xl">
+    <div ref={ref} className="relative w-full">
       <div className="relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" size={18} />
+        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/20" size={12} />
         <input
           type="text"
           value={query}
           onChange={(e) => handleChange(e.target.value)}
-          placeholder="Search laptops, phones, game top-ups..."
-          className="w-full pl-12 pr-12 py-3 bg-white/5 border border-white/10 rounded-2xl text-white placeholder-white/30
-                     focus:outline-none focus:border-rt-accent/50 focus:bg-white/10 transition-all duration-300"
+          placeholder="Search..."
+          className="w-full pl-8 pr-7 py-1.5 bg-white/[0.02] border border-white/[0.06] rounded-lg text-[11px] text-white/60 placeholder:text-white/15 focus:border-rt-accent/30 focus:bg-white/[0.04] transition-all duration-300 font-mono tracking-wide"
         />
         {query && (
-          <button onClick={() => { setQuery(""); setResults([]); setOpen(false); }} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white">
-            <X size={16} />
+          <button
+            onClick={() => { setQuery(""); setResults([]); setOpen(false); }}
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-white/20 hover:text-white/50 transition-colors"
+          >
+            <X size={11} />
           </button>
         )}
       </div>
+
       {open && results.length > 0 && (
-        <div className="absolute top-full mt-2 w-full glass rounded-2xl overflow-hidden z-50 border border-white/10">
+        <div className="absolute top-full mt-1 w-full hologram rounded-xl overflow-hidden z-50 shadow-2xl">
           {results.map((p) => (
             <button
               key={p.id}
               onClick={() => handleSelect(p.id)}
-              className="w-full flex items-center gap-4 px-4 py-3 hover:bg-white/10 transition-colors text-left"
+              className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-white/[0.04] transition-colors text-left"
             >
-              <img src={p.images[0]} alt={p.name} className="w-12 h-12 object-cover rounded-lg" />
+              <div className="w-7 h-7 rounded-lg bg-rt-dark/50 border border-white/[0.04] overflow-hidden shrink-0 flex items-center justify-center">
+                {p.images?.[0] ? (
+                  <img src={p.images[0]} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <Zap size={10} className="text-rt-accent/40" />
+                )}
+              </div>
               <div className="flex-1 min-w-0">
-                <p className="text-white font-medium truncate">{p.name}</p>
-                <p className="text-rt-accent text-sm font-mono">${p.price.toLocaleString()}</p>
+                <p className="text-white/60 text-[11px] font-medium truncate">{p.name}</p>
+                <p className="text-rt-accent text-[10px] font-mono">${Number(p.price).toLocaleString()}</p>
               </div>
             </button>
           ))}

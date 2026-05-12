@@ -38,7 +38,7 @@ export default function OrderDetailPage() {
       <div className="flex flex-col items-center justify-center py-32 text-white/40">
         <Package size={48} className="mb-4 opacity-30" />
         <p className="text-xl font-display mb-4">Order not found</p>
-        <Link to="/account" className="btn-primary">Back to Account</Link>
+        <Link to="/account" className="btn-crystal">Back to Account</Link>
       </div>
     );
   }
@@ -51,7 +51,7 @@ export default function OrderDetailPage() {
 
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="section-title flex items-center gap-3">
+          <h1 className="section-crystal-title flex items-center gap-3">
             <Package size={28} className="text-rt-accent" />
             Order #{order.id.slice(0, 8)}
           </h1>
@@ -64,7 +64,7 @@ export default function OrderDetailPage() {
 
       <div className="grid md:grid-cols-3 gap-6 mb-8">
         {order.statusHistory?.map((h, i) => (
-          <div key={i} className="glass rounded-xl p-4 border border-white/5">
+          <div key={i} className="crystal rounded-xl p-4 border border-white/5">
             <div className="flex items-center gap-2 mb-1">
               <div className={`w-2 h-2 rounded-full ${i === order.statusHistory.length - 1 ? "bg-rt-accent" : "bg-white/20"}`} />
               <span className="text-white text-sm font-medium capitalize">{h.status}</span>
@@ -75,7 +75,7 @@ export default function OrderDetailPage() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-6 mb-8">
-        <div className="glass rounded-2xl p-5 border border-white/5">
+        <div className="crystal rounded-2xl p-5 border border-white/5">
           <h3 className="text-white font-semibold flex items-center gap-2 mb-3"><MapPin size={16} className="text-rt-accent" /> Shipping Address</h3>
           {order.address ? (
             <>
@@ -86,7 +86,7 @@ export default function OrderDetailPage() {
             <p className="text-white/40 text-sm">No address saved</p>
           )}
         </div>
-        <div className="glass rounded-2xl p-5 border border-white/5">
+        <div className="crystal rounded-2xl p-5 border border-white/5">
           <h3 className="text-white font-semibold flex items-center gap-2 mb-3"><CreditCard size={16} className="text-rt-accent" /> Order Summary</h3>
           <div className="space-y-1 text-sm">
             <div className="flex justify-between"><span className="text-white/50">Subtotal</span><span className="text-white">${order.items?.reduce((s, i) => s + i.price * i.quantity, 0).toFixed(2)}</span></div>
@@ -100,7 +100,7 @@ export default function OrderDetailPage() {
       <div className="space-y-3">
         <h3 className="text-white font-semibold mb-4">Items</h3>
         {order.items?.map((item) => (
-          <div key={item.id} className="glass rounded-2xl p-4 border border-white/5 flex items-center gap-4">
+          <div key={item.id} className="crystal rounded-2xl p-4 border border-white/5 flex items-center gap-4">
             <img src={item.images?.[0]} alt={item.name} className="w-16 h-16 object-cover rounded-xl shrink-0" />
             <div className="flex-1 min-w-0">
               <Link to={`/product/${item.id}`} className="text-white font-medium hover:text-rt-accent transition-colors line-clamp-1">{item.name}</Link>

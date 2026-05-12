@@ -50,9 +50,12 @@ export default function ProductDetailPage() {
 
   if (!product) {
     return (
-      <div className="flex flex-col items-center justify-center py-32 text-white/40">
-        <p className="text-2xl font-display mb-4">Product not found</p>
-        <Link to="/products" className="btn-primary">Back to Products</Link>
+      <div className="flex flex-col items-center justify-center py-32">
+        <div className="w-16 h-16 rounded-2xl bg-rt-accent/5 border border-rt-accent/10 flex items-center justify-center mb-4">
+          <ArrowLeft size={24} className="text-rt-accent/40" />
+        </div>
+        <p className="text-lg font-display font-bold text-white/50 mb-4">UNIT NOT FOUND</p>
+        <Link to="/products" className="btn-crystal text-xs px-5 py-2.5">BACK TO PRODUCTS</Link>
       </div>
     );
   }
@@ -121,7 +124,7 @@ export default function ProductDetailPage() {
           </div>
 
           <div className="flex items-baseline gap-4 mb-8">
-            <span className="text-5xl font-display font-bold text-rt-accent text-glow">${product.price.toLocaleString()}</span>
+            <span className="text-5xl font-display font-bold text-rt-accent text-glow-crystal">${product.price.toLocaleString()}</span>
             {product.originalPrice && (
               <><span className="text-2xl text-white/30 line-through">${product.originalPrice.toLocaleString()}</span>
               <span className="px-3 py-1 text-sm font-bold rounded-full bg-red-500/20 text-red-400">-{Math.round((1 - product.price / product.originalPrice) * 100)}% OFF</span></>
@@ -158,7 +161,7 @@ export default function ProductDetailPage() {
               { icon: Shield, text: "2 Year Warranty", sub: "Full coverage" },
               { icon: RotateCcw, text: "30-Day Returns", sub: "No questions asked" },
             ].map(({ icon: Icon, text, sub }) => (
-              <div key={text} className="glass rounded-xl p-4 text-center border border-white/5">
+              <div key={text} className="crystal rounded-xl p-4 text-center border border-white/5">
                 <Icon size={20} className="text-rt-accent mx-auto mb-2" />
                 <p className="text-white text-sm font-medium">{text}</p>
                 <p className="text-white/30 text-xs">{sub}</p>
@@ -182,7 +185,7 @@ export default function ProductDetailPage() {
           {product.specs && (
             <div className="mt-8">
               <h3 className="text-white font-semibold mb-3">Specifications</h3>
-              <div className="glass rounded-2xl border border-white/5 overflow-hidden">
+              <div className="crystal rounded-2xl border border-white/5 overflow-hidden">
                 {Object.entries(product.specs).map(([key, val], i) => (
                   <div key={key} className={`flex justify-between px-5 py-3 ${i % 2 === 0 ? "bg-white/5" : ""}`}>
                     <span className="text-white/40 text-sm capitalize">{key.replace(/([A-Z])/g, " $1")}</span>
@@ -202,7 +205,7 @@ export default function ProductDetailPage() {
       <div className="border-t border-white/5 pt-12">
         <div className="flex items-start justify-between mb-8">
           <div>
-            <h2 className="section-title flex items-center gap-3"><MessageSquare size={28} className="text-rt-accent" /> Reviews</h2>
+            <h2 className="section-crystal-title flex items-center gap-3"><MessageSquare size={28} className="text-rt-accent" /> Reviews</h2>
             <p className="text-white/40 mt-1">{stats.total || reviews.length} reviews</p>
           </div>
           {stats.distribution && (
@@ -226,7 +229,7 @@ export default function ProductDetailPage() {
         <div className="grid lg:grid-cols-3 gap-8">
           <div>
             {user ? (
-              <form onSubmit={handleReview} className="glass rounded-2xl p-5 border border-white/5 sticky top-28">
+              <form onSubmit={handleReview} className="crystal rounded-2xl p-5 border border-white/5 sticky top-28">
                 <h3 className="text-white font-semibold mb-4">Write a Review</h3>
                 <div className="flex gap-1 mb-4">
                   {[1, 2, 3, 4, 5].map((s) => (
@@ -239,14 +242,14 @@ export default function ProductDetailPage() {
                   placeholder="Review title" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm mb-3 focus:outline-none focus:border-rt-accent/50" />
                 <textarea value={reviewForm.comment} onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
                   placeholder="Share your experience..." rows={4} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm mb-3 focus:outline-none focus:border-rt-accent/50 resize-none" />
-                <button type="submit" disabled={reviewing || !reviewForm.comment} className="btn-primary w-full text-sm">
+                <button type="submit" disabled={reviewing || !reviewForm.comment} className="btn-crystal w-full text-sm">
                   {reviewing ? "Submitting..." : "Submit Review"}
                 </button>
               </form>
             ) : (
-              <div className="glass rounded-2xl p-5 border border-white/5 text-center sticky top-28">
+              <div className="crystal rounded-2xl p-5 border border-white/5 text-center sticky top-28">
                 <p className="text-white/50 text-sm mb-4">Sign in to write a review</p>
-                <Link to="/login" className="btn-primary text-sm">Sign In</Link>
+                <Link to="/login" className="btn-crystal text-sm">Sign In</Link>
               </div>
             )}
           </div>
@@ -260,7 +263,7 @@ export default function ProductDetailPage() {
             ) : (
               reviews.map((r) => (
                 <motion.div key={r.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                  className="glass rounded-2xl p-5 border border-white/5"
+                  className="crystal rounded-2xl p-5 border border-white/5"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div>
