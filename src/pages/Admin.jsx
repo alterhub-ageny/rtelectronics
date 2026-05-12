@@ -478,8 +478,14 @@ function ProductsTab({ addToast }) {
 }
 
 function ProductForm({ product, categories, onSave, onClose }) {
-  const [form, setForm] = useState({ name: "", category: "", price: "", stock: "", description: "", badge: "", originalPrice: "", features: "", images: "", specs: "", ...product });
-  const handleSubmit = (e) => { e.preventDefault(); onSave({ ...form, price: Number(form.price), stock: Number(form.stock || 0), originalPrice: form.originalPrice ? Number(form.originalPrice) : null, features: form.features ? form.features.split("\n").filter(Boolean) : [], images: form.images ? form.images.split("\n").filter(Boolean) : [], specs: form.specs ? JSON.parse(form.specs || "{}") : {} }); };
+  const [form, setForm] = useState(() => ({
+    name: product.name || "", category: product.category || "", price: product.price ?? "", stock: product.stock ?? "",
+    description: product.description || "", badge: product.badge || "", originalPrice: product.originalPrice ?? "",
+    features: Array.isArray(product.features) ? product.features.join("\n") : product.features || "",
+    images: Array.isArray(product.images) ? product.images.join("\n") : product.images || "",
+    specs: product.specs && typeof product.specs === "object" ? JSON.stringify(product.specs, null, 2) : product.specs || "",
+  }));
+  const handleSubmit = (e) => { e.preventDefault(); onSave({ ...form, price: Number(form.price), stock: Number(form.stock || 0), originalPrice: form.originalPrice ? Number(form.originalPrice) : null, features: form.features ? form.features.split("\n").filter(Boolean) : [], images: form.images ? form.images.split("\n").filter(Boolean) : [], specs: form.specs && typeof form.specs === "string" ? JSON.parse(form.specs || "{}") : form.specs || {} }); };
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={onClose}>
       <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="w-full max-w-2xl max-h-[85vh] overflow-y-auto glass rounded-2xl border border-white/10 p-6" onClick={(e) => e.stopPropagation()}>
