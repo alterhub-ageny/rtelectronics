@@ -244,8 +244,8 @@
     top: 100%;
     left: 50%;
     transform: translateX(-50%) translateY(10px);
-    background: #FFFFFF;
-    border: 1px solid #E2E8F0;
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
     border-radius: 8px;
     padding: 1.25rem;
     opacity: 0;
@@ -301,13 +301,13 @@
 :root:not([data-theme="dark"]) .text-white\/60 { color: #475569; }
 :root:not([data-theme="dark"]) .text-white\/50 { color: #64748B; }
 :root:not([data-theme="dark"]) .text-white\/40,
-:root:not([data-theme="dark"]) .text-white\/35,
+:root:not([data-theme="dark"]) .text-white\/35 { color: #64748B; }
 :root:not([data-theme="dark"]) .text-white\/30 { color: #94A3B8; }
-:root:not([data-theme="dark"]) .text-white\/25,
+:root:not([data-theme="dark"]) .text-white\/25 { color: #94A3B8; }
 :root:not([data-theme="dark"]) .text-white\/20 { color: #CBD5E1; }
-:root:not([data-theme="dark"]) .text-white\/15 { color: #E2E8F0; }
-:root:not([data-theme="dark"]) .text-white\/10 { color: #F1F5F9; }
-:root:not([data-theme="dark"]) .text-white\/5 { color: #F8FAFC; }
+:root:not([data-theme="dark"]) .text-white\/15 { color: #CBD5E1; }
+:root:not([data-theme="dark"]) .text-white\/10 { color: #E2E8F0; }
+:root:not([data-theme="dark"]) .text-white\/5 { color: #F1F5F9; }
 
 /* Step 2: In light mode, dark-section restores white text */
 :root:not([data-theme="dark"]) .dark-section .text-white,
@@ -437,44 +437,44 @@
 :root:not([data-theme="dark"]) .dark-section .crystal .text-white\/50 { color: #64748B; }
 :root:not([data-theme="dark"]) .dark-section .card-glass .text-white\/40,
 :root:not([data-theme="dark"]) .dark-section .card-glass .text-white\/35,
-:root:not([data-theme="dark"]) .dark-section .card-glass .text-white\/30,
 :root:not([data-theme="dark"]) .dark-section .card-glass-solid .text-white\/40,
 :root:not([data-theme="dark"]) .dark-section .card-glass-solid .text-white\/35,
-:root:not([data-theme="dark"]) .dark-section .card-glass-solid .text-white\/30,
 :root:not([data-theme="dark"]) .dark-section .mega-menu .text-white\/40,
 :root:not([data-theme="dark"]) .dark-section .mega-menu .text-white\/35,
-:root:not([data-theme="dark"]) .dark-section .mega-menu .text-white\/30,
 :root:not([data-theme="dark"]) .dark-section .card-crystal .text-white\/40,
 :root:not([data-theme="dark"]) .dark-section .card-crystal .text-white\/35,
-:root:not([data-theme="dark"]) .dark-section .card-crystal .text-white\/30,
 :root:not([data-theme="dark"]) .dark-section .crystal .text-white\/40,
-:root:not([data-theme="dark"]) .dark-section .crystal .text-white\/35,
+:root:not([data-theme="dark"]) .dark-section .crystal .text-white\/35 { color: #64748B; }
+:root:not([data-theme="dark"]) .dark-section .card-glass .text-white\/30,
+:root:not([data-theme="dark"]) .dark-section .card-glass-solid .text-white\/30,
+:root:not([data-theme="dark"]) .dark-section .mega-menu .text-white\/30,
+:root:not([data-theme="dark"]) .dark-section .card-crystal .text-white\/30,
 :root:not([data-theme="dark"]) .dark-section .crystal .text-white\/30 { color: #94A3B8; }
 :root:not([data-theme="dark"]) .dark-section .card-glass .text-white\/25,
-:root:not([data-theme="dark"]) .dark-section .card-glass .text-white\/20,
 :root:not([data-theme="dark"]) .dark-section .card-glass-solid .text-white\/25,
-:root:not([data-theme="dark"]) .dark-section .card-glass-solid .text-white\/20,
 :root:not([data-theme="dark"]) .dark-section .mega-menu .text-white\/25,
-:root:not([data-theme="dark"]) .dark-section .mega-menu .text-white\/20,
 :root:not([data-theme="dark"]) .dark-section .card-crystal .text-white\/25,
+:root:not([data-theme="dark"]) .dark-section .crystal .text-white\/25 { color: #94A3B8; }
+:root:not([data-theme="dark"]) .dark-section .card-glass .text-white\/20,
+:root:not([data-theme="dark"]) .dark-section .card-glass-solid .text-white\/20,
+:root:not([data-theme="dark"]) .dark-section .mega-menu .text-white\/20,
 :root:not([data-theme="dark"]) .dark-section .card-crystal .text-white\/20,
-:root:not([data-theme="dark"]) .dark-section .crystal .text-white\/25,
 :root:not([data-theme="dark"]) .dark-section .crystal .text-white\/20 { color: #CBD5E1; }
 :root:not([data-theme="dark"]) .dark-section .card-glass .text-white\/15,
 :root:not([data-theme="dark"]) .dark-section .card-glass-solid .text-white\/15,
 :root:not([data-theme="dark"]) .dark-section .mega-menu .text-white\/15,
 :root:not([data-theme="dark"]) .dark-section .card-crystal .text-white\/15,
-:root:not([data-theme="dark"]) .dark-section .crystal .text-white\/15 { color: #E2E8F0; }
+:root:not([data-theme="dark"]) .dark-section .crystal .text-white\/15 { color: #CBD5E1; }
 :root:not([data-theme="dark"]) .dark-section .card-glass .text-white\/10,
 :root:not([data-theme="dark"]) .dark-section .card-glass-solid .text-white\/10,
 :root:not([data-theme="dark"]) .dark-section .mega-menu .text-white\/10,
 :root:not([data-theme="dark"]) .dark-section .card-crystal .text-white\/10,
-:root:not([data-theme="dark"]) .dark-section .crystal .text-white\/10 { color: #F1F5F9; }
+:root:not([data-theme="dark"]) .dark-section .crystal .text-white\/10 { color: #E2E8F0; }
 :root:not([data-theme="dark"]) .dark-section .card-glass .text-white\/5,
 :root:not([data-theme="dark"]) .dark-section .card-glass-solid .text-white\/5,
 :root:not([data-theme="dark"]) .dark-section .mega-menu .text-white\/5,
 :root:not([data-theme="dark"]) .dark-section .card-crystal .text-white\/5,
-:root:not([data-theme="dark"]) .dark-section .crystal .text-white\/5 { color: #F8FAFC; }
+:root:not([data-theme="dark"]) .dark-section .crystal .text-white\/5 { color: #F1F5F9; }
 
 /* Step 4: Admin always dark — only needed as override in light mode */
 :root:not([data-theme="dark"]) .admin-panel,
