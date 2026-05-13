@@ -46,8 +46,8 @@
   /* ───── Card Base ───── */
   .card-edge {
     position: relative;
-    background: rgba(255,255,255,0.015);
-    border: 1px solid rgba(255,255,255,0.04);
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
     border-radius: 1rem;
     transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
   }
@@ -65,7 +65,7 @@
     transition: opacity 0.3s ease;
     pointer-events: none;
   }
-  .card-edge:hover { border-color: rgb(var(--rt-accent) / 0.08); }
+  .card-edge:hover { border-color: rgb(var(--rt-accent) / 0.15); }
   .card-edge:hover::before { opacity: 0.8; }
 
   .crystal { @apply card-edge; }
@@ -176,8 +176,8 @@
   /* ───── Product Card ───── */
   .card-crystal {
     position: relative;
-    background: rgba(255,255,255,0.015);
-    border: 1px solid rgba(255,255,255,0.04);
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
     border-radius: 1rem;
     transition: all 0.4s ease;
     overflow: hidden;
