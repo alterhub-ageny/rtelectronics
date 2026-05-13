@@ -60,9 +60,9 @@ export default function Header() {
 
   return (
     <header
-      className={`global-nav fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
         scrolled
-          ? "scrolled shadow-2xl shadow-black/30"
+          ? "bg-[#07070D]/80 backdrop-blur-2xl border-b border-white/[0.03] shadow-2xl shadow-black/30"
           : "bg-transparent"
       }`}
     >

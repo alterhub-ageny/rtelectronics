@@ -29,7 +29,7 @@ export default function ProductCard({ product, index = 0 }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.6, delay: index * 0.05 }}
-      className="group card-glass premium-card overflow-hidden glass-shine"
+      className="group card-glass relative overflow-hidden glass-shine"
     >
       {product.badge && (
         <div className="absolute top-3 left-3 z-10">
