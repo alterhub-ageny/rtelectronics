@@ -310,9 +310,6 @@
   /* ─── Premium Card ─── */
   .premium-card {
     position: relative;
-    display: flex;
-    flex-direction: column;
-    padding: var(--space-6);
     border-radius: var(--card-radius);
     transition: all 0.35s var(--ease-smooth);
     overflow: hidden;
@@ -351,21 +348,14 @@
 
   /* ─── Global Navigation ─── */
   .global-nav {
-    position: sticky;
-    top: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: var(--space-3) var(--space-6);
-    z-index: 50;
     transition: all 0.35s var(--ease-smooth);
   }
-  .theme-standard .global-nav {
+  .theme-standard .global-nav.scrolled {
     background: var(--nav-bg);
     border-bottom: 1px solid var(--nav-border);
     backdrop-filter: blur(8px);
   }
-  .theme-futurist .global-nav {
+  .theme-futurist .global-nav.scrolled {
     background: var(--nav-bg);
     border-bottom: 1px solid var(--nav-border);
     backdrop-filter: blur(var(--glass-blur));
