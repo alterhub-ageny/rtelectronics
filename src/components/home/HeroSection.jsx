@@ -17,7 +17,7 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section className="relative min-h-[90vh] flex items-center overflow-hidden">
+    <section className="dark-section relative min-h-[90vh] flex items-center overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A14] via-[#07070D] to-[#05050A]" />
       <div
         className="absolute inset-0 opacity-[0.04]"

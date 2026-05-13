@@ -1,14 +1,10 @@
 /* ═══════════════════════════════════════════════
-   THEME ARCHITECTURE — RT ELECTRONICS
-   ═══════════════════════════════════════════════
-   Two themes controlled via class on <body>:
-     .theme-standard  →  Red & White (Surgical, Professional)
-     .theme-futurist  →  Neon + Glass (Cyber Hardware Lab)
+   RT ELECTRONICS — SINGLE THEME
+   Red · White · Black — Bold · Clean · Professional
    ═══════════════════════════════════════════════ */
 
-/* ─── Root: shared tokens ─── */
 :root {
-  /* spacing scale */
+  /* ─── Spacing ─── */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -18,277 +14,166 @@
   --space-12: 3rem;
   --space-16: 4rem;
 
-  /* radius scale */
+  /* ─── Radius ─── */
   --radius-sm: 2px;
   --radius-md: 4px;
   --radius-lg: 8px;
   --radius-xl: 12px;
   --radius-2xl: 16px;
 
-  /* transitions */
+  /* ─── Easing ─── */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-smooth: cubic-bezier(0.175, 0.885, 0.32, 1.1);
 
-  /* font stacks */
+  /* ─── Fonts ─── */
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
   --font-heading: 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-  --font-display: 'Syncopate', sans-serif;
-}
+  --font-display: 'Inter', system-ui, sans-serif;
 
-/* ═══════════════════════════════════════════════
-   THEME A — STANDARD (Red & White)
-   Clean · Surgical · Professional
-   ═══════════════════════════════════════════════ */
-.theme-standard {
+  /* ─── Colors ─── */
   --color-primary: #DC2626;
   --color-primary-hover: #B91C1C;
-  --color-primary-light: rgba(220, 38, 38, 0.08);
-  --color-primary-glow: rgba(220, 38, 38, 0.12);
+  --color-primary-light: rgba(220, 38, 38, 0.10);
+  --color-primary-glow: rgba(220, 38, 38, 0.15);
 
-  --color-bg-main: #FFFFFF;
-  --color-bg-surface: #F8FAFC;
+  --color-secondary: #1A1A1A;
+  --color-secondary-hover: #000000;
+  --color-secondary-light: rgba(0, 0, 0, 0.06);
+  --color-secondary-glow: rgba(0, 0, 0, 0.10);
+
+  --color-black: #000000;
+  --color-bg: #FAF8F8;
+  --color-bg-surface: #F5F0F0;
   --color-bg-elevated: #FFFFFF;
   --color-bg-card: #FFFFFF;
 
-  --color-text: #0F172A;
-  --color-text-secondary: #475569;
-  --color-text-muted: #94A3B8;
+  --color-text: #121212;
+  --color-text-secondary: #3D3D3D;
+  --color-text-muted: #757575;
 
-  --color-border: #E2E8F0;
-  --color-border-hover: #CBD5E1;
+  --color-border: #E0D0D0;
+  --color-border-hover: #CCB8B8;
 
   --color-success: #16A34A;
   --color-warning: #D97706;
   --color-error: #DC2626;
-  --color-info: #2563EB;
+  --color-info: #1A1A1A;
 
-  /* card */
+  /* ─── Card ─── */
   --card-bg: #FFFFFF;
-  --card-border: #E2E8F0;
+  --card-border: #E8D6D6;
   --card-radius: var(--radius-lg);
-  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --card-shadow: 0 2px 8px rgba(220, 38, 38, 0.08);
+  --card-shadow-hover: 0 6px 16px rgba(220, 38, 38, 0.14);
 
-  /* glass (minimal — just a hint) */
-  --glass-bg: rgba(255, 255, 255, 0.5);
-  --glass-border: rgba(0, 0, 0, 0.04);
-  --glass-blur: 4px;
-
-  /* glow */
-  --glow-primary: 0 0 20px rgba(220, 38, 38, 0.08);
-  --glow-cyan: none;
-
-  /* badge */
+  /* ─── Badge ─── */
   --badge-bg: #DC2626;
   --badge-text: #FFFFFF;
 
-  /* tag / pill */
-  --tag-bg: rgba(220, 38, 38, 0.06);
-  --tag-border: rgba(220, 38, 38, 0.12);
+  /* ─── Tag ─── */
+  --tag-bg: rgba(220, 38, 38, 0.10);
+  --tag-border: rgba(220, 38, 38, 0.25);
   --tag-text: #DC2626;
 
-  /* button */
+  /* ─── Button ─── */
   --btn-primary-bg: #DC2626;
   --btn-primary-text: #FFFFFF;
   --btn-primary-hover: #B91C1C;
 
-  --btn-outline-border: #E2E8F0;
-  --btn-outline-text: #475569;
+  --btn-secondary-bg: #1A1A1A;
+  --btn-secondary-text: #FFFFFF;
+  --btn-secondary-hover: #000000;
+
+  --btn-outline-border: #1A1A1A;
+  --btn-outline-text: #1A1A1A;
   --btn-outline-hover-border: #DC2626;
   --btn-outline-hover-text: #DC2626;
 
-  /* navigation */
-  --nav-bg: rgba(255, 255, 255, 0.85);
-  --nav-border: #E2E8F0;
-  --nav-link: #475569;
-  --nav-link-hover: #DC2626;
+  /* ─── Navigation (always dark) ─── */
+  --nav-bg: #000000;
+  --nav-border: rgba(255, 255, 255, 0.08);
+  --nav-link: rgba(255, 255, 255, 0.55);
+  --nav-link-hover: #FFFFFF;
   --nav-accent-line: #DC2626;
 
-  /* layout */
-  --body-bg: #FFFFFF;
-  --body-grid: rgba(0, 0, 0, 0.02);
+  /* ─── Footer (always dark) ─── */
+  --footer-bg: #000000;
+  --footer-text: rgba(255, 255, 255, 0.35);
+  --footer-text-hover: #FFFFFF;
+  --footer-border: rgba(255, 255, 255, 0.06);
 
-  /* divider */
-  --divider: linear-gradient(90deg, transparent, #E2E8F0, transparent);
+  /* ─── Layout ─── */
+  --body-bg: #FAF8F8;
+  --body-grid: rgba(220, 38, 38, 0.03);
 
-  /* circuit pattern (hidden in standard) */
-  --circuit-opacity: 0;
-  --circuit-color: transparent;
+  /* ─── Divider ─── */
+  --divider: linear-gradient(90deg, transparent, #DC2626, transparent);
 
-  /* backward compat — old component variable names */
+  /* ─── Backward Compat ─── */
   --accent: 220 38 38;
-  --accent-dim: 185 28 28;
-  --bg: #FFFFFF;
-  --bg-surface: #F8FAFC;
+  --accent-dim: 26 26 26;
+  --bg: #FAF8F8;
+  --bg-surface: #F5F0F0;
   --bg-elevated: #FFFFFF;
   --bg-card: #FFFFFF;
-  --text: #0F172A;
-  --text-secondary: #475569;
-  --text-muted: #94A3B8;
-  --border: #E2E8F0;
-  --accent-glow: rgba(220, 38, 38, 0.12);
-  --mesh-1: rgba(220, 38, 38, 0.02);
-  --mesh-2: rgba(220, 38, 38, 0.01);
-  --mesh-3: rgba(220, 38, 38, 0.005);
+  --text: #121212;
+  --text-secondary: #3D3D3D;
+  --text-muted: #757575;
+  --border: #E0D0D0;
+  --accent-glow: rgba(220, 38, 38, 0.15);
+  --mesh-1: rgba(220, 38, 38, 0.03);
+  --mesh-2: rgba(0, 0, 0, 0.02);
+  --mesh-3: rgba(220, 38, 38, 0.008);
 }
 
 /* ═══════════════════════════════════════════════
-   THEME B — NEO-CYBER (Ultra Futuristic)
-   Neon Spectrum · Holographic · Animated
+   DARK MODE — Clean dark variant
    ═══════════════════════════════════════════════ */
-.theme-futurist {
-  --color-primary: #00FFFF;
-  --color-primary-hover: #22D3EE;
-  --color-primary-light: rgba(0, 255, 255, 0.1);
-  --color-primary-glow: rgba(0, 255, 255, 0.35);
+:root[data-theme="dark"] {
+  --color-bg: #0F172A;
+  --color-bg-surface: #1E293B;
+  --color-bg-elevated: #1E293B;
+  --color-bg-card: #1E293B;
 
-  --color-bg-main: #000000;
-  --color-bg-surface: #050510;
-  --color-bg-elevated: #0A0A1A;
-  --color-bg-card: rgba(10, 10, 30, 0.5);
+  --color-text: #F1F5F9;
+  --color-text-secondary: #CBD5E1;
+  --color-text-muted: #64748B;
 
-  --color-text: rgba(230, 240, 255, 0.92);
-  --color-text-secondary: rgba(230, 240, 255, 0.55);
-  --color-text-muted: rgba(230, 240, 255, 0.28);
+  --color-border: #334155;
+  --color-border-hover: #475569;
 
-  --color-border: rgba(0, 255, 255, 0.12);
-  --color-border-hover: rgba(0, 255, 255, 0.3);
+  --card-bg: #1E293B;
+  --card-border: #334155;
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.4);
 
-  --color-success: #00FFAA;
-  --color-warning: #FF00FF;
-  --color-error: #FF0044;
-  --color-info: #0088FF;
+  --tag-bg: rgba(220, 38, 38, 0.15);
+  --tag-border: rgba(220, 38, 38, 0.3);
 
-  /* card — holographic glass */
-  --card-bg: rgba(8, 8, 28, 0.6);
-  --card-border: rgba(0, 255, 255, 0.1);
-  --card-radius: var(--radius-xl);
-  --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-  --card-shadow-hover: 0 12px 48px rgba(0, 0, 0, 0.8);
+  --btn-outline-border: #334155;
+  --btn-outline-text: #CBD5E1;
+  --btn-outline-hover-border: #DC2626;
+  --btn-outline-hover-text: #DC2626;
 
-  /* glass — heavy blur */
-  --glass-bg: rgba(8, 8, 28, 0.55);
-  --glass-border: rgba(0, 255, 255, 0.1);
-  --glass-blur: 20px;
+  --body-bg: #0F172A;
+  --divider: linear-gradient(90deg, transparent, #334155, transparent);
 
-  /* glow */
-  --glow-primary: 0 0 30px rgba(0, 255, 255, 0.15), 0 0 60px rgba(0, 255, 255, 0.05);
-  --glow-cyan: 0 0 30px rgba(255, 0, 255, 0.1), 0 0 60px rgba(255, 0, 255, 0.03);
-
-  /* badge */
-  --badge-bg: #00FFFF;
-  --badge-text: #000000;
-
-  /* tag / pill — neon */
-  --tag-bg: rgba(0, 255, 255, 0.06);
-  --tag-border: rgba(0, 255, 255, 0.15);
-  --tag-text: #00FFFF;
-
-  /* button */
-  --btn-primary-bg: linear-gradient(135deg, #00FFFF, #0088FF);
-  --btn-primary-text: #000000;
-  --btn-primary-hover: linear-gradient(135deg, #22D3EE, #0066FF);
-
-  --btn-outline-border: rgba(0, 255, 255, 0.2);
-  --btn-outline-text: rgba(255, 255, 255, 0.5);
-  --btn-outline-hover-border: rgba(0, 255, 255, 0.5);
-  --btn-outline-hover-text: #00FFFF;
-
-  /* navigation */
-  --nav-bg: rgba(0, 0, 0, 0.8);
-  --nav-border: rgba(0, 255, 255, 0.08);
-  --nav-link: rgba(255, 255, 255, 0.3);
-  --nav-link-hover: #00FFFF;
-  --nav-accent-line: #00FFFF;
-
-  /* layout */
-  --body-bg: #000000;
-  --body-grid: rgba(0, 255, 255, 0.03);
-
-  /* divider */
-  --divider: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
-
-  /* holographic grid pattern */
-  --circuit-opacity: 0.02;
-  --circuit-color: #00FFFF;
-
-  /* backward compat — old component variable names */
-  --accent: 0 255 255;
-  --accent-dim: 0 136 255;
-  --bg: #000000;
-  --bg-surface: #050510;
-  --bg-elevated: #0A0A1A;
-  --bg-card: rgba(8, 8, 28, 0.6);
-  --text: rgba(230, 240, 255, 0.92);
-  --text-secondary: rgba(230, 240, 255, 0.55);
-  --text-muted: rgba(230, 240, 255, 0.28);
-  --border: rgba(0, 255, 255, 0.1);
-  --accent-glow: rgba(0, 255, 255, 0.35);
-  --mesh-1: rgba(0, 255, 255, 0.04);
-  --mesh-2: rgba(255, 0, 255, 0.03);
-  --mesh-3: rgba(0, 136, 255, 0.02);
+  /* Backward compat */
+  --bg: #0F172A;
+  --bg-surface: #1E293B;
+  --bg-elevated: #1E293B;
+  --bg-card: #1E293B;
+  --text: #F1F5F9;
+  --text-secondary: #CBD5E1;
+  --text-muted: #64748B;
+  --border: #334155;
+  --accent-glow: rgba(220, 38, 38, 0.2);
 }
 
-/* ═══════════════════════════════════════════════
-   FONT IMPORTS
-   ═══════════════════════════════════════════════ */
-/* Inter loaded via Google Fonts in index.css */
-/* JetBrains Mono loaded via Google Fonts in index.css */
-/* Syncopate loaded via Google Fonts in index.css */
-/* Orbitron for futurist headings (loaded in index.css) */
-
-/* ═══════════════════════════════════════════════
-   GLOBAL THEME BINDINGS
-   ═══════════════════════════════════════════════ */
-
-/* Theme‑specific font overrides */
-.theme-standard {
-  --font-heading: 'Inter', system-ui, sans-serif;
-}
-.theme-futurist {
-  --font-heading: 'Orbitron', 'Syncopate', sans-serif;
-}
-
-/* Body setup */
-.theme-standard body,
-body.theme-standard {
+/* ─── Body ─── */
+body {
   background: var(--body-bg);
   color: var(--color-text);
   font-family: var(--font-body);
-}
-
-.theme-futurist body,
-body.theme-futurist {
-  background: var(--body-bg);
-  color: var(--color-text);
-  font-family: var(--font-body);
-}
-
-/* Holographic grid + animated gradient (futurist only) */
-body.theme-futurist::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background:
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 40px,
-      rgba(0, 255, 255, 0.012) 40px,
-      rgba(0, 255, 255, 0.012) 41px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      transparent,
-      transparent 40px,
-      rgba(0, 255, 255, 0.012) 40px,
-      rgba(0, 255, 255, 0.012) 41px
-    ),
-    radial-gradient(ellipse 80% 60% at 20% 20%, rgba(0, 255, 255, 0.04), transparent 60%),
-    radial-gradient(ellipse 60% 50% at 80% 80%, rgba(255, 0, 255, 0.03), transparent 60%),
-    radial-gradient(ellipse 50% 40% at 50% 50%, rgba(0, 136, 255, 0.02), transparent 50%);
-  animation: bg-drift 15s ease-in-out infinite alternate;
-  pointer-events: none;
-  z-index: 0;
 }

@@ -4,15 +4,15 @@ const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem("rt-theme") || "dark";
+    return localStorage.getItem("rt-theme") || "light";
   });
 
   useEffect(() => {
-    document.body.className = theme === "dark" ? "theme-futurist" : "theme-standard";
+    document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("rt-theme", theme);
   }, [theme]);
 
-  const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
+  const toggleTheme = () => setTheme((t) => (t === "light" ? "dark" : "light"));
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>

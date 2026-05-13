@@ -19,7 +19,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="relative border-t border-white/[0.02] bg-[#050508] mt-20">
+    <footer className="dark-section relative border-t border-white/10 bg-black mt-20">
       <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-rt-accent/10 via-cyan-500/5 to-transparent" />
 
       <div className="max-w-site mx-auto px-4 sm:px-6 py-16 relative">
