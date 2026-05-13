@@ -1,62 +1,43 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles, Shield, Cpu, Zap } from "lucide-react";
+import { ArrowRight, Truck, Shield, HeadphonesIcon, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
+import { getCategories } from "../../services/api";
+
+const ICON_MAP = {
+  laptop: "💻", smartphone: "📱", "gamepad-2": "🎮", tablet: "📟",
+  watch: "⌚", headphones: "🎧", keyboard: "⌨️", dices: "🎲", gift: "🎁"
+};
 
 export default function HeroSection() {
-  const glowRef = useRef(null);
-  const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    const el = glowRef.current;
-    if (!el) return;
-    const onMove = (e) => {
-      const r = el.getBoundingClientRect();
-      setMousePos({
-        x: ((e.clientX - r.left) / r.width) * 100,
-        y: ((e.clientY - r.top) / r.height) * 100,
-      });
-    };
-    window.addEventListener("mousemove", onMove);
-    return () => window.removeEventListener("mousemove", onMove);
+    getCategories().then(setCategories).catch(() => {});
   }, []);
 
   return (
-    <section ref={glowRef} className="relative min-h-[90vh] flex items-center overflow-hidden">
-      <div className="absolute inset-0 bg-neural opacity-[0.015]" />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#07070d]/60 to-[#07070d]" />
-
+    <section className="relative min-h-[90vh] flex items-center overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A14] via-[#07070D] to-[#05050A]" />
       <div
-        className="absolute w-[600px] h-[600px] rounded-full pointer-events-none transition-all duration-1000 ease-out"
-        style={{
-          background: `radial-gradient(circle at center, rgb(var(--accent) / 0.04), transparent 60%)`,
-          left: `${mousePos.x}%`,
-          top: `${mousePos.y}%`,
-          transform: "translate(-50%, -50%)",
-        }}
+        className="absolute inset-0 opacity-[0.04]"
+        style={{ backgroundImage: "radial-gradient(ellipse at 50% 0%, rgba(225,29,72,0.4) 0%, transparent 70%), radial-gradient(ellipse at 70% 50%, rgba(0,229,255,0.05) 0%, transparent 50%)" }}
       />
 
-      <div className="absolute inset-0">
-        <div className="absolute top-16 left-8 w-20 h-20 border-l border-t border-white/5 rounded-tl-xl" />
-        <div className="absolute top-16 right-8 w-20 h-20 border-r border-t border-white/5 rounded-tr-xl" />
-        <div className="absolute bottom-16 left-8 w-20 h-20 border-l border-b border-white/5 rounded-bl-xl" />
-        <div className="absolute bottom-16 right-8 w-20 h-20 border-r border-b border-white/5 rounded-br-xl" />
-      </div>
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-rt-accent/5 rounded-full blur-[120px] animate-glow-pulse" />
+      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-cyan-500/3 rounded-full blur-[100px] animate-float" />
 
       <div className="max-w-site mx-auto px-4 sm:px-6 relative z-10 py-20 w-full">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <div>
+        <div className="grid lg:grid-cols-5 gap-12 items-center">
+          <div className="lg:col-span-3">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-rt-accent/20 bg-rt-accent/10 mb-6">
-                <span className="w-1.5 h-1.5 rounded-full bg-rt-accent" />
-                <span className="text-rt-accent text-[10px] font-mono tracking-[0.15em] uppercase">
-                  v.2 Precision Architecture
-                </span>
-                <Sparkles size={10} className="text-rt-accent" />
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-rt-accent/10 bg-rt-accent/[0.03] mb-6">
+                <Sparkles size={10} className="text-rt-accent/60" />
+                <span className="section-eyebrow">Premium Electronics</span>
               </div>
             </motion.div>
 
@@ -64,14 +45,14 @@ export default function HeroSection() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 0.1 }}
-              className="text-5xl md:text-7xl lg:text-8xl font-display font-bold leading-[0.9] mb-6"
+              className="text-4xl md:text-6xl lg:text-7xl font-display font-bold leading-[1.05] mb-6"
             >
-              <span className="text-white tracking-[-0.03em]">CRYSTAL</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white/90 to-white/70">
+                Your Source for
+              </span>
               <br />
-              <span className="text-crystal">INTELLIGENCE</span>
-              <br />
-              <span className="text-white/30 text-3xl md:text-4xl lg:text-5xl tracking-[0.1em] font-light">
-                /system.v2
+              <span className="text-gradient-dual">
+                Cutting-Edge Tech
               </span>
             </motion.h1>
 
@@ -79,9 +60,9 @@ export default function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-white/50 text-base max-w-xl mb-8 leading-relaxed"
+              className="text-white/30 text-base max-w-xl mb-8 leading-relaxed"
             >
-              Crystalline neural networks power the next dimension of tech. From quantum laptops to immersive digital frontiers — engineered beyond conventional limits.
+              From laptops and smartphones to gaming PCs and accessories — explore our curated collection of premium electronics at competitive prices.
             </motion.p>
 
             <motion.div
@@ -90,16 +71,11 @@ export default function HeroSection() {
               transition={{ duration: 0.8, delay: 0.3 }}
               className="flex flex-wrap gap-3"
             >
-              <Link to="/products" className="btn-crystal text-[10px] flex items-center gap-2 px-6 py-3">
-                <span className="tracking-[0.15em]">EXPLORE</span>
-                <ArrowRight size={12} />
+              <Link to="/products" className="btn-primary text-xs">
+                SHOP ALL <ArrowRight size={12} />
               </Link>
-              <Link
-                to="/products?category=gaming-pcs"
-                className="btn-ghost text-[10px] px-6 py-3 flex items-center gap-2"
-              >
-                <Cpu size={12} />
-                <span className="tracking-[0.15em]">GAMING</span>
+              <Link to="/products?category=gaming-pcs" className="btn-outline text-[10px]">
+                GAMING RIGS
               </Link>
             </motion.div>
 
@@ -107,15 +83,15 @@ export default function HeroSection() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1 }}
-              className="flex items-center gap-6 mt-10 pt-6 border-t border-white/5"
+              className="flex items-center gap-6 mt-10 pt-6 border-t border-white/[0.04]"
             >
               {[
-                { icon: Zap, text: "Free Shipping $99+" },
+                { icon: Truck, text: "Free Shipping $99+" },
                 { icon: Shield, text: "2 Year Warranty" },
-                { icon: Cpu, text: "24/7 Support" },
+                { icon: HeadphonesIcon, text: "24/7 Support" },
               ].map((item) => (
-                <div key={item.text} className="flex items-center gap-1.5 text-white/40 text-xs font-mono">
-                  <item.icon size={12} className="text-rt-accent/60" />
+                <div key={item.text} className="flex items-center gap-1.5 text-white/25 text-xs font-mono">
+                  <item.icon size={12} className="text-rt-accent/50" />
                   {item.text}
                 </div>
               ))}
@@ -123,39 +99,32 @@ export default function HeroSection() {
           </div>
 
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.2, delay: 0.4 }}
-            className="hidden lg:block relative"
+            transition={{ duration: 1, delay: 0.3 }}
+            className="lg:col-span-2"
           >
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-rt-accent/5 via-transparent to-rt-accent/5 rounded-[40px] blur-3xl" />
-              <div className="relative grid grid-cols-2 gap-3">
-                {[
-                  { label: "LAPTOPS", sub: "M5 Quantum", accent: "from-rt-accent/10" },
-                  { label: "PHONES", sub: "Crystal Gen", accent: "from-rt-accent/10" },
-                  { label: "GAMING", sub: "Neural Core", accent: "from-rt-accent/10" },
-                  { label: "XR", sub: "Depth Field", accent: "from-rt-accent/10" },
-                ].map((item, i) => (
-                  <motion.div
-                    key={item.label}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.6 + i * 0.1 }}
-                    className="group card-edge p-5 flex flex-col items-center text-center cursor-default"
-                  >
-                    <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-500">
-                      <span className="text-rt-accent text-lg font-bold">
-                        {["◇", "○", "△", "◈"][i]}
-                      </span>
-                    </div>
-                    <p className="text-white/80 font-semibold text-xs tracking-wider">
-                      {item.label}
-                    </p>
-                    <p className="text-white/30 text-[10px] mt-0.5">{item.sub}</p>
-                  </motion.div>
-                ))}
-              </div>
+            <div className="grid grid-cols-2 gap-3">
+              {categories.filter(c => c.featured).slice(0, 4).map((cat) => (
+                <Link
+                  key={cat.id}
+                  to={`/products?category=${cat.slug}`}
+                  className="group card-glass p-4"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-2xl opacity-60 group-hover:opacity-100 transition-opacity duration-300">
+                      {ICON_MAP[cat.icon] || "📦"}
+                    </span>
+                    <ArrowRight size={11} className="text-white/20 group-hover:text-rt-accent/60 transition-colors -translate-x-2 group-hover:translate-x-0 opacity-0 group-hover:opacity-100 transition-all duration-300" />
+                  </div>
+                  <p className="text-white/70 font-semibold text-base group-hover:text-white transition-colors">
+                    {cat.name}
+                  </p>
+                  <p className="text-white/25 text-[10px] mt-0.5 font-mono tracking-wider">
+                    {cat.productCount} products
+                  </p>
+                </Link>
+              ))}
             </div>
           </motion.div>
         </div>

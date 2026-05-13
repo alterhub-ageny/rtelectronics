@@ -2,7 +2,7 @@ import pkg from "pg";
 const { Pool } = pkg;
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: process.env.DATABASE_URL.replace("?sslmode=require", ""),
   max: 5,
   idleTimeoutMillis: 10000,
   connectionTimeoutMillis: 5000,

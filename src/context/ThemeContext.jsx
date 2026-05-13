@@ -4,7 +4,7 @@ const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem("rt-theme") || "red";
+    return localStorage.getItem("rt-theme") || "dark";
   });
 
   useEffect(() => {
@@ -12,7 +12,7 @@ export function ThemeProvider({ children }) {
     localStorage.setItem("rt-theme", theme);
   }, [theme]);
 
-  const toggleTheme = () => setTheme((t) => (t === "red" ? "soft" : "red"));
+  const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>

@@ -64,6 +64,7 @@ export async function seed() {
       {name:"Sony Xperia 1 VI (256GB)",category:"phones",price:999,stock:5,rating:4.6,reviews:234,description:"Sony Xperia 1 VI. 4K HDR OLED 120Hz, SD 8 Gen 3, 48MP+12MP+12MP Zeiss, 3.5mm jack.",features:["6.5\" 4K HDR OLED 120Hz","Snapdragon 8 Gen 3","48MP+12MP+12MP Zeiss camera","3.5mm headphone jack","microSD expansion","5000mAh battery","IP68 rated"],images:[`${P}1553481180-5e3a6a2fe839?w=400`]},
 
       /* LAPTOPS */
+      ...[
       {name:'MacBook Air 13" M5 (2026)',price:1099,originalPrice:1199,stock:20,badge:"New",rating:4.9,reviews:342,features:["Apple M5 (12+18 core)","16GB unified memory","256GB SSD","13.6\" Liquid Retina","18h battery","MagSafe","Thunderbolt 4"]},
       {name:'MacBook Pro 14" M5 Pro (2025)',price:1999,stock:12,badge:"Best Seller",rating:4.9,reviews:567,features:["Apple M5 Pro (14+20 core)","24GB unified memory","512GB SSD","14.2\" Liquid Retina XDR","17h battery","HDMI 2.1, SDXC","Thunderbolt 5"]},
       {name:'MacBook Pro 16" M5 Max (2025)',price:3499,stock:5,badge:"Premium",rating:4.9,reviews:234,features:["Apple M5 Max (16+40 core)","48GB unified memory","1TB SSD","16.2\" Liquid Retina XDR","22h battery","HDMI 2.1","Thunderbolt 5 x3"]},
@@ -99,6 +100,7 @@ export async function seed() {
       {name:"Alienware Aurora R16",category:"gaming-pcs",price:2599,stock:4,badge:"Gaming",rating:4.6,reviews:89,description:"i9-14900KF, RTX 4080 Super, 32GB DDR5, 2TB SSD. Legendary Alienware build.",features:["Intel Core i9-14900KF","RTX 4080 Super 16GB","32GB DDR5-5600 RAM","2TB NVMe SSD","Legendary Alienware design","Cryo-tech cooling","Windows 11 Home"],images:[`${P}1587202372634-32705e3bf49c?w=400`]},
 
       /* TABLETS */
+      ...[
       {name:'iPad Pro 13" M5 (2025)',price:1299,stock:14,badge:"New",rating:4.8,reviews:345,features:["13\" Ultra Retina XDR tandem OLED","Apple M5 (10+10 core)","16GB unified memory","512GB SSD","Thunderbolt 5","Face ID","Wi-Fi 7"]},
       {name:'iPad Pro 11" M5 (2025)',price:999,stock:18,rating:4.7,reviews:456,features:["11\" Ultra Retina XDR OLED","Apple M5 (10+10 core)","8GB unified memory","256GB SSD","Thunderbolt 5","Face ID","Wi-Fi 7"]},
       {name:'iPad Air 11" M4 (2025)',price:599,stock:22,rating:4.7,reviews:456,features:["11\" Liquid Retina LED","Apple M4 (9+10 core)","8GB unified memory","128GB storage","USB-C 3.0","Landscape 12MP cam","Touch ID"]},
@@ -120,6 +122,7 @@ export async function seed() {
     ].map(p => ({...p,category:"tablets",description:p.features.join(", ")+".",images:[`${P}1544244015-0df4b3ffc6b0?w=400`]})),
 
       /* WATCHES */
+      ...[
       {name:"Apple Watch Series 11 (42mm GPS)",price:399,stock:25,badge:"New",rating:4.8,reviews:3456,features:["Always-On Retina LTPO OLED","S11 SiP (64-bit dual-core)","Blood Oxygen + ECG","Temperature sensing","Crash + Fall Detection","50m water resistant","18h battery"]},
       {name:"Apple Watch Series 11 (46mm GPS)",price:429,stock:22,rating:4.8,reviews:2123,features:["Always-On Retina LTPO OLED 46mm","S11 SiP (64-bit dual-core)","Blood Oxygen + ECG","Temperature sensing","45 min fast charge 0-80%","50m water resistant","36h low power mode"]},
       {name:"Apple Watch SE 3 (40mm GPS)",price:249,stock:30,rating:4.6,reviews:5678,features:["Retina LTPO OLED","S9 SiP (64-bit dual-core)","Crash + Fall Detection","Fitness + Workout app","50m water resistant","18h battery","Family Setup"]},
@@ -141,6 +144,7 @@ export async function seed() {
     ].map(p => ({...p,category:"watches",description:p.features.join(", ")+".",images:[`${P}1546868871-af0de0ae72e7?w=400`]})),
 
       /* HEADPHONES */
+      ...[
       {name:"Sony WH-1000XM6",price:449,stock:35,badge:"Featured",rating:4.9,reviews:567,features:["Industry-leading ANC","40h battery","Hi-Res LDAC Wireless","Multipoint (2 devices)","Speak-to-Chat","Adaptive Sound Control","Foldable design"]},
       {name:"Sony WF-1000XM6",price:299,stock:40,badge:"Best Seller",rating:4.8,reviews:1234,features:["World-class ANC","8h (24h w/case)","Hi-Res LDAC","Multipoint","IPX4 water resistant","Wireless Qi charging","Sony Headphones Connect"]},
       {name:"Sony WH-1000XM5",price:329,originalPrice:399,stock:25,rating:4.7,reviews:2345,features:["Industry-leading ANC","40h battery","Hi-Res LDAC","Multipoint","Lightweight 250g","Speak-to-Chat","Carrying case"]},
@@ -163,6 +167,7 @@ export async function seed() {
     ].map(p => ({...p,category:"headphones",description:p.features.join(", ")+".",images:[`${P}1505740420928-5e560c06d30e?w=400`]})),
 
       /* ACCESSORIES */
+      ...[
       {name:"Logitech MX Master 3S",category:"accessories",price:99,stock:50,rating:4.8,reviews:890,features:["8K DPI darkfield sensor","Quiet click buttons","USB-C rechargeable","70-day battery","MagSpeed scroll wheel","3 device connect","Ergonomic design"]},
       {name:"Logitech MX Anywhere 3S",category:"accessories",price:79,stock:60,rating:4.6,reviews:1234,features:["8K DPI darkfield sensor","Quiet clicks","USB-C","70-day battery","MagSpeed scroll","Works on glass","3 device connect"]},
       {name:"Logitech G Pro X Superlight 2",category:"accessories",price:159,stock:25,badge:"Gaming",rating:4.8,reviews:2341,features:["60g ultralight","HERO 2 sensor 44K DPI","LIGHTFORCE switches","95h battery","Wireless Lightspeed","PTFE feet","DPI shift button"]},
@@ -193,6 +198,7 @@ export async function seed() {
     ].map(p => ({...p,category:"accessories",description:p.features.join(", ")+".",images:[`${P}1587829741301-dc798b83add3?w=400`]})),
 
       /* GAME TOP-UPS */
+      ...[
       {name:"Valorant Points — 10,000 VP",category:"game-topup",price:99.99,stock:999,rating:4.5,reviews:3456,features:["10,000 Valorant Points","All Valorant regions","Instant email delivery","Redeem at playvalorant.com"],specs:{type:"Valorant Points",amount:"10,000 VP",delivery:"Instant",platform:"Valorant"}},
       {name:"Valorant Points — 2,000 VP",category:"game-topup",price:24.99,stock:999,rating:4.5,reviews:2341,features:["2,000 Valorant Points","All regions","Instant delivery"],specs:{type:"Valorant Points",amount:"2,000 VP",delivery:"Instant",platform:"Valorant"}},
       {name:"Fortnite V-Bucks — 13,500 V-Bucks",category:"game-topup",price:79.99,stock:999,badge:"Popular",rating:4.4,reviews:5678,features:["13,500 V-Bucks","Cross-platform redemption","Instant email delivery","PC, Console, Mobile"],specs:{type:"V-Bucks",amount:"13,500",delivery:"Instant",platform:"Fortnite"}},
@@ -219,6 +225,7 @@ export async function seed() {
     ].map(p => ({...p,category:"game-topup",description:p.features.join(", ")+".",images:[]})),
 
       /* GIFT CARDS */
+      ...[
       {name:"PlayStation Network $100 Gift Card",category:"gift-cards",price:100,stock:500,badge:"Popular",rating:4.8,reviews:5678,features:["$100 PSN credit","Instant email delivery","Redeem on PS Store","No expiration"],specs:{type:"PSN Gift Card",value:"$100",delivery:"Instant",platform:"PlayStation"}},
       {name:"PlayStation Network $50 Gift Card",category:"gift-cards",price:50,stock:500,rating:4.7,reviews:3456,features:["$50 PSN credit","Instant email delivery","Redeem on PS Store"],specs:{type:"PSN Gift Card",value:"$50",delivery:"Instant",platform:"PlayStation"}},
       {name:"PlayStation Network $25 Gift Card",category:"gift-cards",price:25,stock:500,rating:4.6,reviews:2341,features:["$25 PSN credit","Instant email delivery","Redeem on PS Store"],specs:{type:"PSN Gift Card",value:"$25",delivery:"Instant",platform:"PlayStation"}},
@@ -250,6 +257,7 @@ export async function seed() {
     ];
 
     for (const p of products) {
+      if (!p || !p.name) continue;
       const id = p.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'')+'-'+uuidv4().slice(0,6);
       const ex = await query("SELECT id FROM products WHERE name = $1", [p.name]);
       if (ex.rows.length > 0) continue;
