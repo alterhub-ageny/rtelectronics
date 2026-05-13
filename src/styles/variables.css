@@ -1,0 +1,290 @@
+/* ═══════════════════════════════════════════════
+   THEME ARCHITECTURE — RT ELECTRONICS
+   ═══════════════════════════════════════════════
+   Two themes controlled via class on <body>:
+     .theme-standard  →  Red & White (Surgical, Professional)
+     .theme-futurist  →  Neon + Glass (Cyber Hardware Lab)
+   ═══════════════════════════════════════════════ */
+
+/* ─── Root: shared tokens ─── */
+:root {
+  /* spacing scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* radius scale */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+
+  /* transitions */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-smooth: cubic-bezier(0.175, 0.885, 0.32, 1.1);
+
+  /* font stacks */
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-display: 'Syncopate', sans-serif;
+}
+
+/* ═══════════════════════════════════════════════
+   THEME A — STANDARD (Red & White)
+   Clean · Surgical · Professional
+   ═══════════════════════════════════════════════ */
+.theme-standard {
+  --color-primary: #DC2626;
+  --color-primary-hover: #B91C1C;
+  --color-primary-light: rgba(220, 38, 38, 0.08);
+  --color-primary-glow: rgba(220, 38, 38, 0.12);
+
+  --color-bg-main: #FFFFFF;
+  --color-bg-surface: #F8FAFC;
+  --color-bg-elevated: #FFFFFF;
+  --color-bg-card: #FFFFFF;
+
+  --color-text: #0F172A;
+  --color-text-secondary: #475569;
+  --color-text-muted: #94A3B8;
+
+  --color-border: #E2E8F0;
+  --color-border-hover: #CBD5E1;
+
+  --color-success: #16A34A;
+  --color-warning: #D97706;
+  --color-error: #DC2626;
+  --color-info: #2563EB;
+
+  /* card */
+  --card-bg: #FFFFFF;
+  --card-border: #E2E8F0;
+  --card-radius: var(--radius-lg);
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.06);
+
+  /* glass (minimal — just a hint) */
+  --glass-bg: rgba(255, 255, 255, 0.5);
+  --glass-border: rgba(0, 0, 0, 0.04);
+  --glass-blur: 4px;
+
+  /* glow */
+  --glow-primary: 0 0 20px rgba(220, 38, 38, 0.08);
+  --glow-cyan: none;
+
+  /* badge */
+  --badge-bg: #DC2626;
+  --badge-text: #FFFFFF;
+
+  /* tag / pill */
+  --tag-bg: rgba(220, 38, 38, 0.06);
+  --tag-border: rgba(220, 38, 38, 0.12);
+  --tag-text: #DC2626;
+
+  /* button */
+  --btn-primary-bg: #DC2626;
+  --btn-primary-text: #FFFFFF;
+  --btn-primary-hover: #B91C1C;
+
+  --btn-outline-border: #E2E8F0;
+  --btn-outline-text: #475569;
+  --btn-outline-hover-border: #DC2626;
+  --btn-outline-hover-text: #DC2626;
+
+  /* navigation */
+  --nav-bg: rgba(255, 255, 255, 0.85);
+  --nav-border: #E2E8F0;
+  --nav-link: #475569;
+  --nav-link-hover: #DC2626;
+  --nav-accent-line: #DC2626;
+
+  /* layout */
+  --body-bg: #FFFFFF;
+  --body-grid: rgba(0, 0, 0, 0.02);
+
+  /* divider */
+  --divider: linear-gradient(90deg, transparent, #E2E8F0, transparent);
+
+  /* circuit pattern (hidden in standard) */
+  --circuit-opacity: 0;
+  --circuit-color: transparent;
+
+  /* backward compat — old component variable names */
+  --accent: 220 38 38;
+  --accent-dim: 185 28 28;
+  --bg: #FFFFFF;
+  --bg-surface: #F8FAFC;
+  --bg-elevated: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --text: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+  --border: #E2E8F0;
+  --accent-glow: rgba(220, 38, 38, 0.12);
+  --mesh-1: rgba(220, 38, 38, 0.02);
+  --mesh-2: rgba(220, 38, 38, 0.01);
+  --mesh-3: rgba(220, 38, 38, 0.005);
+}
+
+/* ═══════════════════════════════════════════════
+   THEME B — FUTURIST (Deep End High-End)
+   Cyber Hardware Lab · OS-Interface
+   ═══════════════════════════════════════════════ */
+.theme-futurist {
+  --color-primary: #EF4444;
+  --color-primary-hover: #DC2626;
+  --color-primary-light: rgba(239, 68, 68, 0.1);
+  --color-primary-glow: rgba(239, 68, 68, 0.2);
+
+  --color-bg-main: #020617;
+  --color-bg-surface: #0A0F1E;
+  --color-bg-elevated: #111827;
+  --color-bg-card: rgba(15, 23, 42, 0.6);
+
+  --color-text: #F8FAFC;
+  --color-text-secondary: rgba(248, 250, 252, 0.5);
+  --color-text-muted: rgba(248, 250, 252, 0.2);
+
+  --color-border: rgba(34, 211, 238, 0.1);
+  --color-border-hover: rgba(34, 211, 238, 0.25);
+
+  --color-success: #22D3EE;
+  --color-warning: #FBBF24;
+  --color-error: #EF4444;
+  --color-info: #60A5FA;
+
+  /* card — glass */
+  --card-bg: rgba(15, 23, 42, 0.4);
+  --card-border: rgba(34, 211, 238, 0.08);
+  --card-radius: var(--radius-xl);
+  --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --card-shadow-hover: 0 12px 48px rgba(0, 0, 0, 0.4);
+
+  /* glass — heavy */
+  --glass-bg: rgba(15, 23, 42, 0.35);
+  --glass-border: rgba(34, 211, 238, 0.08);
+  --glass-blur: 15px;
+
+  /* glow */
+  --glow-primary: 0 0 30px rgba(239, 68, 68, 0.15), 0 0 60px rgba(239, 68, 68, 0.05);
+  --glow-cyan: 0 0 30px rgba(34, 211, 238, 0.12), 0 0 60px rgba(34, 211, 238, 0.04);
+
+  /* badge */
+  --badge-bg: #EF4444;
+  --badge-text: #FFFFFF;
+
+  /* tag / pill */
+  --tag-bg: rgba(34, 211, 238, 0.06);
+  --tag-border: rgba(34, 211, 238, 0.12);
+  --tag-text: #22D3EE;
+
+  /* button */
+  --btn-primary-bg: linear-gradient(135deg, #EF4444, #DC2626);
+  --btn-primary-text: #FFFFFF;
+  --btn-primary-hover: linear-gradient(135deg, #DC2626, #B91C1C);
+
+  --btn-outline-border: rgba(34, 211, 238, 0.15);
+  --btn-outline-text: rgba(248, 250, 252, 0.5);
+  --btn-outline-hover-border: rgba(34, 211, 238, 0.4);
+  --btn-outline-hover-text: #22D3EE;
+
+  /* navigation */
+  --nav-bg: rgba(2, 6, 23, 0.75);
+  --nav-border: rgba(34, 211, 238, 0.06);
+  --nav-link: rgba(248, 250, 252, 0.35);
+  --nav-link-hover: #22D3EE;
+  --nav-accent-line: #EF4444;
+
+  /* layout */
+  --body-bg: #020617;
+  --body-grid: rgba(34, 211, 238, 0.03);
+
+  /* divider */
+  --divider: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.08), transparent);
+
+  /* circuit board pattern */
+  --circuit-opacity: 0.015;
+  --circuit-color: #22D3EE;
+
+  /* backward compat — old component variable names */
+  --accent: 239 68 68;
+  --accent-dim: 220 38 38;
+  --bg: #020617;
+  --bg-surface: #0A0F1E;
+  --bg-elevated: #111827;
+  --bg-card: rgba(15, 23, 42, 0.6);
+  --text: #F8FAFC;
+  --text-secondary: rgba(248, 250, 252, 0.5);
+  --text-muted: rgba(248, 250, 252, 0.2);
+  --border: rgba(34, 211, 238, 0.1);
+  --accent-glow: rgba(239, 68, 68, 0.2);
+  --mesh-1: rgba(239, 68, 68, 0.06);
+  --mesh-2: rgba(34, 211, 238, 0.04);
+  --mesh-3: rgba(239, 68, 68, 0.02);
+}
+
+/* ═══════════════════════════════════════════════
+   FONT IMPORTS
+   ═══════════════════════════════════════════════ */
+/* Inter loaded via Google Fonts in index.css */
+/* JetBrains Mono loaded via Google Fonts in index.css */
+/* Syncopate loaded via Google Fonts in index.css */
+/* Orbitron for futurist headings (loaded in index.css) */
+
+/* ═══════════════════════════════════════════════
+   GLOBAL THEME BINDINGS
+   ═══════════════════════════════════════════════ */
+
+/* Theme‑specific font overrides */
+.theme-standard {
+  --font-heading: 'Inter', system-ui, sans-serif;
+}
+.theme-futurist {
+  --font-heading: 'Orbitron', 'Syncopate', sans-serif;
+}
+
+/* Body setup */
+.theme-standard body,
+body.theme-standard {
+  background: var(--body-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+
+.theme-futurist body,
+body.theme-futurist {
+  background: var(--body-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+
+/* Circuit board background (futurist only) */
+body.theme-futurist::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 40px,
+      rgba(34, 211, 238, 0.008) 40px,
+      rgba(34, 211, 238, 0.008) 41px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 40px,
+      rgba(34, 211, 238, 0.008) 40px,
+      rgba(34, 211, 238, 0.008) 41px
+    );
+  pointer-events: none;
+  z-index: 0;
+}

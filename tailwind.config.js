@@ -8,13 +8,17 @@ export default {
         crimson: { DEFAULT: "#E11D48", 50: "#FEE2E8", 100: "#FCA5B5", 200: "#F8718A", 300: "#EF445E", 400: "#E11D48", 500: "#BE123C", 600: "#9F1239", 700: "#881337" },
         cyan: { DEFAULT: "#00E5FF", 50: "#E0FCFF", 100: "#B3F5FF", 200: "#80EEFF", 300: "#4DE6FF", 400: "#00E5FF", 500: "#00B8D4", 600: "#0091A6" },
         gold: { DEFAULT: "#D4A843", 50: "#FDF5E6", 100: "#FCE8C8", 200: "#F5D79E", 300: "#EBC66E", 400: "#D4A843", 500: "#B8923A" },
+        slate: { DEFAULT: "#475569", 50: "#F8FAFC", 100: "#F1F5F9", 200: "#E2E8F0", 300: "#CBD5E1", 400: "#94A3B8", 500: "#64748B", 600: "#475569", 700: "#334155", 800: "#1E293B", 900: "#0F172A" },
+        midnight: { DEFAULT: "#020617", 50: "#1E293B", 100: "#0F172A", 200: "#0A0F1E", 300: "#060B17", 400: "#030712", 500: "#020617", 600: "#010409", 700: "#000000" },
+        "cyber-red": { DEFAULT: "#EF4444", 50: "#FEF2F2", 100: "#FEE2E2", 200: "#FECACA", 300: "#FCA5A5", 400: "#F87171", 500: "#EF4444", 600: "#DC2626", 700: "#B91C1C" },
+        "neon-cyan": { DEFAULT: "#22D3EE", 50: "#ECFEFF", 100: "#CFFAFE", 200: "#A5F3FC", 300: "#67E8F9", 400: "#22D3EE", 500: "#06B6D4", 600: "#0891B2" },
       },
       fontFamily: {
         sans: ["'Space Grotesk'", "system-ui", "sans-serif"],
         display: ["'Syncopate'", "sans-serif"],
-
         mono: ["'JetBrains Mono'", "monospace"],
         inter: ["Inter", "system-ui", "sans-serif"],
+        orbitron: ["'Orbitron'", "sans-serif"],
       },
       animation: {
         "shimmer": "shimmer 4s linear infinite",

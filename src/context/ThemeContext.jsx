@@ -8,7 +8,7 @@ export function ThemeProvider({ children }) {
   });
 
   useEffect(() => {
-    document.documentElement.dataset.theme = theme;
+    document.body.className = theme === "dark" ? "theme-futurist" : "theme-standard";
     localStorage.setItem("rt-theme", theme);
   }, [theme]);
 
