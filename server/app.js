@@ -11,6 +11,15 @@ import bcrypt from "bcryptjs";
 import { query } from "./db.js";
 import { generateToken, authMiddleware, adminMiddleware } from "./middleware/auth.js";
 import { seed as seedRealData } from "./seed.js";
+import {
+  registerSchema, loginSchema, contactSchema, chatConversationSchema, chatMessageSchema,
+  reviewSchema, orderSchema, newsletterSchema, couponValidateSchema, validate
+} from "./validate.js";
+
+function sanitizeError(e) {
+  if (process.env.NODE_ENV === "production") return "Internal server error";
+  return e.message;
+}
 
 // Auto-migrate and seed on cold start
 const SCHEMA_SQL = `
@@ -227,19 +236,38 @@ app.use(async (req, res, next) => {
   next();
 });
 
-app.use(helmet({ crossOriginResourcePolicy: false, contentSecurityPolicy: false }));
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      fontSrc: ["'self'", "https:", "data:"],
+      connectSrc: ["'self'", "https:"],
+      frameSrc: ["'none'"],
+      objectSrc: ["'none'"],
+    },
+  },
+}));
 app.use(cors({ origin: process.env.CORS_ORIGIN || "http://localhost:5173", credentials: true }));
-app.use(express.json({ limit: "10mb" }));
+app.use(express.json({ limit: "1mb" }));
 
-const limiter = rateLimit({ windowMs: 60 * 1000, max: 200 });
-app.use(limiter);
+const globalLimiter = rateLimit({ windowMs: 60 * 1000, max: 200 });
+app.use(globalLimiter);
+
+const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10, message: { error: "Too many attempts, try later" } });
+const contactLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 5, message: { error: "Too many messages, try later" } });
+const chatLimiter = rateLimit({ windowMs: 60 * 1000, max: 30, message: { error: "Too many chat requests" } });
+const couponLimiter = rateLimit({ windowMs: 60 * 1000, max: 10, message: { error: "Too many attempts" } });
 
 /* ─────── CATEGORIES ─────── */
 app.get("/api/categories", async (req, res) => {
   try {
     const { rows } = await query('SELECT c.*, COALESCE(p."count",0) as "productCount" FROM categories c LEFT JOIN (SELECT category, COUNT(*) as "count" FROM products GROUP BY category) p ON c.slug = p.category ORDER BY c."order" ASC');
     res.json(rows);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 /* ─────── PRODUCTS ─────── */
@@ -289,15 +317,13 @@ app.get("/api/products", async (req, res) => {
     const paginated = items.slice(offset, offset + l);
 
     res.json({ items: paginated, total, page: p, totalPages: Math.ceil(total / l) });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 /* ─────── AUTH ─────── */
-app.post("/api/auth/register", async (req, res) => {
+app.post("/api/auth/register", authLimiter, validate(registerSchema), async (req, res) => {
   try {
     const { name, email, password } = req.body;
-    if (!name || !email || !password) return res.status(400).json({ error: "All fields required" });
-
     const { rows: existing } = await query("SELECT id FROM users WHERE email = $1", [email]);
     if (existing.length) return res.status(409).json({ error: "Email already registered" });
 
@@ -316,15 +342,16 @@ app.post("/api/auth/register", async (req, res) => {
   } catch (e) { res.status(500).json({ error: "Registration failed" }); }
 });
 
-app.post("/api/auth/login", async (req, res) => {
+app.post("/api/auth/login", authLimiter, validate(loginSchema), async (req, res) => {
   try {
     const { email, password } = req.body;
     const { rows } = await query("SELECT * FROM users WHERE email = $1", [email]);
     const user = rows[0];
     if (!user || !(await bcrypt.compare(password, user.password))) return res.status(401).json({ error: "Invalid credentials" });
+    if (user.banned) return res.status(403).json({ error: "Account suspended" });
     const { password: _, ...safe } = user;
     res.json({ user: safe, token: generateToken(user) });
-  } catch (e) { res.status(500).json({ error: "Login failed" }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.get("/api/auth/me", authMiddleware, async (req, res) => {
@@ -332,7 +359,7 @@ app.get("/api/auth/me", authMiddleware, async (req, res) => {
     const { rows } = await query("SELECT id, name, email, role, avatar, addresses, wishlist, \"createdAt\" FROM users WHERE id = $1", [req.user.id]);
     if (!rows.length) return res.status(404).json({ error: "User not found" });
     res.json(rows[0]);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.put("/api/auth/profile", authMiddleware, async (req, res) => {
@@ -348,7 +375,7 @@ app.put("/api/auth/profile", authMiddleware, async (req, res) => {
     const { rows } = await query(`UPDATE users SET ${updates.join(", ")} WHERE id = $${idx} RETURNING id, name, email, role, avatar, addresses, wishlist, "createdAt"`, params);
     if (!rows.length) return res.status(404).json({ error: "User not found" });
     res.json(rows[0]);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.post("/api/auth/addresses", authMiddleware, async (req, res) => {
@@ -361,7 +388,7 @@ app.post("/api/auth/addresses", authMiddleware, async (req, res) => {
     if (!rows.length) return res.status(404).json({ error: "User not found" });
     const addresses = rows[0].addresses || [];
     res.status(201).json(addresses.find((a) => a.id === addr.id) || addr);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.delete("/api/auth/addresses/:addrId", authMiddleware, async (req, res) => {
@@ -372,7 +399,7 @@ app.delete("/api/auth/addresses/:addrId", authMiddleware, async (req, res) => {
     );
     if (!rows.length) return res.status(404).json({ error: "User not found" });
     res.json({ success: true });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 /* ─────── ORDERS ─────── */
@@ -380,20 +407,19 @@ app.get("/api/orders", authMiddleware, async (req, res) => {
   try {
     const { rows } = await query('SELECT * FROM orders WHERE "userId" = $1 ORDER BY "createdAt" DESC', [req.user.id]);
     res.json(rows);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.get("/api/orders/:id", authMiddleware, async (req, res) => {
   try {
     const { rows } = await query("SELECT * FROM orders WHERE id = $1", [req.params.id]);
     res.json(rows[0] || null);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
-app.post("/api/orders", authMiddleware, async (req, res) => {
+app.post("/api/orders", authMiddleware, validate(orderSchema), async (req, res) => {
   try {
     const { items, total, shipping, tax, coupon, shippingMethod, giftWrap, notes, address } = req.body;
-    if (!items?.length) return res.status(400).json({ error: "Cart is empty" });
 
     const id = uuidv4();
     const now = new Date().toISOString();
@@ -419,7 +445,7 @@ app.post("/api/orders", authMiddleware, async (req, res) => {
 
     const { rows } = await query("SELECT * FROM orders WHERE id = $1", [id]);
     res.status(201).json(rows[0]);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.put("/api/orders/:id/cancel", authMiddleware, async (req, res) => {
@@ -444,7 +470,7 @@ app.put("/api/orders/:id/cancel", authMiddleware, async (req, res) => {
       ["cancelled", JSON.stringify(statusHistory), req.params.id]
     );
     res.json(updated[0]);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 /* ─────── ALL ORDERS (ADMIN) ─────── */
@@ -457,7 +483,7 @@ app.get("/api/admin/orders", authMiddleware, adminMiddleware, async (req, res) =
     const { rows: count } = await query("SELECT COUNT(*) FROM orders");
     const total = parseInt(count[0].count);
     res.json({ items, total, page: p, totalPages: Math.ceil(total / l) });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.put("/api/admin/orders/:id/status", authMiddleware, adminMiddleware, async (req, res) => {
@@ -476,7 +502,7 @@ app.put("/api/admin/orders/:id/status", authMiddleware, adminMiddleware, async (
       [status, JSON.stringify(statusHistory), trackingNumber, req.params.id]
     );
     res.json(rows[0]);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 /* ─────── REVIEWS ─────── */
@@ -504,14 +530,12 @@ app.get("/api/reviews", async (req, res) => {
       stats.distribution = [5, 4, 3, 2, 1].map((s) => ({ star: s, count: distMap[s] || 0 }));
     }
     res.json({ reviews, stats });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
-app.post("/api/reviews", authMiddleware, async (req, res) => {
+app.post("/api/reviews", authMiddleware, validate(reviewSchema), async (req, res) => {
   try {
     const { productId, rating, title, comment } = req.body;
-    if (!productId || !rating || !comment) return res.status(400).json({ error: "Missing required fields" });
-
     const { rows: users } = await query("SELECT name FROM users WHERE id = $1", [req.user.id]);
     const userName = users[0]?.name || "Anonymous";
     const id = uuidv4();
@@ -520,12 +544,12 @@ app.post("/api/reviews", authMiddleware, async (req, res) => {
     await query(
       `INSERT INTO reviews (id, "productId", "userId", "userName", rating, title, comment, verified, "createdAt")
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
-      [id, productId, req.user.id, userName, Math.min(5, Math.max(1, rating)), title || "", comment, true, now]
+      [id, productId, req.user.id, userName, rating, title || "", comment, true, now]
     );
 
     const { rows } = await query("SELECT * FROM reviews WHERE id = $1", [id]);
     res.status(201).json(rows[0]);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 /* ─────── WISHLIST ─────── */
@@ -533,7 +557,7 @@ app.get("/api/wishlist", authMiddleware, async (req, res) => {
   try {
     const { rows } = await query("SELECT wishlist FROM users WHERE id = $1", [req.user.id]);
     res.json(rows[0]?.wishlist || []);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.post("/api/wishlist/:productId", authMiddleware, async (req, res) => {
@@ -543,7 +567,7 @@ app.post("/api/wishlist/:productId", authMiddleware, async (req, res) => {
       [JSON.stringify([req.params.productId]), req.user.id]
     );
     res.json(rows[0]?.wishlist || []);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.delete("/api/wishlist/:productId", authMiddleware, async (req, res) => {
@@ -553,11 +577,11 @@ app.delete("/api/wishlist/:productId", authMiddleware, async (req, res) => {
       [req.params.productId, req.user.id]
     );
     res.json(rows[0]?.wishlist || []);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 /* ─────── COUPONS ─────── */
-app.post("/api/coupons/validate", async (req, res) => {
+app.post("/api/coupons/validate", couponLimiter, validate(couponValidateSchema), async (req, res) => {
   try {
     const { code, orderTotal } = req.body;
     const { rows } = await query("SELECT * FROM coupons WHERE UPPER(code) = UPPER($1) AND active = true", [code]);
@@ -565,20 +589,20 @@ app.post("/api/coupons/validate", async (req, res) => {
     if (!coupon) return res.status(404).json({ error: "Invalid coupon code" });
     if (new Date(coupon.expiresAt) < new Date()) return res.status(400).json({ error: "Coupon has expired" });
     if (coupon.used >= coupon.maxUses) return res.status(400).json({ error: "Coupon usage limit reached" });
-    if (orderTotal < coupon.minOrder) return res.status(400).json({ error: `Minimum order amount is $${coupon.minOrder}` });
+    if (orderTotal < coupon.minOrder) return res.status(400).json({ error: "Minimum order amount not met" });
     let discount = 0;
     if (coupon.type === "percent") discount = orderTotal * (coupon.discount / 100);
     else if (coupon.type === "flat") discount = coupon.discount;
     else if (coupon.type === "free_shipping") discount = 0;
     res.json({ valid: true, coupon: { ...coupon, discount: Math.min(discount, orderTotal) } });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.get("/api/coupons", authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const { rows } = await query("SELECT * FROM coupons ORDER BY code");
     res.json(rows);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.post("/api/coupons", authMiddleware, adminMiddleware, async (req, res) => {
@@ -590,27 +614,25 @@ app.post("/api/coupons", authMiddleware, adminMiddleware, async (req, res) => {
       [coupon.id, coupon.code, coupon.discount, coupon.type, coupon.minOrder || 0, coupon.maxUses || 100, 0, coupon.active !== false, coupon.expiresAt]
     );
     res.status(201).json(coupon);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 /* ─────── CONTACT ─────── */
-app.post("/api/contact", async (req, res) => {
+app.post("/api/contact", contactLimiter, validate(contactSchema), async (req, res) => {
   try {
     const { name, email, subject, message } = req.body;
-    if (!name || !email || !message) return res.status(400).json({ error: "All fields required" });
     await query(
       `INSERT INTO contacts (id, name, email, subject, message, read, "createdAt") VALUES ($1,$2,$3,$4,$5,$6,$7)`,
       [uuidv4(), name, email, subject || null, message, false, new Date().toISOString()]
     );
     res.status(201).json({ success: true });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 /* ─────── CHAT ─────── */
-app.post("/api/chat/conversations", async (req, res) => {
+app.post("/api/chat/conversations", chatLimiter, validate(chatConversationSchema), async (req, res) => {
   try {
     const { name, email, subject, userId } = req.body;
-    if (!name || !email) return res.status(400).json({ error: "Name and email required" });
     if (userId) {
       const existing = await query(`SELECT * FROM chat_conversations WHERE "userId"=$1 AND status='open' ORDER BY "createdAt" DESC LIMIT 1`, [userId]);
       if (existing.rows.length) return res.json(existing.rows[0]);
@@ -621,18 +643,17 @@ app.post("/api/chat/conversations", async (req, res) => {
     const id = uuidv4();
     await query(`INSERT INTO chat_conversations (id, "userId", name, email, subject, status, "createdAt") VALUES ($1,$2,$3,$4,$5,'open',$6)`, [id, userId || null, name, email, subject || null, new Date().toISOString()]);
     res.status(201).json({ id, userId: userId || null, name, email, subject, status: "open" });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
-app.post("/api/chat/messages", async (req, res) => {
+app.post("/api/chat/messages", chatLimiter, validate(chatMessageSchema), async (req, res) => {
   try {
     const { conversationId, message, name } = req.body;
-    if (!conversationId || !message || !name) return res.status(400).json({ error: "conversationId, name, and message required" });
     const id = uuidv4();
     await query(`INSERT INTO chat_messages (id, "conversationId", sender, name, message, "createdAt") VALUES ($1,$2,'user',$3,$4,$5)`, [id, conversationId, name, message, new Date().toISOString()]);
     await query(`UPDATE chat_conversations SET "lastMessage"=$1, "lastMessageAt"=$2, unread=unread+1 WHERE id=$3`, [message, new Date().toISOString(), conversationId]);
     res.status(201).json({ id, message, sender: "user" });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.get("/api/chat/messages/:conversationId", async (req, res) => {
@@ -640,14 +661,14 @@ app.get("/api/chat/messages/:conversationId", async (req, res) => {
     const r = await query(`SELECT c.*, COALESCE(json_agg(json_build_object('id',m.id,'sender',m.sender,'name',m.name,'message',m.message,'createdAt',m."createdAt")) FILTER (WHERE m.id IS NOT NULL), '[]'::json) AS messages FROM chat_conversations c LEFT JOIN chat_messages m ON m."conversationId"=c.id WHERE c.id=$1 GROUP BY c.id`, [req.params.conversationId]);
     if (!r.rows.length) return res.status(404).json({ error: "Not found" });
     res.json(r.rows[0]);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.get("/api/admin/chat/conversations", authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const r = await query(`SELECT * FROM chat_conversations ORDER BY "lastMessageAt" DESC NULLS LAST, "createdAt" DESC`);
     res.json(r.rows);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.get("/api/admin/chat/messages/:conversationId", authMiddleware, adminMiddleware, async (req, res) => {
@@ -658,7 +679,7 @@ app.get("/api/admin/chat/messages/:conversationId", authMiddleware, adminMiddlew
     ]);
     if (!conv.rows.length) return res.status(404).json({ error: "Not found" });
     res.json({ ...conv.rows[0], messages: msgs.rows });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.post("/api/admin/chat/reply", authMiddleware, adminMiddleware, async (req, res) => {
@@ -669,7 +690,7 @@ app.post("/api/admin/chat/reply", authMiddleware, adminMiddleware, async (req, r
     await query(`INSERT INTO chat_messages (id, "conversationId", sender, name, message, "createdAt") VALUES ($1,$2,'admin','Support',$3,$4)`, [id, conversationId, message, new Date().toISOString()]);
     await query(`UPDATE chat_conversations SET "lastMessage"=$1, "lastMessageAt"=$2 WHERE id=$3`, [message, new Date().toISOString(), conversationId]);
     res.status(201).json({ id, message, sender: "admin" });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 /* ─────── ADMIN: PRODUCTS ─────── */
@@ -682,7 +703,7 @@ app.get("/api/admin/products", authMiddleware, adminMiddleware, async (req, res)
     const { rows: count } = await query("SELECT COUNT(*) FROM products");
     const total = parseInt(count[0].count);
     res.json({ items, total, page: p, totalPages: Math.ceil(total / l) });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.post("/api/admin/products", authMiddleware, adminMiddleware, async (req, res) => {
@@ -697,7 +718,7 @@ app.post("/api/admin/products", authMiddleware, adminMiddleware, async (req, res
        product.stock || 0, product.badge || null, JSON.stringify(product.specs || {}), product.createdAt]
     );
     res.status(201).json(product);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.put("/api/admin/products/:id", authMiddleware, adminMiddleware, async (req, res) => {
@@ -716,14 +737,14 @@ app.put("/api/admin/products/:id", authMiddleware, adminMiddleware, async (req, 
        JSON.stringify(updated.specs || {}), req.params.id]
     );
     res.json(updated);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.delete("/api/admin/products/:id", authMiddleware, adminMiddleware, async (req, res) => {
   try {
     await query("DELETE FROM products WHERE id = $1", [req.params.id]);
     res.json({ success: true });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.post("/api/admin/products/bulk-delete", authMiddleware, adminMiddleware, async (req, res) => {
@@ -732,7 +753,7 @@ app.post("/api/admin/products/bulk-delete", authMiddleware, adminMiddleware, asy
     if (!ids?.length) return res.status(400).json({ error: "No IDs provided" });
     await query("DELETE FROM products WHERE id = ANY($1)", [ids]);
     res.json({ success: true, deleted: ids.length });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 /* ─────── ADMIN: CATEGORIES ─────── */
@@ -744,7 +765,7 @@ app.post("/api/admin/categories", authMiddleware, adminMiddleware, async (req, r
       [cat.id, cat.name, cat.slug, cat.description || null, cat.icon || null, cat.image || null, cat.featured || false, cat.order || 0]
     );
     res.status(201).json(cat);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.put("/api/admin/categories/:id", authMiddleware, adminMiddleware, async (req, res) => {
@@ -755,14 +776,14 @@ app.put("/api/admin/categories/:id", authMiddleware, adminMiddleware, async (req
     );
     if (!rows.length) return res.status(404).json({ error: "Not found" });
     res.json(rows[0]);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.delete("/api/admin/categories/:id", authMiddleware, adminMiddleware, async (req, res) => {
   try {
     await query("DELETE FROM categories WHERE id = $1", [req.params.id]);
     res.json({ success: true });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 /* ─────── PROMOTIONS ─────── */
@@ -770,7 +791,7 @@ app.get("/api/promotions", async (req, res) => {
   try {
     const { rows } = await query("SELECT * FROM promotions WHERE active = true");
     res.json(rows);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 /* ─────── DASHBOARD STATS (Admin) ─────── */
@@ -823,20 +844,19 @@ app.get("/api/admin/stats", authMiddleware, adminMiddleware, async (req, res) =>
       todayRevenue: parseFloat(todayOrders[0]?.revenue || 0),
       netProfit: parseFloat(orders[0]?.totalRevenue || 0) - parseFloat(expenses[0]?.total || 0),
     });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 /* ─────── NEWSLETTER ─────── */
-app.post("/api/newsletter", async (req, res) => {
+app.post("/api/newsletter", contactLimiter, validate(newsletterSchema), async (req, res) => {
   try {
     const { email } = req.body;
-    if (!email) return res.status(400).json({ error: "Email required" });
     const { rows } = await query("SELECT id FROM subscribers WHERE email = $1", [email]);
     if (!rows.length) {
       await query('INSERT INTO subscribers (id, email, "createdAt") VALUES ($1,$2,$3)', [uuidv4(), email, new Date().toISOString()]);
     }
     res.json({ success: true });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 /* ─────── ADMIN: USERS ─────── */
@@ -848,7 +868,7 @@ app.get("/api/admin/users", authMiddleware, adminMiddleware, async (req, res) =>
     const { rows: count } = await query("SELECT COUNT(*) FROM users");
     const total = parseInt(count[0].count);
     res.json({ items, total, page: p, totalPages: Math.ceil(total / 50) });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.put("/api/admin/users/:id", authMiddleware, adminMiddleware, async (req, res) => {
@@ -865,14 +885,14 @@ app.put("/api/admin/users/:id", authMiddleware, adminMiddleware, async (req, res
     const { rows } = await query(`UPDATE users SET ${sets.join(", ")} WHERE id = $${idx} RETURNING id, name, email, role, avatar, addresses, wishlist, banned, "createdAt"`, params);
     if (!rows.length) return res.status(404).json({ error: "User not found" });
     res.json(rows[0]);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.delete("/api/admin/users/:id", authMiddleware, adminMiddleware, async (req, res) => {
   try {
     await query("DELETE FROM users WHERE id = $1", [req.params.id]);
     res.json({ success: true });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 /* ─────── ADMIN: CONTACTS ─────── */
@@ -880,7 +900,7 @@ app.get("/api/admin/contacts", authMiddleware, adminMiddleware, async (req, res)
   try {
     const { rows } = await query('SELECT * FROM contacts ORDER BY "createdAt" DESC');
     res.json(rows);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.put("/api/admin/contacts/:id/read", authMiddleware, adminMiddleware, async (req, res) => {
@@ -888,14 +908,14 @@ app.put("/api/admin/contacts/:id/read", authMiddleware, adminMiddleware, async (
     const { rows } = await query("UPDATE contacts SET read = true WHERE id = $1 RETURNING *", [req.params.id]);
     if (!rows.length) return res.status(404).json({ error: "Not found" });
     res.json(rows[0]);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.delete("/api/admin/contacts/:id", authMiddleware, adminMiddleware, async (req, res) => {
   try {
     await query("DELETE FROM contacts WHERE id = $1", [req.params.id]);
     res.json({ success: true });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 /* ─────── ADMIN: SUBSCRIBERS ─────── */
@@ -903,7 +923,7 @@ app.get("/api/admin/subscribers", authMiddleware, adminMiddleware, async (req, r
   try {
     const { rows } = await query('SELECT * FROM subscribers ORDER BY "createdAt" DESC');
     res.json(rows);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 /* ─────── ADMIN: REVIEWS ─────── */
@@ -915,14 +935,14 @@ app.get("/api/admin/reviews", authMiddleware, adminMiddleware, async (req, res) 
     const { rows: count } = await query("SELECT COUNT(*) FROM reviews");
     const total = parseInt(count[0].count);
     res.json({ items, total, page: p, totalPages: Math.ceil(total / 50) });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.delete("/api/admin/reviews/:id", authMiddleware, adminMiddleware, async (req, res) => {
   try {
     await query("DELETE FROM reviews WHERE id = $1", [req.params.id]);
     res.json({ success: true });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 /* ─────── ADMIN: COUPONS ─────── */
@@ -936,14 +956,14 @@ app.put("/api/admin/coupons/:id", authMiddleware, adminMiddleware, async (req, r
       [updated.code, updated.discount, updated.type, updated.minOrder, updated.maxUses, updated.used, updated.active, updated.expiresAt, req.params.id]
     );
     res.json(updated);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.delete("/api/admin/coupons/:id", authMiddleware, adminMiddleware, async (req, res) => {
   try {
     await query("DELETE FROM coupons WHERE id = $1", [req.params.id]);
     res.json({ success: true });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 /* ─────── ADMIN: SALES HISTORY ─────── */
@@ -965,7 +985,7 @@ app.get("/api/admin/sales-history", authMiddleware, adminMiddleware, async (req,
     }).reverse();
 
     res.json(history);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 /* ─────── ADMIN: STOCK ─────── */
@@ -1008,7 +1028,7 @@ app.post("/api/admin/stock/adjust", authMiddleware, adminMiddleware, async (req,
 
     const { rows: updated } = await query("SELECT * FROM products WHERE id = $1", [productId]);
     res.json({ product: updated[0], log: { id: logId, productId, type, quantity, note } });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 /* ─────── ADMIN: EXPENSES ─────── */
@@ -1016,7 +1036,7 @@ app.get("/api/admin/expenses", authMiddleware, adminMiddleware, async (req, res)
   try {
     const { rows } = await query('SELECT * FROM expenses ORDER BY date DESC, "createdAt" DESC');
     res.json(rows);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.post("/api/admin/expenses", authMiddleware, adminMiddleware, async (req, res) => {
@@ -1027,7 +1047,7 @@ app.post("/api/admin/expenses", authMiddleware, adminMiddleware, async (req, res
       [exp.id, exp.title, exp.category || "other", exp.amount, exp.description || null, exp.date, exp.recurring || false, exp.createdAt]
     );
     res.status(201).json(exp);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.put("/api/admin/expenses/:id", authMiddleware, adminMiddleware, async (req, res) => {
@@ -1038,14 +1058,14 @@ app.put("/api/admin/expenses/:id", authMiddleware, adminMiddleware, async (req, 
     );
     if (!rows.length) return res.status(404).json({ error: "Not found" });
     res.json(rows[0]);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.delete("/api/admin/expenses/:id", authMiddleware, adminMiddleware, async (req, res) => {
   try {
     await query("DELETE FROM expenses WHERE id = $1", [req.params.id]);
     res.json({ success: true });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 /* ─────── ADMIN: SUPPLIERS ─────── */
@@ -1053,7 +1073,7 @@ app.get("/api/admin/suppliers", authMiddleware, adminMiddleware, async (req, res
   try {
     const { rows } = await query('SELECT * FROM suppliers ORDER BY name');
     res.json(rows);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.post("/api/admin/suppliers", authMiddleware, adminMiddleware, async (req, res) => {
@@ -1064,7 +1084,7 @@ app.post("/api/admin/suppliers", authMiddleware, adminMiddleware, async (req, re
       [sup.id, sup.name, sup.contact || null, sup.email || null, sup.phone || null, sup.address || null, sup.notes || null, sup.createdAt]
     );
     res.status(201).json(sup);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.put("/api/admin/suppliers/:id", authMiddleware, adminMiddleware, async (req, res) => {
@@ -1075,14 +1095,14 @@ app.put("/api/admin/suppliers/:id", authMiddleware, adminMiddleware, async (req,
     );
     if (!rows.length) return res.status(404).json({ error: "Not found" });
     res.json(rows[0]);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.delete("/api/admin/suppliers/:id", authMiddleware, adminMiddleware, async (req, res) => {
   try {
     await query("DELETE FROM suppliers WHERE id = $1", [req.params.id]);
     res.json({ success: true });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 /* ─────── ADMIN: SETTINGS ─────── */
@@ -1092,7 +1112,7 @@ app.get("/api/admin/settings", authMiddleware, adminMiddleware, async (req, res)
     const obj = {};
     for (const row of rows) obj[row.key] = { value: row.value, type: row.type };
     res.json(obj);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.put("/api/admin/settings", authMiddleware, adminMiddleware, async (req, res) => {
@@ -1105,7 +1125,7 @@ app.put("/api/admin/settings", authMiddleware, adminMiddleware, async (req, res)
     const obj = {};
     for (const row of rows) obj[row.key] = { value: row.value, type: row.type };
     res.json(obj);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 /* ─────── ADMIN: PAGES ─────── */
@@ -1113,14 +1133,14 @@ app.get("/api/pages/:slug", async (req, res) => {
   try {
     const { rows } = await query("SELECT * FROM pages WHERE slug = $1 AND published = true", [req.params.slug]);
     res.json(rows[0] || null);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.get("/api/admin/pages", authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const { rows } = await query("SELECT * FROM pages ORDER BY slug");
     res.json(rows);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.put("/api/admin/pages/:id", authMiddleware, adminMiddleware, async (req, res) => {
@@ -1131,7 +1151,7 @@ app.put("/api/admin/pages/:id", authMiddleware, adminMiddleware, async (req, res
     );
     if (!rows.length) return res.status(404).json({ error: "Not found" });
     res.json(rows[0]);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 /* ─────── ADMIN: NOTIFICATIONS ─────── */
@@ -1144,7 +1164,7 @@ app.get("/api/admin/notifications", authMiddleware, adminMiddleware, async (req,
         : 'SELECT * FROM notifications ORDER BY "createdAt" DESC LIMIT 50'
     );
     res.json(rows);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.post("/api/admin/notifications", authMiddleware, adminMiddleware, async (req, res) => {
@@ -1155,7 +1175,7 @@ app.post("/api/admin/notifications", authMiddleware, adminMiddleware, async (req
       [notif.id, notif.type || "info", notif.title, notif.message || null, false, notif.createdAt]
     );
     res.status(201).json(notif);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 app.put("/api/admin/notifications/:id/read", authMiddleware, adminMiddleware, async (req, res) => {
@@ -1163,7 +1183,7 @@ app.put("/api/admin/notifications/:id/read", authMiddleware, adminMiddleware, as
     const { rows } = await query("UPDATE notifications SET read = true WHERE id = $1 RETURNING *", [req.params.id]);
     if (!rows.length) return res.status(404).json({ error: "Not found" });
     res.json(rows[0]);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 /* ─────── SEED ADMIN USER ─────── */
@@ -1180,7 +1200,7 @@ app.post("/api/admin/seed", authMiddleware, adminMiddleware, async (req, res) =>
        "https://api.dicebear.com/7.x/avataaars/svg?seed=admin", now]
     );
     res.json({ message: "Admin created. Email: admin@rtelectronics.com / Password: admin123" });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: sanitizeError(e) }); }
 });
 
 /* ─────── HEALTH CHECK ─────── */
