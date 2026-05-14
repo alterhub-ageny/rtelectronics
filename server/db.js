@@ -6,7 +6,7 @@ const pool = new Pool({
   max: 5,
   idleTimeoutMillis: 10000,
   connectionTimeoutMillis: 5000,
-  ssl: process.env.DATABASE_URL.includes("sslmode=require") ? { rejectUnauthorized: true } : { rejectUnauthorized: false },
+  ssl: { rejectUnauthorized: false },
 });
 
 pool.on("error", (err) => {
