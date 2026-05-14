@@ -108,6 +108,17 @@
   --footer-text-hover: #000000;
   --footer-border: rgba(0, 0, 0, 0.06);
 
+  /* ─── Hero ─── */
+  --hero-bg: #FFFFFF;
+  --hero-grid: rgba(0, 0, 0, 0.025);
+  --hero-glow-1: rgba(220, 38, 38, 0.04);
+  --hero-glow-2: rgba(0, 0, 0, 0.015);
+  --hero-heading-from: #000000;
+  --hero-heading-via: rgba(0, 0, 0, 0.85);
+  --hero-heading-to: rgba(0, 0, 0, 0.55);
+  --hero-border: rgba(0, 0, 0, 0.04);
+  --hero-text: rgba(0, 0, 0, 0.35);
+
   /* ─── Layout ─── */
   --body-bg: #FFFFFF;
   --body-grid: rgba(0, 0, 0, 0.02);
@@ -188,6 +199,16 @@
   --footer-text: rgba(255, 255, 255, 0.35);
   --footer-text-hover: #FFFFFF;
   --footer-border: rgba(255, 255, 255, 0.06);
+
+  --hero-bg: #0A0A14;
+  --hero-grid: rgba(255, 255, 255, 0.02);
+  --hero-glow-1: rgba(220, 38, 38, 0.05);
+  --hero-glow-2: rgba(0, 229, 255, 0.03);
+  --hero-heading-from: #FFFFFF;
+  --hero-heading-via: rgba(255, 255, 255, 0.85);
+  --hero-heading-to: rgba(255, 255, 255, 0.55);
+  --hero-border: rgba(255, 255, 255, 0.04);
+  --hero-text: rgba(255, 255, 255, 0.35);
 }
 
 /* ─── Body ─── */

@@ -19,15 +19,18 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section className="dark-section relative min-h-[90vh] flex items-center overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A14] via-[#07070D] to-[#05050A]" />
+    <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-[var(--hero-bg)]">
       <div
-        className="absolute inset-0 opacity-[0.04]"
-        style={{ backgroundImage: "radial-gradient(ellipse at 50% 0%, rgba(225,29,72,0.4) 0%, transparent 70%), radial-gradient(ellipse at 70% 50%, rgba(0,229,255,0.05) 0%, transparent 50%)" }}
+        className="absolute inset-0"
+        style={{ backgroundImage: "radial-gradient(var(--hero-grid) 1px, transparent 1px)", backgroundSize: "28px 28px" }}
+      />
+      <div
+        className="absolute inset-0"
+        style={{ background: "radial-gradient(ellipse at 50% 0%, var(--hero-glow-1) 0%, transparent 70%), radial-gradient(ellipse at 70% 50%, var(--hero-glow-2) 0%, transparent 50%)" }}
       />
 
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-rt-accent/5 rounded-full blur-[120px] animate-glow-pulse" />
-      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-cyan-500/3 rounded-full blur-[100px] animate-float" />
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-[120px] animate-glow-pulse" style={{ background: "var(--hero-glow-1)" }} />
+      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full blur-[100px] animate-float" style={{ background: "var(--hero-glow-2)" }} />
 
       <div className="max-w-site mx-auto px-4 sm:px-6 relative z-10 py-20 w-full">
         <div className="grid lg:grid-cols-5 gap-12 items-center">
@@ -49,7 +52,7 @@ export default function HeroSection() {
               transition={{ duration: 0.9, delay: 0.1 }}
               className="text-4xl md:text-6xl lg:text-7xl font-display font-bold leading-[1.05] mb-6"
             >
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white/90 to-white/70">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--hero-heading-from)] via-[var(--hero-heading-via)] to-[var(--hero-heading-to)]">
                 {t("hero.heading_1")}
               </span>
               <br />
@@ -62,7 +65,7 @@ export default function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-white/30 text-base max-w-xl mb-8 leading-relaxed"
+              className="text-[var(--hero-text)] text-base max-w-xl mb-8 leading-relaxed"
             >
               {t("hero.description")}
             </motion.p>
@@ -85,14 +88,14 @@ export default function HeroSection() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1 }}
-              className="flex items-center gap-6 mt-10 pt-6 border-t border-white/[0.04]"
+              className="flex items-center gap-6 mt-10 pt-6 border-t border-[var(--hero-border)]"
             >
               {[
                 { icon: Truck, text: t("hero.free_shipping") },
                 { icon: Shield, text: t("hero.warranty") },
                 { icon: HeadphonesIcon, text: t("hero.support") },
               ].map((item) => (
-                <div key={item.text} className="flex items-center gap-1.5 text-white/25 text-xs font-mono">
+                <div key={item.text} className="flex items-center gap-1.5 text-[var(--hero-text)] text-xs font-mono">
                   <item.icon size={12} className="text-rt-accent/50" />
                   {item.text}
                 </div>
