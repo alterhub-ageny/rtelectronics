@@ -7,7 +7,6 @@ E-commerce store (electronics & gaming) — React (Vite) frontend + Express API 
 - **Production:** https://rt-electronics.vercel.app
 - **Vercel Dashboard:** https://vercel.com/pathgridagencys-projects/rt-electronics
 - **API base:** `/api` (serverless function at `api/index.js`)
-- **Supabase:** postgresql://postgres.lksyatuvmtstsxvijkwc:HZ3AynYABHQhzn7v@aws-1-eu-west-3.pooler.supabase.com:5432/postgres?sslmode=require
 
 ## Repo & Commands
 - **Directory:** `C:\Users\Admin\Documents\GitHub\rt-electronics`
@@ -17,11 +16,7 @@ E-commerce store (electronics & gaming) — React (Vite) frontend + Express API 
 - **Seed:** `node server/seed.js` (populates 258 products, 9 categories, orders, etc.)
 
 ## Project Config
-- **Framework preset (Vercel):** `vite` (was `services`, had to PATCH via API to fix)
-- **Vercel project ID:** `prj_rfBc208ifHvKgT9O8cWsi7DgGSFg`
-- **Vercel team ID:** `team_pxLegtQQMaxAps4e4zmBklK3`
-- **Environment variables set in Vercel:**
-  - `DATABASE_URL` (production) — the Supabase connection string
+- **Framework preset (Vercel):** `vite`
 - **Vercel CLI version:** 53.3.2
 
 ## Key Files
@@ -29,25 +24,26 @@ E-commerce store (electronics & gaming) — React (Vite) frontend + Express API 
 |------|---------|
 | `api/index.js` | Serverless entry point — imports `server/app.js` |
 | `server/app.js` | Express app — routes, middleware, CORS, session |
-| `server/db.js` | pg Pool connection (strips `?sslmode=require` from DATABASE_URL) |
+| `server/db.js` | pg Pool connection |
 | `server/seed.js` | Seeds 258 products, 9 categories, orders, reviews, etc. |
 | `src/services/api.js` | Frontend API client — `BASE = "/api"`, all endpoints |
 | `src/App.jsx` | React root — routes, layout, providers |
-| `src/pages/Home.jsx` | Home page — loads all sections from API |
-| `src/components/home/HeroSection.jsx` | Hero — fetches featured categories |
-| `src/components/home/CategoryShowcase.jsx` | 9-category grid with emoji icons |
-| `src/components/home/FeaturedProducts.jsx` | Featured products carousel |
-| `src/components/home/PromoSection.jsx` | Promotions from API |
-| `src/styles/index.css` | Tailwind + fonts + dark glass theme |
+| `src/main.jsx` | Entry point — wraps App with `I18nextProvider` |
+| `src/i18n/index.js` | i18next config — language detector, RTL switching |
+| `src/locales/en/translation.json` | English translations (~400 keys) |
+| `src/locales/fr/translation.json` | French translations |
+| `src/locales/ar/translation.json` | Arabic translations |
+| `src/styles/index.css` | Tailwind + fonts + dark/light glass theme + text-white overrides |
+| `src/styles/variables.css` | Light/dark CSS custom properties |
+| `src/context/ThemeContext.jsx` | Dark/Light toggle, `data-theme` on `<html>`, localStorage `rt-theme` |
 | `vercel.json` | Rewrites: `/api/(.*)` → `/api`, `/(.*)` → `/index.html` |
 
 ## Design Language
-- **Theme:** Dark glass (dark backgrounds, glassmorphism cards, subtle indigo accents)
-- **Fonts:** Syncopate (headings), Space Grotesk (body), Inter (UI), JetBrains Mono (code)
-- **Colors:** Indigo accent (`#6366f1`), dark surfaces, white text
-- **No "crystal intelligence" / "neural core" / neon gimmicks** — professional tech store tone
+- **Theme:** Dark glass (dark backgrounds, glassmorphism cards, red accent `#DC2626`)
+- **Light theme:** Pure white/red/black (`#FFFFFF` bg, `#000000` text, `#DC2626` accents)
+- **Fonts:** Syncopate (logo), Space Grotesk (body), Inter (UI), JetBrains Mono (code)
 - **All content from SQL database** — no hardcoded products or categories
-- **Category icons:** Emoji strings in JSX (no dynamic ICON_MAP)
+- **Category icons:** Emoji strings in JSX
 
 ## API Endpoints (key ones)
 - `GET /api/categories` — all categories with product counts
@@ -62,76 +58,164 @@ E-commerce store (electronics & gaming) — React (Vite) frontend + Express API 
 - `GET /api/admin/stats` — admin dashboard stats
 - `POST /api/admin/seed` — re-seed database
 
-## Database (Supabase Postgres)
-- **Schema:** ~12 tables (categories, products, users, orders, order_items, reviews, addresses, wishlist, promotions, coupons, contacts, subscribers, settings, pages, chat_conversations, chat_messages, notifications, stock_log, expenses, suppliers)
-- **Seed data:** 258 products across 9 categories (laptops, smartphones, gaming PCs, tablets, watches, headphones, accessories, game top-ups, gift cards), plus orders, reviews, users, etc.
+## What Has Been Done
 
-## History of Issues Fixed
-1. **Seed syntax error** — `server/seed.js` line 96: missing `...[` before 7 category arrays caused `FUNCTION_INVOCATION_FAILED` on Vercel cold start
-2. **Framework preset** — Vercel project was set to "services" framework, had to PATCH via `Invoke-RestMethod` to `v2/projects/prj_...` with `{"framework":"vite"}`
-3. **DATABASE_URL missing** — env var wasn't set in Vercel production, causing `ECONNREFUSED 127.0.0.1:5432`; added via `vercel env add DATABASE_URL production`
-4. **SSL cert error** — `?sslmode=require` in connection string conflicted with explicit `ssl` config; fixed by stripping it in `db.js` with `.replace("?sslmode=require", "")`
-5. **Frontend showing blank** — was downstream of API failures; once API returned data, frontend rendered correctly
+### Multi-language Support (i18n) — COMPLETED May 14, 2026
+- **i18n config:** `src/i18n/index.js` — i18next + react-i18next, language detection (localStorage → browser → `en` fallback), RTL direction switching on `<html>`
+- **Translation files:**
+  - `src/locales/en/translation.json` — English (400+ keys across 20 sections)
+  - `src/locales/fr/translation.json` — French translations
+  - `src/locales/ar/translation.json` — Arabic translations
+- **Language Switcher:** Globe icon button in Header cycling EN → FR → AR, persisted as `rt-lang` in localStorage
+- **RTL:** Arabic sets `dir="rtl"` + `lang="ar"` on `<html>`; EN/FR set `dir="ltr"`
+- **Files with `t()` replacements done:**
+  - `src/main.jsx` (I18nextProvider wrapper)
+  - `src/components/layout/Header.jsx` (brand, nav, user menu, search)
+  - `src/components/layout/Footer.jsx` (links, contact, copyright)
+  - `src/components/home/HeroSection.jsx` (headings, badges, CTAs, features)
+  - `src/components/home/FeaturedProducts.jsx` (section titles)
+  - `src/components/home/CategoryShowcase.jsx` (section titles, descriptions)
+  - `src/components/product/ProductCard.jsx` (VIEW badge, toast messages)
+  - `src/components/product/ProductGrid.jsx` (empty/no-results text)
+  - `src/components/product/ProductFilter.jsx` (all filter labels, sort options)
+  - `src/components/ui/SearchBar.jsx` (placeholder)
+  - `src/components/ui/Breadcrumbs.jsx` (Home link)
+  - `src/components/ui/ChatWidget.jsx` (channel UI, form, messages)
+  - `src/components/cart/CartSummary.jsx` (order summary, checkout button, trust badges)
+  - `src/components/extra/CookieConsent.jsx` (consent banner)
+  - `src/components/extra/TrustBadges.jsx` (badge labels)
+  - `src/pages/Home.jsx` (newsletter, contact form, section titles, admin button)
+  - `src/pages/Products.jsx` (sort options, product count, labels)
+  - `src/pages/Cart.jsx` (empty state, order summary, checkout)
+  - `src/pages/Checkout.jsx` (entire flow: shipping, payment, coupon, order confirmed)
+  - `src/pages/Login.jsx` (title, form labels, buttons, errors)
+  - `src/pages/Register.jsx` (title, form labels, buttons, errors)
+  - `src/pages/Wishlist.jsx` (empty state, title, buttons)
+  - `src/pages/FAQ.jsx` (badge, title, search, all 10 Q&A pairs)
+  - `src/pages/Contact.jsx` (form, success state, info section)
+  - `src/pages/About.jsx` (stats, values, descriptions, CTA)
+  - `src/pages/NotFound.jsx` (404 message, buttons)
+  - `src/pages/Account.jsx` (tabs, profile data, orders, addresses)
+  - `src/pages/Admin.jsx` (NOT translated — large file, admin-only, lower priority)
+  - `index.html` (added `dir="ltr"` initial attribute)
 
-## Current State (as of May 13, 2026)
-- [x] API works — returns 9 categories, 258 products, 8 featured
-- [x] Home page renders — Hero, CategoryGrid, FeaturedProducts, PromoSection all load from API
-- [x] Deployed to Vercel production — `https://rt-electronics.vercel.app`
-- [ ] Remaining pages not yet redesigned: product listing, product detail, cart, account, admin, etc.
-- [ ] Bundle size warning — `index.js` is 1.7MB (unminified); could code-split
+### Light Theme (Pure White/Red/Black) — COMPLETED
+- Replaced `[data-theme="light"]` with `:root:not([data-theme="dark"])` for pre-hydration flash fix
+- Pure `#FFFFFF` backgrounds, `#000000` text, `#DC2626` red accents
+- Updated all CSS variable aliases (`--bg`, `--text`, etc.)
+- Enhanced text-white opacity overrides with dark slate values
+- Mega-menu background uses CSS variables
 
-## Design System (as of May 13, 2026 — v3 "Neo-Luxe")
+## What Still Needs To Be Done
 
-### Color Palette
-| Token | Dark Mode | Light Mode | Usage |
-|-------|-----------|------------|-------|
-| Background | `#07070D` | `#F5F5F0` | Page bg |
-| Surface | `#0D0D1A` | `#FFFFFF` | Cards, menus |
-| Crimson | `#E11D48` | `#E11D48` | Primary accent |
-| Cyan | `#00E5FF` | `#00E5FF` | Secondary glow accent |
-| Gold | `#D4A843` | `#D4A843` | Tertiary luxury |
+### 1. Admin.jsx Translation — Lower Priority
+- `src/pages/Admin.jsx` (~1000+ lines) still has hardcoded English strings
+- 15 admin tab labels, ~30+ toast messages, form labels, table headers, buttons
+- Can be done by adding `useTranslation()` hook and replacing strings
+- Or leave as-is since admin-only section is likely used in English
 
-### Typography
-| Font | Weight | Usage |
-|------|--------|-------|
-| **Playfair Display** | 700 / 400 italic | Headings, section titles, hero |
-| **Syncopate** | 700 | Logo, buttons, eyebrow text |
-| **Space Grotesk** | 300-700 | Body text |
-| **JetBrains Mono** | 400 | Monospaced / technical text |
-| **Inter** | 400-800 | UI elements |
+### 2. Toast/Notification String Gaps
+- A few toast messages across the app use hardcoded English strings not yet translated:
+  - `Cart.jsx` — some toast for item removal
+  - `Checkout.jsx` — "Please fill all required fields", "Coupon applied!", "Order failed. Please try again."
+  - `Contact.jsx` — "Fill in required fields", "Failed to send"
+  - `Home.jsx` — "Fill in all required fields", "Subscription failed", "Failed to send"
+  - `Account.jsx` — "Profile updated", "Update failed", "Address added", etc.
+  - `Login.jsx` — "Access granted", "Invalid credentials"
+  - `Register.jsx` — "Profile initialized", "Registration failed"
+  - These are visible as toast popups — should be translated for full localization
 
-### Theme Toggle
-- Dark/Light mode via `ThemeContext` (`data-theme` on `<html>`)
-- CSS custom properties swap automatically
-- Sun/Moon icon button in header
-- Persisted in `localStorage` as `rt-theme`
+### 3. Missing Translation Keys Check
+- Run the app in dev mode, switch to French/Arabic, check all pages for missing `t()` calls that fall back to English
+- Look for any hardcoded strings that were missed in the initial pass
+- Particularly: placeholder attributes, aria-labels, title attributes, dynamic error messages from API
 
-### Component Architecture
-- `card-glass` — glassmorphism card with gradient border glow on hover
-- `btn-primary` — pill-shaped crimson gradient button with glow
-- `btn-outline` — transparent pill with hover border
-- `card-glass-solid` — solid elevated card for dropdowns
-- `glass-shine` — animated diagonal shine overlay
-- `corner-accent` — subtle corner brackets on cards
-- `section-eyebrow` — uppercase badge labels (Syncopate, crimson)
-- `.section-title` — Playfair Display heading
-- `.section-subtitle` — Playfair Display italic
+### 4. Language Preference Persistence on First Visit
+- `i18n/index.js` checks `localStorage` then `navigator.language` then falls back to `"en"`
+- Currently only `"en"`, `"fr"`, `"ar"` are explicit language codes in the navigator check — extended browser language codes like `"fr-CA"` would fall through to `"en"`
+- Optionally add a language detection modal/prompt on first visit to let user choose language
 
-### Header Mega-Menu
-- Hovering over a category nav item reveals a floating dropdown
-- Shows emoji icon, category name in Playfair italic, description, product count
-- Smooth animation with arrow indicator
-- Backdrop blur + elevated shadow
+### 5. SEO / Meta Tags
+- `index.html` has hardcoded `<title>` and `<meta name="description">` in English
+- Should dynamically update based on current language
+- Could use `react-helmet-async` or update `document.title` from `useEffect` on language change
 
-### Animations
-- `glow-pulse` — slow opacity pulse for background glow orbs
-- `float` — gentle Y-axis floating
-- `glass-shine` — diagonal light sweep across glass surfaces
-- `shimmer` — gradient position animation for borders
+### 6. Right-to-Left (RTL) CSS Polish
+- The `dir="rtl"` attribute is set on `<html>` for Arabic, but some CSS may need RTL-specific overrides:
+  - Flex/grid directions for nav items, header layout, mega-menu positioning
+  - Input icon positions (search icon on left vs right)
+  - Text alignment in specific sections
+  - ChevonRight icons should flip to ChevronLeft in RTL
+- Search the codebase for `left-`, `right-`, `ml-`, `mr-`, `pl-`, `pr-` Tailwind classes that may need RTL variants (use `ltr:` / `rtl:` Tailwind prefixes)
 
-## Next Steps (potential)
-1. Redesign remaining pages (product listing, product detail, cart) to match dark glass aesthetic
-2. Add search with filters
-3. Code-split with lazy loading (`React.lazy` + Suspense) for faster initial load
-4. Set up preview deployments for PRs
-5. Add `NODE_ENV=production` env var in Vercel
+### 7. Dynamic Content Translation (Database-driven)
+- Product names, descriptions, category names come from the database — these are currently in English
+- To fully localize, you'd need:
+  - Add language columns to DB tables (e.g. `name_en`, `name_fr`, `name_ar`)
+  - Update API to accept `?lang=` parameter and return appropriate column
+  - Update frontend to pass current language to API calls
+- This is a large effort — defer for now
+
+### 8. Code-Splitting / Bundle Size
+- Bundle is 1.9MB (minified) — Vite warns about chunk size
+- Could use `React.lazy` + `Suspense` for route-level code splitting
+- `three.js` / `@react-three/fiber` are heavy dependencies — consider dynamic import for 3D components
+- i18n translation files are imported synchronously — could lazy-load them
+
+## Key Implementation Details
+
+### i18n Pattern Used
+```jsx
+import { useTranslation } from "react-i18next";
+
+function Component() {
+  const { t } = useTranslation();
+  return <div>{t("section.key")}</div>;
+}
+```
+
+### Translation Key Structure
+- Organized by component/page: `header.brand`, `hero.shop_all`, `checkout.place_order`, etc.
+- Interpolation: `t("units_found", { count: n })`
+- Nested JSON keys for readability
+
+### Theme System
+- `:root` = light theme (no `data-theme` attribute needed)
+- `:root[data-theme="dark"]` = dark theme
+- CSS variables in `src/styles/variables.css`
+- Text-white overrides in `src/styles/index.css` (Steps 1-3)
+
+### RTL Implementation
+- `i18n.on("languageChanged")` handler sets `document.documentElement.dir`
+- Initial dir set synchronously in `src/i18n/index.js` before React renders
+- `lang` attribute also updated on `<html>`
+
+## Things Not To Touch
+- The theme toggle implementation in `src/context/ThemeContext.jsx` — do not change the localStorage key `rt-theme`
+- The CSS text-white override strategy (Steps 1-3 in index.css) — critical for light theme
+- Hardcoded categorized text in FAQ component (if you decide not to translate FAQ) — but we've already translated it
+- API response format — frontend expects specific shapes
+- The `i18n/index.js` language detection order: localStorage → browser → `"en"`
+
+## Handoff Prompt (copy-paste for next session)
+```
+Continue the RT Electronics project at C:\Users\Admin\Documents\GitHub\rt-electronics.
+
+i18n has been set up (en/fr/ar) with react-i18next. Language switcher in Header cycles EN/FR/AR. RTL dir switching works for Arabic.
+
+What's done: i18n config, translation JSON files (400+ keys), all 27+ page/component files have t() calls replacing hardcoded English strings, I18nextProvider in main.jsx, language switcher in Header.
+
+What remains:
+1. Admin.jsx strings (~1000 lines) still hardcoded in English — add useTranslation import and t() calls
+2. ~15 toast messages across Cart, Checkout, Contact, Home, Account, Login, Register are still hardcoded — add t() calls
+3. Audit for any missed hardcoded strings (placeholders, aria-labels, title attrs, error messages)
+4. RTL CSS polish — some left/right Tailwind classes may need ltr:/rtl: variants
+5. SEO meta tags should update dynamically per language (react-helmet-async or document.title)
+6. Dynamic content (DB-driven product names/categories) — requires DB schema changes, complex
+7. Code-splitting for better load performance
+
+Build command: npm run build (works, no errors)
+Deploy command: vercel deploy --prod
+Production URL: https://rt-electronics.vercel.app
+Local dev: vercel dev
+```

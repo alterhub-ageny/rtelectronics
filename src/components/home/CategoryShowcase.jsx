@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { useCategories } from "../../hooks/useCategories";
 
 export default function CategoryShowcase() {
+  const { t } = useTranslation();
   const { categories } = useCategories();
 
   return (
@@ -11,13 +13,13 @@ export default function CategoryShowcase() {
       <div className="text-center mb-14">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-rt-accent/10 bg-rt-accent/[0.03] mb-4">
           <Sparkles size={10} className="text-rt-accent/60" />
-          <span className="section-eyebrow">Categories</span>
+          <span className="section-eyebrow">{t("categories_page.title")}</span>
         </div>
-        <h2 className="section-title mb-2">
-          Shop by Category
+        <h2 className="font-display text-4xl font-extrabold text-[var(--color-text)] mb-2">
+          {t("categories_page.heading")}
         </h2>
         <p className="section-subtitle">
-          Browse our full range of products
+          {t("categories_page.subtitle")}
         </p>
       </div>
 
@@ -32,10 +34,10 @@ export default function CategoryShowcase() {
           >
             <Link
               to={`/products?category=${cat.slug}`}
-              className="group card-glass block p-5 h-full"
+              className="group card-glass block p-5 h-full border-t-2 border-t-[var(--color-primary)] hover:shadow-[0_8px_24px_rgba(220,38,38,0.15)] hover:border-[var(--color-primary)] hover:scale-[1.02] transition-all duration-300"
             >
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-2xl opacity-50 group-hover:opacity-100 transition-opacity duration-300">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-3xl group-hover:scale-110 group-hover:[filter:drop-shadow(0_0_6px_rgba(220,38,38,0.5))] transition-all duration-300 inline-block">
                   {cat.icon === "laptop" && "💻"}
                   {cat.icon === "smartphone" && "📱"}
                   {cat.icon === "gamepad-2" && "🎮"}
@@ -46,15 +48,15 @@ export default function CategoryShowcase() {
                   {cat.icon === "dices" && "🎲"}
                   {cat.icon === "gift" && "🎁"}
                 </span>
-                <div className="flex items-center gap-1 text-white/15 group-hover:text-rt-accent/50 transition-colors">
+                <div className="flex items-center gap-1 text-[var(--nav-icon-color)] group-hover:text-[var(--color-primary)] transition-colors">
                   <span className="text-[9px] font-mono">{cat.productCount}</span>
                   <ArrowRight size={11} className="transition-transform duration-300 group-hover:translate-x-0.5" />
                 </div>
               </div>
-              <h3 className="text-white/80 text-base font-semibold mb-0.5 group-hover:text-white transition-colors">
+              <h3 className="font-display text-lg font-bold text-[var(--color-text)] mb-0.5 group-hover:text-[var(--color-primary)] transition-colors">
                 {cat.name}
               </h3>
-              <p className="text-white/20 text-[10px] font-mono tracking-wider">
+              <p className="text-[var(--color-text-muted)] text-[10px] font-mono tracking-wider">
                 {cat.productCount} item{cat.productCount !== 1 ? "s" : ""}
               </p>
             </Link>

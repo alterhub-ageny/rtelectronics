@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { Mail, Lock, Eye, EyeOff, Zap, ArrowRight, LogIn } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
 
 export default function Login() {
+  const { t } = useTranslation();
   const { login } = useAuth();
   const addToast = useToast();
   const navigate = useNavigate();
@@ -17,14 +19,14 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    if (!form.email || !form.password) { setError("All fields required"); return; }
+    if (!form.email || !form.password) { setError(t("login.all_fields_required")); return; }
     setLoading(true);
     try {
       await login(form.email, form.password);
-      addToast("Access granted", "success");
+      addToast(t("login.access_granted"), "success");
       navigate("/");
     } catch (err) {
-      setError(err.message || "Invalid credentials");
+      setError(err.message || t("login.invalid_credentials"));
     } finally {
       setLoading(false);
     }
@@ -40,8 +42,8 @@ export default function Login() {
                 <Zap size={16} className="text-rt-accent" />
               </div>
             </Link>
-            <h1 className="text-lg font-display font-bold text-white/90">ACCESS TERMINAL</h1>
-            <p className="text-white/25 text-xs font-mono mt-1">Authenticate to continue</p>
+            <h1 className="text-lg font-display font-bold text-white/90">{t("login.title")}</h1>
+            <p className="text-white/25 text-xs font-mono mt-1">{t("login.subtitle")}</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-3.5">
@@ -56,7 +58,7 @@ export default function Login() {
             )}
 
             <div>
-              <label className="text-[10px] text-white/30 font-mono tracking-wider mb-1.5 block">EMAIL</label>
+              <label className="text-[10px] text-white/30 font-mono tracking-wider mb-1.5 block">{t("login.email")}</label>
               <div className="relative">
                 <Mail size={13} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/20" />
                 <input
@@ -70,7 +72,7 @@ export default function Login() {
             </div>
 
             <div>
-              <label className="text-[10px] text-white/30 font-mono tracking-wider mb-1.5 block">PASSWORD</label>
+              <label className="text-[10px] text-white/30 font-mono tracking-wider mb-1.5 block">{t("login.password")}</label>
               <div className="relative">
                 <Lock size={13} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/20" />
                 <input
@@ -96,17 +98,17 @@ export default function Login() {
               className="btn-crystal w-full flex items-center justify-center gap-2 text-xs py-3 mt-1"
             >
               {loading ? (
-                <><span className="spinner-crystal w-4 h-4" /> AUTHENTICATING</>
+                <><span className="spinner-crystal w-4 h-4" /> {t("login.authenticating")}</>
               ) : (
-                <><LogIn size={14} /> SIGN IN <ArrowRight size={13} /></>
+                <><LogIn size={14} /> {t("login.sign_in")} <ArrowRight size={13} /></>
               )}
             </button>
           </form>
 
           <p className="text-center text-white/20 text-[11px] font-mono mt-5">
-            No access credentials?{' '}
+            {t("login.no_credentials")}{' '}
             <Link to="/register" className="text-rt-accent hover:text-white/70 transition-colors">
-              Initialize
+              {t("login.initialize")}
             </Link>
           </p>
         </div>

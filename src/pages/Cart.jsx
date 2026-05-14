@@ -1,16 +1,18 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { Trash2, ShoppingCart, ArrowRight, Zap } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { useToast } from "../context/ToastContext";
 
 export default function Cart() {
+  const { t } = useTranslation();
   const { items, totalItems, totalPrice, updateQuantity, removeItem } = useCart();
   const addToast = useToast();
 
   const handleRemove = (id, name) => {
     removeItem(id);
-    addToast(`${name} removed from cart`, "info");
+    addToast(`${name} ${t("cart.removed")}`, "info");
   };
 
   if (!items.length) {
@@ -20,10 +22,10 @@ export default function Cart() {
           <div className="w-16 h-16 rounded-2xl bg-rt-accent/10 border border-rt-accent/20 flex items-center justify-center mx-auto mb-4">
             <ShoppingCart size={24} className="text-rt-accent" />
           </div>
-          <h2 className="text-xl font-display font-bold text-white/80 mb-2">CART EMPTY</h2>
-          <p className="text-white/30 text-xs font-mono mb-6">No items in transmission queue.</p>
+          <h2 className="text-xl font-display font-bold text-white/80 mb-2">{t("cart.empty_title")}</h2>
+          <p className="text-white/30 text-xs font-mono mb-6">{t("cart.empty_text")}</p>
           <Link to="/products" className="btn-crystal text-xs inline-flex items-center gap-2 px-5 py-2.5">
-            BROWSE PRODUCTS <ArrowRight size={13} />
+            {t("cart.browse_products")} <ArrowRight size={13} />
           </Link>
         </div>
       </div>
@@ -35,10 +37,10 @@ export default function Cart() {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-rt-accent/20 bg-rt-accent/5 mb-4">
           <span className="w-1.5 h-1.5 rounded-full bg-rt-accent" />
-          <span className="text-rt-accent text-[10px] font-mono tracking-[0.15em] uppercase">Cart</span>
+          <span className="text-rt-accent text-[10px] font-mono tracking-[0.15em] uppercase">{t("cart.badge")}</span>
         </div>
         <h1 className="text-2xl md:text-3xl font-display font-bold text-white/90">
-          CART <span className="text-white/30">({totalItems})</span>
+          {t("cart.title")} <span className="text-white/30">({totalItems})</span>
         </h1>
       </motion.div>
 
@@ -88,22 +90,22 @@ export default function Cart() {
 
         <div>
           <div className="crystal rounded-2xl p-5 space-y-4">
-            <h3 className="text-white/60 font-display text-xs font-bold tracking-wider">ORDER SUMMARY</h3>
+            <h3 className="text-white/60 font-display text-xs font-bold tracking-wider">{t("cart.order_summary")}</h3>
             <div className="space-y-2 text-xs font-mono">
-              <div className="flex justify-between text-white/30"><span>Items</span><span className="text-white/50">{totalItems}</span></div>
-              <div className="flex justify-between text-white/30"><span>Subtotal</span><span className="text-rt-accent">${Number(totalPrice).toFixed(2)}</span></div>
-              <div className="flex justify-between text-white/30"><span>Shipping</span><span className="text-white/50">Calculated next</span></div>
+              <div className="flex justify-between text-white/30"><span>{t("cart.items")}</span><span className="text-white/50">{totalItems}</span></div>
+              <div className="flex justify-between text-white/30"><span>{t("cart.subtotal")}</span><span className="text-rt-accent">${Number(totalPrice).toFixed(2)}</span></div>
+              <div className="flex justify-between text-white/30"><span>{t("cart.shipping")}</span><span className="text-white/50">{t("cart.calculated_next")}</span></div>
             </div>
             <div className="h-[1px] bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
             <div className="flex justify-between items-center">
-              <span className="text-white/50 text-xs font-mono">Total</span>
+              <span className="text-white/50 text-xs font-mono">{t("cart.total")}</span>
               <span className="text-lg font-display font-bold text-rt-accent">${Number(totalPrice).toFixed(2)}</span>
             </div>
             <Link
               to="/checkout"
               className="btn-crystal w-full flex items-center justify-center gap-2 text-xs py-3"
             >
-              <Zap size={14} /> CHECKOUT <ArrowRight size={13} />
+              <Zap size={14} /> {t("cart.checkout")} <ArrowRight size={13} />
             </Link>
           </div>
         </div>

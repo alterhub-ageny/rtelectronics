@@ -1,9 +1,11 @@
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { ShoppingBag, Shield, Truck, CreditCard } from "lucide-react";
 import { useCart } from "../../context/CartContext";
 import Button from "../ui/Button";
 
 export default function CartSummary() {
+  const { t } = useTranslation();
   const { totalPrice, items } = useCart();
   const shipping = totalPrice > 499 ? 0 : 19.99;
   const tax = totalPrice * 0.08;
@@ -15,39 +17,39 @@ export default function CartSummary() {
       animate={{ opacity: 1, y: 0 }}
       className="glass rounded-2xl p-6 border border-white/5 sticky top-28"
     >
-      <h3 className="text-lg font-display font-bold text-white mb-6">Order Summary</h3>
+      <h3 className="text-lg font-display font-bold text-white mb-6">{t("cart_summary.order_summary")}</h3>
 
       <div className="space-y-3 mb-6">
         <div className="flex justify-between text-sm">
-          <span className="text-white/50">Subtotal ({items.length} items)</span>
+          <span className="text-white/50">{t("cart_summary.subtotal", { count: items.length })}</span>
           <span className="text-white font-mono">${totalPrice.toLocaleString()}</span>
         </div>
         <div className="flex justify-between text-sm">
-          <span className="text-white/50">Shipping</span>
+          <span className="text-white/50">{t("cart_summary.shipping")}</span>
           <span className={shipping === 0 ? "text-rt-accent3 font-mono" : "text-white font-mono"}>
-            {shipping === 0 ? "FREE" : `$${shipping.toFixed(2)}`}
+            {shipping === 0 ? t("cart_summary.free") : `$${shipping.toFixed(2)}`}
           </span>
         </div>
         <div className="flex justify-between text-sm">
-          <span className="text-white/50">Tax (8%)</span>
+          <span className="text-white/50">{t("cart_summary.tax")}</span>
           <span className="text-white font-mono">${tax.toFixed(2)}</span>
         </div>
         <div className="border-t border-white/10 pt-3 flex justify-between">
-          <span className="text-white font-semibold">Total</span>
+          <span className="text-white font-semibold">{t("cart_summary.total")}</span>
           <span className="text-rt-accent font-display font-bold text-xl">${total.toFixed(2)}</span>
         </div>
       </div>
 
       <Button className="w-full mb-4 text-base" href="/checkout">
         <ShoppingBag size={18} className="inline mr-2" />
-        Proceed to Checkout
+        {t("cart_summary.checkout")}
       </Button>
 
       <div className="space-y-3">
         {[
-          { icon: Shield, text: "Secure checkout" },
-          { icon: Truck, text: `Free shipping on orders over $499` },
-          { icon: CreditCard, text: "Pay with Visa, MC, PayPal" },
+          { icon: Shield, text: t("cart_summary.secure") },
+          { icon: Truck, text: t("cart_summary.free_shipping") },
+          { icon: CreditCard, text: t("cart_summary.payment_methods") },
         ].map(({ icon: Icon, text }) => (
           <div key={text} className="flex items-center gap-2 text-xs text-white/40">
             <Icon size={14} className="text-rt-accent shrink-0" />

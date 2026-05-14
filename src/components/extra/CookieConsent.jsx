@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { Cookie } from "lucide-react";
 
 export default function CookieConsent() {
+  const { t } = useTranslation();
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -29,10 +31,10 @@ export default function CookieConsent() {
               <Cookie size={20} className="text-rt-accent" />
             </div>
             <div className="flex-1">
-              <p className="text-white text-sm font-medium mb-1">We use cookies</p>
-              <p className="text-white/40 text-xs leading-relaxed">This site uses cookies to enhance your experience. By continuing, you agree to our use of cookies.</p>
+              <p className="text-white text-sm font-medium mb-1">{t("cookie.title")}</p>
+              <p className="text-white/40 text-xs leading-relaxed">{t("cookie.text")}</p>
             </div>
-            <button onClick={accept} className="btn-primary text-sm whitespace-nowrap px-5 py-2">Accept</button>
+            <button onClick={accept} className="btn-primary text-sm whitespace-nowrap px-5 py-2">{t("cookie.accept")}</button>
           </div>
         </motion.div>
       )}

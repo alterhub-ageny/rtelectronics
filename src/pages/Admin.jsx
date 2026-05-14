@@ -1,6 +1,7 @@
 import { Component, useState, useEffect, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
 
@@ -71,34 +72,37 @@ const STATUS_COLORS = {
 };
 
 const STOCK_COLORS = {
-  out:    { bg: "bg-red-500/15", text: "text-red-300", border: "border-red-500/25", dot: "bg-red-400", label: "Out of Stock" },
-  low:    { bg: "bg-orange-500/15", text: "text-orange-300", border: "border-orange-500/25", dot: "bg-orange-400", label: "Low Stock" },
-  normal: { bg: "bg-emerald-500/15", text: "text-emerald-300", border: "border-emerald-500/25", dot: "bg-emerald-400", label: "In Stock" },
-  high:   { bg: "bg-blue-500/15", text: "text-blue-300", border: "border-blue-500/25", dot: "bg-blue-400", label: "Overstock" },
+  out:    { bg: "bg-red-500/15", text: "text-red-300", border: "border-red-500/25", dot: "bg-red-400" },
+  low:    { bg: "bg-orange-500/15", text: "text-orange-300", border: "border-orange-500/25", dot: "bg-orange-400" },
+  normal: { bg: "bg-emerald-500/15", text: "text-emerald-300", border: "border-emerald-500/25", dot: "bg-emerald-400" },
+  high:   { bg: "bg-blue-500/15", text: "text-blue-300", border: "border-blue-500/25", dot: "bg-blue-400" },
 };
 
-const EXPENSE_CATEGORY_LABELS = {
-  shipping: "Shipping", supplier: "Supplier Payment", marketing: "Marketing",
-  software: "Software", rent: "Office Rent", utilities: "Utilities", salary: "Salaries", other: "Other",
+const EXPENSE_CATEGORY_KEYS = {
+  shipping: "expense_shipping", supplier: "expense_supplier", marketing: "expense_marketing",
+  software: "expense_software", rent: "expense_rent", utilities: "expense_utilities", salary: "expense_salary", other: "expense_other",
 };
 
 function StockBadge({ stock, threshold = 5 }) {
+  const { t } = useTranslation();
   const s = stock === 0 ? "out" : stock <= threshold ? "low" : stock > 100 ? "high" : "normal";
+  const labels = { out: t("admin.stock_out"), low: t("admin.stock_low"), normal: t("admin.stock_normal"), high: t("admin.stock_high") };
   const c = STOCK_COLORS[s];
   return (
     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider ${c.bg} ${c.text} ${c.border} border`}>
       <span className={`w-1.5 h-1.5 rounded-full ${c.dot} animate-pulse`} />
-      {c.label}
+      {labels[s]}
     </span>
   );
 }
 
 function CategoryBadge({ category }) {
+  const { t } = useTranslation();
   const c = CATEGORY_COLORS[category] || CATEGORY_COLORS.other;
   return (
     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium capitalize ${c.bg} ${c.text} ${c.border} border`}>
       <span className={`w-1.5 h-1.5 rounded-full ${c.dot}`} />
-      {EXPENSE_CATEGORY_LABELS[category] || category}
+      {t("admin." + (EXPENSE_CATEGORY_KEYS[category] || "expense_other"))}
     </span>
   );
 }
@@ -113,29 +117,31 @@ function StatusBadge({ status }) {
   );
 }
 
-const TABS = [
-  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { id: "products", label: "Products", icon: Package },
-  { id: "orders", label: "Orders", icon: ShoppingCart },
-  { id: "users", label: "Users", icon: Users },
-  { id: "categories", label: "Categories", icon: FolderTree },
-  { id: "stock", label: "Stock", icon: Box },
-  { id: "expenses", label: "Expenses", icon: DollarSign },
-  { id: "suppliers", label: "Suppliers", icon: Truck },
-  { id: "coupons", label: "Coupons", icon: Tag },
-  { id: "messages", label: "Messages", icon: MessageSquare },
-  { id: "reviews", label: "Reviews", icon: Star },
-  { id: "subscribers", label: "Subscribers", icon: Mail },
-  { id: "settings", label: "Settings", icon: Settings },
-  { id: "pages", label: "Pages", icon: FileText },
+const TABS = (t) => [
+  { id: "dashboard", label: t("admin.dashboard"), icon: LayoutDashboard },
+  { id: "products", label: t("admin.products"), icon: Package },
+  { id: "orders", label: t("admin.tab_orders"), icon: ShoppingCart },
+  { id: "users", label: t("admin.users"), icon: Users },
+  { id: "categories", label: t("admin.tab_categories"), icon: FolderTree },
+  { id: "stock", label: t("admin.tab_stock"), icon: Box },
+  { id: "expenses", label: t("admin.tab_expenses"), icon: DollarSign },
+  { id: "suppliers", label: t("admin.tab_suppliers"), icon: Truck },
+  { id: "coupons", label: t("admin.tab_coupons"), icon: Tag },
+  { id: "messages", label: t("admin.tab_messages"), icon: MessageSquare },
+  { id: "reviews", label: t("admin.reviews"), icon: Star },
+  { id: "subscribers", label: t("admin.subscribers"), icon: Mail },
+  { id: "settings", label: t("admin.tab_settings"), icon: Settings },
+  { id: "pages", label: t("admin.tab_pages"), icon: FileText },
 ];
 
 export default function Admin() {
+  const { t } = useTranslation();
   const { user, loading, isAdmin, logout } = useAuth();
   const addToast = useToast();
   const navigate = useNavigate();
   const [tab, setTab] = useState("dashboard");
   const [sidebar, setSidebar] = useState(false);
+  const tabs = TABS(t);
 
   useEffect(() => { if (!loading && !user) navigate("/login"); else if (!loading && !isAdmin) navigate("/"); }, [user, isAdmin, loading]);
   if (loading) return <div className="min-h-screen bg-rt-darker flex items-center justify-center"><div className="w-8 h-8 border-2 border-rt-accent border-t-transparent rounded-full animate-spin" /></div>;
@@ -174,27 +180,27 @@ export default function Admin() {
               <Zap size={24} className="text-rt-accent relative z-10" />
               <div className="absolute inset-0 bg-rt-accent/20 blur-xl rounded-full scale-150 group-hover:scale-175 transition-transform" />
             </div>
-            <span className="text-lg font-display font-bold"><span className="text-white">RT</span><span className="text-rt-accent"> ADMIN</span></span>
+            <span className="text-lg font-display font-bold"><span className="text-white">{t("admin.title_1")}</span><span className="text-rt-accent">{t("admin.title_2")}</span></span>
           </Link>
         </div>
         <nav className="p-2 space-y-0.5">
-          {TABS.map((t) => (
-            <button key={t.id} onClick={() => { setTab(t.id); setSidebar(false); }}
+          {tabs.map((tabItem) => (
+            <button key={tabItem.id} onClick={() => { setTab(tabItem.id); setSidebar(false); }}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-300 relative overflow-hidden group ${
-                tab === t.id ? "text-rt-accent" : "text-white/50 hover:text-white hover:bg-white/5"
+                tab === tabItem.id ? "text-rt-accent" : "text-white/50 hover:text-white hover:bg-white/5"
               }`}
             >
-              {tab === t.id && <div className="absolute inset-0 bg-rt-accent/10 border border-rt-accent/30 rounded-xl" />}
+              {tab === tabItem.id && <div className="absolute inset-0 bg-rt-accent/10 border border-rt-accent/30 rounded-xl" />}
               <span className="relative z-10 flex items-center gap-3">
-                <t.icon size={16} />
-                {t.label}
+                <tabItem.icon size={16} />
+                {tabItem.label}
               </span>
             </button>
           ))}
         </nav>
         <div className="p-2 border-t border-white/5 mt-2">
           <button onClick={() => { logout(); navigate("/"); }} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-red-400/70 hover:text-red-400 hover:bg-red-500/10 transition-all">
-            <LogOut size={16} /> Sign Out
+            <LogOut size={16} /> {t("admin.sign_out")}
           </button>
         </div>
       </aside>
@@ -205,7 +211,7 @@ export default function Admin() {
             <button onClick={() => setSidebar(true)} className="lg:hidden p-2 rounded-xl bg-white/5 border border-white/10 text-white">
               <MenuIcon />
             </button>
-            <h1 className="text-lg font-display font-bold text-white">{TABS.find((t) => t.id === tab)?.label || "Dashboard"}</h1>
+            <h1 className="text-lg font-display font-bold text-white">{tabs.find((t) => t.id === tab)?.label || t("admin.dashboard")}</h1>
           </div>
           <div className="flex items-center gap-3">
             <span className="text-sm text-white/40 hidden sm:block">{user?.name}</span>
@@ -295,6 +301,7 @@ function KpiCard({ title, value, icon: Icon, trend, subtitle, color = "text-rt-a
 
 /* ─────── DASHBOARD TAB ─────── */
 function DashboardTab() {
+  const { t } = useTranslation();
   const [stats, setStats] = useState(null);
   const [history, setHistory] = useState([]);
   const [settings, setSettings] = useState({});
@@ -316,7 +323,7 @@ function DashboardTab() {
         <div className="w-12 h-12 border-2 border-rt-accent/30 border-t-rt-accent rounded-full animate-spin" />
         <div className="absolute inset-0 bg-rt-accent/10 blur-xl rounded-full animate-pulse" />
       </div>
-      <p className="text-white/30 text-sm animate-pulse">Loading dashboard...</p>
+      <p className="text-white/30 text-sm animate-pulse">{t("admin.loading")}</p>
     </div>
   );
 
@@ -326,7 +333,7 @@ function DashboardTab() {
         <AlertTriangle size={28} className="text-red-400" />
       </div>
       <p className="text-red-400 text-sm">{error}</p>
-      <button onClick={load} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all"><RefreshCw size={14} /> Retry</button>
+      <button onClick={load} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all"><RefreshCw size={14} /> {t("admin.retry")}</button>
     </div>
   );
 
@@ -335,27 +342,27 @@ function DashboardTab() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4">
-        <KpiCard title="Today" value={`$${sf(stats.todayRevenue)}`} icon={BarChart3} color="text-emerald-400" subtitle={`${stats.todayOrders} orders`} />
-        <KpiCard title="Total Revenue" value={`$${sf(stats.totalRevenue)}`} icon={TrendingUp} color="text-green-400" />
-        <KpiCard title="Total Expenses" value={`$${sf(stats.totalExpenses)}`} icon={TrendingDown} color="text-orange-400" />
-        <KpiCard title="Net Profit" value={`$${sf(stats.netProfit)}`} icon={DollarSign} color={stats.netProfit >= 0 ? "text-emerald-400" : "text-red-400"} subtitle={`${sf(profitMargin, 1)}% margin`} />
+        <KpiCard title={t("admin.today")} value={`$${sf(stats.todayRevenue)}`} icon={BarChart3} color="text-emerald-400" subtitle={`${stats.todayOrders} ${t("admin.total_orders").toLowerCase()}`} />
+        <KpiCard title={t("admin.total_revenue")} value={`$${sf(stats.totalRevenue)}`} icon={TrendingUp} color="text-green-400" />
+        <KpiCard title={t("admin.total_expenses")} value={`$${sf(stats.totalExpenses)}`} icon={TrendingDown} color="text-orange-400" />
+        <KpiCard title={t("admin.net_profit")} value={`$${sf(stats.netProfit)}`} icon={DollarSign} color={stats.netProfit >= 0 ? "text-emerald-400" : "text-red-400"} subtitle={`${sf(profitMargin, 1)}% margin`} />
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4">
-        <KpiCard title="Total Orders" value={stats.totalOrders} icon={ShoppingCart} trend={0} subtitle="all time" />
-        <KpiCard title="Pending" value={stats.pendingOrders} icon={Clock} color="text-yellow-400" />
-        <KpiCard title="Low Stock" value={stats.lowStockProducts} icon={AlertTriangle} color="text-orange-400" subtitle={`${stats.outOfStockProducts} out of stock`} />
-        <KpiCard title="Avg Order" value={`$${sf(stats.averageOrderValue)}`} icon={Activity} />
+        <KpiCard title={t("admin.total_orders")} value={stats.totalOrders} icon={ShoppingCart} trend={0} subtitle="all time" />
+        <KpiCard title={t("admin.pending")} value={stats.pendingOrders} icon={Clock} color="text-yellow-400" />
+        <KpiCard title={t("admin.low_stock")} value={stats.lowStockProducts} icon={AlertTriangle} color="text-orange-400" subtitle={`${stats.outOfStockProducts} ${t("admin.stock_out").toLowerCase()}`} />
+        <KpiCard title={t("admin.avg_order")} value={`$${sf(stats.averageOrderValue)}`} icon={Activity} />
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4">
-        <KpiCard title="Products" value={stats.totalProducts} icon={Package} />
-        <KpiCard title="Users" value={stats.totalUsers} icon={Users} />
-        <KpiCard title="Reviews" value={stats.totalReviews} icon={Star} />
-        <KpiCard title="Subscribers" value={stats.totalSubscribers} icon={Mail} />
+        <KpiCard title={t("admin.products")} value={stats.totalProducts} icon={Package} />
+        <KpiCard title={t("admin.users")} value={stats.totalUsers} icon={Users} />
+        <KpiCard title={t("admin.reviews")} value={stats.totalReviews} icon={Star} />
+        <KpiCard title={t("admin.subscribers")} value={stats.totalSubscribers} icon={Mail} />
       </div>
       <div className="glass rounded-2xl p-5 border border-white/5 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-rt-accent/50 to-transparent" />
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-white font-display font-semibold">Revenue vs Expenses</h3>
+          <h3 className="text-white font-display font-semibold">{t("admin.revenue_vs_expenses")}</h3>
           <div className="flex gap-1">
             {[7, 30].map((d) => (
               <button key={d} onClick={() => setPeriod(d)} className={`px-3 py-1 text-xs rounded-lg transition-all ${period === d ? "bg-rt-accent text-white shadow-lg shadow-rt-accent/25" : "bg-white/5 text-white/50 hover:text-white"}`}>{d}d</button>
@@ -365,25 +372,25 @@ function DashboardTab() {
         <div className="flex gap-4 flex-wrap">
           <div className="flex-1 min-w-[250px]">
             <BarChart data={history.map((h) => ({ label: h.date?.slice(5), value: h.revenue }))} color={settings.chart_revenue_color || "#22c55e"} />
-            <p className="text-xs text-emerald-400/50 text-center mt-1">Revenue</p>
+            <p className="text-xs text-emerald-400/50 text-center mt-1">{t("admin.revenue_chart")}</p>
           </div>
           <div className="flex-1 min-w-[250px]">
             <BarChart data={history.map((h) => ({ label: h.date?.slice(5), value: h.expenses }))} color={settings.chart_expenses_color || "#f97316"} />
-            <p className="text-xs text-orange-400/50 text-center mt-1">Expenses</p>
+            <p className="text-xs text-orange-400/50 text-center mt-1">{t("admin.expenses_chart")}</p>
           </div>
           <div className="flex-1 min-w-[250px]">
             <BarChart data={history.map((h) => ({ label: h.date?.slice(5), value: Math.max(0, h.profit) }))} color={settings.chart_profit_color || "#a855f7"} />
-            <p className="text-xs text-violet-400/50 text-center mt-1">Profit</p>
+            <p className="text-xs text-violet-400/50 text-center mt-1">{t("admin.profit_chart")}</p>
           </div>
         </div>
       </div>
       <div className="glass rounded-2xl p-5 border border-white/5 relative">
         <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-rt-accent/50 to-transparent" />
-        <h3 className="text-white font-display font-semibold mb-3">Recent Sales ({period}d)</h3>
+        <h3 className="text-white font-display font-semibold mb-3">{t("admin.recent_sales", { days: period })}</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead><tr className="text-white/30 text-xs uppercase border-b border-white/5">
-              <th className="text-left py-2 pr-4">Date</th><th className="text-right pr-4">Orders</th><th className="text-right pr-4">Revenue</th><th className="text-right pr-4">Costs</th><th className="text-right">Profit</th>
+              <th className="text-left py-2 pr-4">{t("admin.date")}</th><th className="text-right pr-4">{t("admin.orders_col")}</th><th className="text-right pr-4">{t("admin.revenue_col")}</th><th className="text-right pr-4">{t("admin.costs")}</th><th className="text-right">{t("admin.profit_col")}</th>
             </tr></thead>
             <tbody>
               {[...history].reverse().map((h) => (
@@ -405,6 +412,7 @@ function DashboardTab() {
 
 /* ─────── PRODUCTS TAB ─────── */
 function ProductsTab({ addToast }) {
+  const { t } = useTranslation();
   const [products, setProducts] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -418,11 +426,11 @@ function ProductsTab({ addToast }) {
 
   useEffect(() => { load(); }, [load]);
 
-  const handleDelete = async (id) => { if (!confirm("Delete this product?")) return; try { await adminDeleteProduct(id); addToast("Product deleted", "success"); load(); } catch (e) { addToast(e.message, "error"); } };
+  const handleDelete = async (id) => { if (!confirm(t("admin.delete_confirm", { item: t("admin.product_col").toLowerCase() }))) return; try { await adminDeleteProduct(id); addToast(t("admin.product_deleted"), "success"); load(); } catch (e) { addToast(e.message, "error"); } };
   const handleSave = async (data) => {
     try {
-      if (editing?.id) { await adminUpdateProduct(editing.id, data); addToast("Product updated", "success"); }
-      else { await adminCreateProduct(data); addToast("Product created", "success"); }
+      if (editing?.id) { await adminUpdateProduct(editing.id, data); addToast(t("admin.product_updated"), "success"); }
+      else { await adminCreateProduct(data); addToast(t("admin.product_created"), "success"); }
       setEditing(null); load();
     } catch (e) { addToast(e.message, "error"); }
   };
@@ -432,15 +440,15 @@ function ProductsTab({ addToast }) {
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="relative flex-1 max-w-xs">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search products..." className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50 transition-all" />
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("admin.search_products")} className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50 transition-all" />
         </div>
-        <button onClick={() => setEditing({})} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20"><Plus size={16} /> Add Product</button>
+        <button onClick={() => setEditing({})} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20"><Plus size={16} /> {t("admin.add_product")}</button>
       </div>
       <div className="glass rounded-2xl border border-white/5 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead><tr className="text-white/30 text-xs uppercase border-b border-white/5">
-              <th className="text-left py-3 px-4">Product</th><th className="text-right px-4">Price</th><th className="text-right px-4">Stock</th><th className="text-right px-4">Rating</th><th className="text-right px-4 w-20">Actions</th>
+              <th className="text-left py-3 px-4">{t("admin.product_col")}</th><th className="text-right px-4">{t("admin.price")}</th><th className="text-right px-4">{t("admin.stock")}</th><th className="text-right px-4">{t("admin.rating_col")}</th><th className="text-right px-4 w-20">{t("admin.actions")}</th>
             </tr></thead>
             <tbody>
               {products.filter((p) => !search || p.name.toLowerCase().includes(search.toLowerCase())).map((p) => (
@@ -467,10 +475,10 @@ function ProductsTab({ addToast }) {
         </div>
       </div>
       <div className="flex items-center justify-between text-sm text-white/40">
-        <span>{total} products total</span>
+        <span>{t("admin.products_total", { count: total })}</span>
         <div className="flex gap-2">
-          <button disabled={page <= 1} onClick={() => setPage(page - 1)} className="px-3 py-1 rounded-lg bg-white/5 border border-white/10 disabled:opacity-30 hover:border-white/20 transition-all">Prev</button>
-          <button disabled={page * 15 >= total} onClick={() => setPage(page + 1)} className="px-3 py-1 rounded-lg bg-white/5 border border-white/10 disabled:opacity-30 hover:border-white/20 transition-all">Next</button>
+          <button disabled={page <= 1} onClick={() => setPage(page - 1)} className="px-3 py-1 rounded-lg bg-white/5 border border-white/10 disabled:opacity-30 hover:border-white/20 transition-all">{t("admin.prev")}</button>
+          <button disabled={page * 15 >= total} onClick={() => setPage(page + 1)} className="px-3 py-1 rounded-lg bg-white/5 border border-white/10 disabled:opacity-30 hover:border-white/20 transition-all">{t("admin.next")}</button>
         </div>
       </div>
       <AnimatePresence>{editing !== null && <ProductForm product={editing} categories={categories} onSave={handleSave} onClose={() => setEditing(null)} />}</AnimatePresence>
@@ -479,6 +487,7 @@ function ProductsTab({ addToast }) {
 }
 
 function ProductForm({ product, categories, onSave, onClose }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState(() => ({
     name: product.name || "", category: product.category || "", price: product.price ?? "", stock: product.stock ?? "",
     description: product.description || "", badge: product.badge || "", originalPrice: product.originalPrice ?? "",
@@ -490,22 +499,22 @@ function ProductForm({ product, categories, onSave, onClose }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={onClose}>
       <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="w-full max-w-2xl max-h-[85vh] overflow-y-auto glass rounded-2xl border border-white/10 p-6" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between mb-6"><h2 className="text-xl font-display font-bold text-white">{product?.id ? "Edit Product" : "New Product"}</h2><button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40"><X size={18} /></button></div>
+        <div className="flex items-center justify-between mb-6"><h2 className="text-xl font-display font-bold text-white">{product?.id ? t("admin.edit_product") : t("admin.new_product")}</h2><button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40"><X size={18} /></button></div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <div className="col-span-2"><label className="text-xs text-white/40 block mb-1">Name</label><input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
-            <div><label className="text-xs text-white/40 block mb-1">Category</label><select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50">
-              <option value="">Select...</option>{categories.map((c) => <option key={c.id} value={c.slug}>{c.name}</option>)}
+            <div className="col-span-2"><label className="text-xs text-white/40 block mb-1">{t("admin.name")}</label><input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
+            <div><label className="text-xs text-white/40 block mb-1">{t("admin.category")}</label><select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50">
+              <option value="">{t("admin.select")}</option>{categories.map((c) => <option key={c.id} value={c.slug}>{c.name}</option>)}
             </select></div>
-            <div><label className="text-xs text-white/40 block mb-1">Badge</label><input value={form.badge} onChange={(e) => setForm({ ...form, badge: e.target.value })} placeholder="Featured, New, Sale..." className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
-            <div><label className="text-xs text-white/40 block mb-1">Price ($)</label><input type="number" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
-            <div><label className="text-xs text-white/40 block mb-1">Original Price</label><input type="number" step="0.01" value={form.originalPrice || ""} onChange={(e) => setForm({ ...form, originalPrice: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
-            <div><label className="text-xs text-white/40 block mb-1">Stock</label><input type="number" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
+            <div><label className="text-xs text-white/40 block mb-1">{t("admin.badge")}</label><input value={form.badge} onChange={(e) => setForm({ ...form, badge: e.target.value })} placeholder="Featured, New, Sale..." className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
+            <div><label className="text-xs text-white/40 block mb-1">{t("admin.price")} ($)</label><input type="number" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
+            <div><label className="text-xs text-white/40 block mb-1">{t("admin.original_price")}</label><input type="number" step="0.01" value={form.originalPrice || ""} onChange={(e) => setForm({ ...form, originalPrice: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
+            <div><label className="text-xs text-white/40 block mb-1">{t("admin.stock")}</label><input type="number" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
           </div>
-          <div><label className="text-xs text-white/40 block mb-1">Description</label><textarea rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50 resize-none" /></div>
-          <div><label className="text-xs text-white/40 block mb-1">Features (one per line)</label><textarea rows={3} value={form.features} onChange={(e) => setForm({ ...form, features: e.target.value })} placeholder="Feature 1&#10;Feature 2" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50 resize-none font-mono" /></div>
-          <div><label className="text-xs text-white/40 block mb-1">Images (one URL per line)</label><textarea rows={2} value={form.images} onChange={(e) => setForm({ ...form, images: e.target.value })} placeholder="https://..." className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50 resize-none font-mono" /></div>
-          <div className="flex justify-end gap-3 pt-2"><button type="button" onClick={onClose} className="px-4 py-2 rounded-xl border border-white/10 text-white/50 hover:text-white transition-all text-sm">Cancel</button><button type="submit" className="px-6 py-2 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20">{product?.id ? "Update" : "Create"} Product</button></div>
+          <div><label className="text-xs text-white/40 block mb-1">{t("admin.description")}</label><textarea rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50 resize-none" /></div>
+          <div><label className="text-xs text-white/40 block mb-1">{t("admin.features")}</label><textarea rows={3} value={form.features} onChange={(e) => setForm({ ...form, features: e.target.value })} placeholder="Feature 1&#10;Feature 2" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50 resize-none font-mono" /></div>
+          <div><label className="text-xs text-white/40 block mb-1">{t("admin.images")}</label><textarea rows={2} value={form.images} onChange={(e) => setForm({ ...form, images: e.target.value })} placeholder="https://..." className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50 resize-none font-mono" /></div>
+          <div className="flex justify-end gap-3 pt-2"><button type="button" onClick={onClose} className="px-4 py-2 rounded-xl border border-white/10 text-white/50 hover:text-white transition-all text-sm">{t("common.cancel")}</button><button type="submit" className="px-6 py-2 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20">{product?.id ? t("admin.update") : t("admin.create")} {t("admin.product_col")}</button></div>
         </form>
       </motion.div>
     </motion.div>
@@ -514,6 +523,7 @@ function ProductForm({ product, categories, onSave, onClose }) {
 
 /* ─────── ORDERS TAB ─────── */
 function OrdersTab({ addToast }) {
+  const { t } = useTranslation();
   const [orders, setOrders] = useState([]);
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("");
@@ -523,7 +533,7 @@ function OrdersTab({ addToast }) {
 
   const updateStatus = async (id, status) => {
     const tracking = status === "shipped" ? prompt("Tracking number:") : undefined;
-    try { await adminUpdateOrderStatus(id, { status, ...(tracking ? { trackingNumber: tracking } : {}) }); addToast("Order updated", "success"); load(); } catch (e) { addToast(e.message, "error"); }
+    try { await adminUpdateOrderStatus(id, { status, ...(tracking ? { trackingNumber: tracking } : {}) }); addToast(t("admin.order_updated"), "success"); load(); } catch (e) { addToast(e.message, "error"); }
   };
 
   const filtered = orders.filter((o) => !statusFilter || o.status === statusFilter);
@@ -532,7 +542,7 @@ function OrdersTab({ addToast }) {
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
       <div className="flex gap-2 flex-wrap">
-        <button onClick={() => setStatusFilter("")} className={`px-3 py-1.5 rounded-lg text-xs transition-all ${!statusFilter ? "bg-rt-accent/20 text-rt-accent border border-rt-accent/30 shadow-lg shadow-rt-accent/10" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}>All</button>
+        <button onClick={() => setStatusFilter("")} className={`px-3 py-1.5 rounded-lg text-xs transition-all ${!statusFilter ? "bg-rt-accent/20 text-rt-accent border border-rt-accent/30 shadow-lg shadow-rt-accent/10" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}>{t("admin.all")}</button>
         {statuses.map((s) => (
           <button key={s} onClick={() => setStatusFilter(s)} className={`px-3 py-1.5 rounded-lg text-xs capitalize transition-all ${statusFilter === s ? "bg-rt-accent/20 text-rt-accent border border-rt-accent/30 shadow-lg shadow-rt-accent/10" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}>{s}</button>
         ))}
@@ -541,7 +551,7 @@ function OrdersTab({ addToast }) {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead><tr className="text-white/30 text-xs uppercase border-b border-white/5">
-              <th className="text-left py-3 px-4">Order</th><th className="text-left px-4">Customer</th><th className="text-right px-4">Items</th><th className="text-right px-4">Total</th><th className="text-center px-4">Status</th><th className="text-right px-4">Date</th><th className="text-right px-4 w-24">Action</th>
+              <th className="text-left py-3 px-4">{t("admin.order_col")}</th><th className="text-left px-4">{t("admin.customer")}</th><th className="text-right px-4">{t("admin.items_col")}</th><th className="text-right px-4">{t("admin.total_col")}</th><th className="text-center px-4">{t("admin.status")}</th><th className="text-right px-4">{t("admin.date")}</th><th className="text-right px-4 w-24">{t("admin.action")}</th>
             </tr></thead>
             <tbody>
               {filtered.map((o) => (
@@ -554,7 +564,7 @@ function OrdersTab({ addToast }) {
                   <td className="px-4 text-right text-white/40 text-xs">{o.createdAt?.slice(0, 10)}</td>
                   <td className="px-4 text-right">
                     <select onChange={(e) => { if (e.target.value) updateStatus(o.id, e.target.value); e.target.value = ""; }} value="" className="bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:border-rt-accent/50">
-                      <option value="" disabled>Update</option>
+                      <option value="" disabled>{t("admin.update")}</option>
                       {statuses.filter((s) => s !== o.status).map((s) => <option key={s} value={s}>{s}</option>)}
                     </select>
                   </td>
@@ -565,10 +575,10 @@ function OrdersTab({ addToast }) {
         </div>
       </div>
       <div className="flex justify-between text-sm text-white/40">
-        <span>{filtered.length} orders</span>
+        <span>{t("admin.orders_count", { count: filtered.length })}</span>
         <div className="flex gap-2">
-          <button disabled={page <= 1} onClick={() => setPage(page - 1)} className="px-3 py-1 rounded-lg bg-white/5 border border-white/10 disabled:opacity-30 hover:border-white/20">Prev</button>
-          <button disabled={filtered.length < 20} onClick={() => setPage(page + 1)} className="px-3 py-1 rounded-lg bg-white/5 border border-white/10 disabled:opacity-30 hover:border-white/20">Next</button>
+          <button disabled={page <= 1} onClick={() => setPage(page - 1)} className="px-3 py-1 rounded-lg bg-white/5 border border-white/10 disabled:opacity-30 hover:border-white/20">{t("admin.prev")}</button>
+          <button disabled={filtered.length < 20} onClick={() => setPage(page + 1)} className="px-3 py-1 rounded-lg bg-white/5 border border-white/10 disabled:opacity-30 hover:border-white/20">{t("admin.next")}</button>
         </div>
       </div>
     </motion.div>
@@ -577,19 +587,20 @@ function OrdersTab({ addToast }) {
 
 /* ─────── USERS TAB ─────── */
 function UsersTab({ addToast }) {
+  const { t } = useTranslation();
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
   const load = useCallback(async () => { try { const res = await adminGetUsers({ page }); setUsers(res.items); } catch {} }, [page]);
   useEffect(() => { load(); }, [load]);
-  const toggleBan = async (u) => { try { await adminUpdateUser(u.id, { banned: !u.banned }); addToast(u.banned ? "User unbanned" : "User banned", "success"); load(); } catch (e) { addToast(e.message, "error"); } };
-  const toggleRole = async (u) => { try { await adminUpdateUser(u.id, { role: u.role === "admin" ? "user" : "admin" }); addToast("Role updated", "success"); load(); } catch (e) { addToast(e.message, "error"); } };
+  const toggleBan = async (u) => { try { await adminUpdateUser(u.id, { banned: !u.banned }); addToast(u.banned ? t("admin.user_unbanned") : t("admin.user_banned"), "success"); load(); } catch (e) { addToast(e.message, "error"); } };
+  const toggleRole = async (u) => { try { await adminUpdateUser(u.id, { role: u.role === "admin" ? "user" : "admin" }); addToast(t("admin.role_updated"), "success"); load(); } catch (e) { addToast(e.message, "error"); } };
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
       <div className="glass rounded-2xl border border-white/5 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead><tr className="text-white/30 text-xs uppercase border-b border-white/5">
-              <th className="text-left py-3 px-4">User</th><th className="text-left px-4">Email</th><th className="text-center px-4">Role</th><th className="text-center px-4">Status</th><th className="text-right px-4">Joined</th><th className="text-right px-4 w-24">Actions</th>
+              <th className="text-left py-3 px-4">{t("admin.customer")}</th><th className="text-left px-4">Email</th><th className="text-center px-4">{t("admin.role")}</th><th className="text-center px-4">{t("admin.status")}</th><th className="text-right px-4">{t("admin.joined")}</th><th className="text-right px-4 w-24">{t("admin.actions")}</th>
             </tr></thead>
             <tbody>
               {users.map((u) => (
@@ -601,11 +612,11 @@ function UsersTab({ addToast }) {
                       <Crown size={10} />{u.role}
                     </span>
                   </td>
-                  <td className="px-4 text-center">{u.banned ? <span className="text-[10px] px-2 py-1 rounded-full bg-red-500/15 text-red-300 border border-red-500/25">Banned</span> : <span className="text-[10px] px-2 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/25">Active</span>}</td>
+                    <td className="px-4 text-center">{u.banned ? <span className="text-[10px] px-2 py-1 rounded-full bg-red-500/15 text-red-300 border border-red-500/25">{t("admin.user_banned_label")}</span> : <span className="text-[10px] px-2 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/25">{t("admin.user_active")}</span>}</td>
                   <td className="px-4 text-right text-white/40 text-xs">{u.createdAt?.slice(0, 10)}</td>
                   <td className="px-4 text-right"><div className="flex items-center justify-end gap-1">
-                    <button onClick={() => toggleRole(u)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-rt-accent transition-all" title="Toggle admin"><Crown size={14} /></button>
-                    <button onClick={() => toggleBan(u)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-red-400 transition-all" title={u.banned ? "Unban" : "Ban"}><Ban size={14} /></button>
+                    <button onClick={() => toggleRole(u)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-rt-accent transition-all" title={t("admin.toggle_admin")}><Crown size={14} /></button>
+                    <button onClick={() => toggleBan(u)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-red-400 transition-all" title={u.banned ? t("admin.unban") : t("admin.ban")}><Ban size={14} /></button>
                   </div></td>
                 </tr>
               ))}
@@ -614,10 +625,10 @@ function UsersTab({ addToast }) {
         </div>
       </div>
       <div className="flex justify-between text-sm text-white/40">
-        <span>{users.length} users shown</span>
+        <span>{t("admin.users_shown", { count: users.length })}</span>
         <div className="flex gap-2">
-          <button disabled={page <= 1} onClick={() => setPage(page - 1)} className="px-3 py-1 rounded-lg bg-white/5 border border-white/10 disabled:opacity-30 hover:border-white/20">Prev</button>
-          <button disabled={users.length < 50} onClick={() => setPage(page + 1)} className="px-3 py-1 rounded-lg bg-white/5 border border-white/10 disabled:opacity-30 hover:border-white/20">Next</button>
+          <button disabled={page <= 1} onClick={() => setPage(page - 1)} className="px-3 py-1 rounded-lg bg-white/5 border border-white/10 disabled:opacity-30 hover:border-white/20">{t("admin.prev")}</button>
+          <button disabled={users.length < 50} onClick={() => setPage(page + 1)} className="px-3 py-1 rounded-lg bg-white/5 border border-white/10 disabled:opacity-30 hover:border-white/20">{t("admin.next")}</button>
         </div>
       </div>
     </motion.div>
@@ -626,23 +637,24 @@ function UsersTab({ addToast }) {
 
 /* ─────── CATEGORIES TAB ─────── */
 function CategoriesTab({ addToast }) {
+  const { t } = useTranslation();
   const [cats, setCats] = useState([]);
   const [editing, setEditing] = useState(null);
   const [filterFeatured, setFilterFeatured] = useState("all");
   const load = useCallback(async () => { try { setCats(await getCategories()); } catch {} }, []);
   useEffect(() => { load(); }, [load]);
-  const handleSave = async (data) => { try { if (editing?.id) { await adminUpdateCategory(editing.id, data); addToast("Category updated", "success"); } else { await adminCreateCategory(data); addToast("Category created", "success"); } setEditing(null); load(); } catch (e) { addToast(e.message, "error"); } };
-  const handleDelete = async (id) => { if (!confirm("Delete this category?")) return; try { await adminDeleteCategory(id); addToast("Category deleted", "success"); load(); } catch (e) { addToast(e.message, "error"); } };
+  const handleSave = async (data) => { try { if (editing?.id) { await adminUpdateCategory(editing.id, data); addToast(t("admin.category_updated"), "success"); } else { await adminCreateCategory(data); addToast(t("admin.category_created"), "success"); } setEditing(null); load(); } catch (e) { addToast(e.message, "error"); } };
+  const handleDelete = async (id) => { if (!confirm(t("admin.delete_confirm", { item: t("admin.category_name").toLowerCase() }))) return; try { await adminDeleteCategory(id); addToast(t("admin.category_deleted"), "success"); load(); } catch (e) { addToast(e.message, "error"); } };
   const filtered = cats.filter((c) => filterFeatured === "all" || (filterFeatured === "featured" && c.featured) || (filterFeatured === "standard" && !c.featured));
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="flex gap-2 flex-wrap">
-          <button onClick={() => setFilterFeatured("all")} className={`px-3 py-1.5 rounded-lg text-xs transition-all ${filterFeatured === "all" ? "bg-rt-accent/20 text-rt-accent border border-rt-accent/30" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}>All ({cats.length})</button>
-          <button onClick={() => setFilterFeatured("featured")} className={`px-3 py-1.5 rounded-lg text-xs transition-all ${filterFeatured === "featured" ? "bg-rt-accent/20 text-rt-accent border border-rt-accent/30" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}>Featured</button>
+          <button onClick={() => setFilterFeatured("all")} className={`px-3 py-1.5 rounded-lg text-xs transition-all ${filterFeatured === "all" ? "bg-rt-accent/20 text-rt-accent border border-rt-accent/30" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}>{t("admin.all")} ({cats.length})</button>
+          <button onClick={() => setFilterFeatured("featured")} className={`px-3 py-1.5 rounded-lg text-xs transition-all ${filterFeatured === "featured" ? "bg-rt-accent/20 text-rt-accent border border-rt-accent/30" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}>{t("admin.featured")}</button>
           <button onClick={() => setFilterFeatured("standard")} className={`px-3 py-1.5 rounded-lg text-xs transition-all ${filterFeatured === "standard" ? "bg-rt-accent/20 text-rt-accent border border-rt-accent/30" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}>Standard</button>
         </div>
-        <button onClick={() => setEditing({})} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20"><Plus size={16} /> Add Category</button>
+        <button onClick={() => setEditing({})} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20"><Plus size={16} /> {t("admin.add_category_btn")}</button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filtered.map((c) => (
@@ -660,10 +672,10 @@ function CategoriesTab({ addToast }) {
                 <button onClick={() => handleDelete(c.id)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-red-400"><Trash2 size={14} /></button>
               </div>
             </div>
-            <p className="text-sm text-white/50 mb-3 line-clamp-2">{c.description || "No description"}</p>
+            <p className="text-sm text-white/50 mb-3 line-clamp-2">{c.description || t("admin.no_description")}</p>
             <div className="flex items-center justify-between text-xs">
               <span className="text-white/40"><Package size={12} className="inline mr-1" />{c.productCount || 0} products</span>
-              {c.featured ? <span className="px-2 py-0.5 rounded-full bg-rt-accent/10 text-rt-accent flex items-center gap-1 border border-rt-accent/20"><Star size={10} /> Featured</span> : <span className="text-white/20">Standard</span>}
+              {c.featured ? <span className="px-2 py-0.5 rounded-full bg-rt-accent/10 text-rt-accent flex items-center gap-1 border border-rt-accent/20"><Star size={10} /> {t("admin.featured")}</span> : <span className="text-white/20">Standard</span>}
             </div>
             <div className="mt-2 text-[10px] text-white/20">Order: {c.order || 0}</div>
           </motion.div>
@@ -675,20 +687,21 @@ function CategoriesTab({ addToast }) {
 }
 
 function CategoryForm({ editing, onSave, onClose }) {
+  const { t } = useTranslation();
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={onClose}>
       <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-lg glass rounded-2xl border border-white/10 p-6" onClick={(e) => e.stopPropagation()}>
-        <h2 className="text-lg font-display font-bold text-white mb-4">{editing?.id ? "Edit" : "New"} Category</h2>
+        <h2 className="text-lg font-display font-bold text-white mb-4">{editing?.id ? t("admin.edit_category") : t("admin.new_category")} {t("admin.category_name")}</h2>
         <form onSubmit={(e) => { e.preventDefault(); const fd = new FormData(e.target); onSave({ name: fd.get("name"), slug: fd.get("slug"), description: fd.get("description"), icon: fd.get("icon"), order: Number(fd.get("order") || 0), featured: fd.get("featured") === "on" }); }} className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
-            <div className="col-span-2"><label className="text-xs text-white/40 block mb-1">Name</label><input name="name" defaultValue={editing?.name} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
-            <div><label className="text-xs text-white/40 block mb-1">Slug</label><input name="slug" defaultValue={editing?.slug} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
-            <div><label className="text-xs text-white/40 block mb-1">Icon</label><input name="icon" defaultValue={editing?.icon || ""} placeholder="Monitor, Smartphone..." className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
-            <div className="col-span-2"><label className="text-xs text-white/40 block mb-1">Description</label><textarea name="description" rows={2} defaultValue={editing?.description || ""} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50 resize-none" /></div>
-            <div><label className="text-xs text-white/40 block mb-1">Sort Order</label><input name="order" type="number" defaultValue={editing?.order || 0} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
-            <div className="flex items-end pb-2"><label className="flex items-center gap-2 text-sm text-white/50"><input name="featured" type="checkbox" defaultChecked={editing?.featured || false} className="accent-rt-accent" /> Featured</label></div>
+            <div className="col-span-2"><label className="text-xs text-white/40 block mb-1">{t("admin.category_name")}</label><input name="name" defaultValue={editing?.name} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
+            <div><label className="text-xs text-white/40 block mb-1">{t("admin.slug")}</label><input name="slug" defaultValue={editing?.slug} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
+            <div><label className="text-xs text-white/40 block mb-1">{t("admin.icon")}</label><input name="icon" defaultValue={editing?.icon || ""} placeholder="Monitor, Smartphone..." className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
+            <div className="col-span-2"><label className="text-xs text-white/40 block mb-1">{t("admin.description")}</label><textarea name="description" rows={2} defaultValue={editing?.description || ""} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50 resize-none" /></div>
+            <div><label className="text-xs text-white/40 block mb-1">{t("admin.sort_order")}</label><input name="order" type="number" defaultValue={editing?.order || 0} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
+            <div className="flex items-end pb-2"><label className="flex items-center gap-2 text-sm text-white/50"><input name="featured" type="checkbox" defaultChecked={editing?.featured || false} className="accent-rt-accent" /> {t("admin.featured")}</label></div>
           </div>
-          <div className="flex justify-end gap-3 pt-2"><button type="button" onClick={onClose} className="px-4 py-2 rounded-xl border border-white/10 text-white/50 hover:text-white transition-all text-sm">Cancel</button><button type="submit" className="px-6 py-2 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20">Save</button></div>
+          <div className="flex justify-end gap-3 pt-2"><button type="button" onClick={onClose} className="px-4 py-2 rounded-xl border border-white/10 text-white/50 hover:text-white transition-all text-sm">{t("common.cancel")}</button><button type="submit" className="px-6 py-2 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20">{t("common.save")}</button></div>
         </form>
       </motion.div>
     </motion.div>
@@ -697,24 +710,25 @@ function CategoryForm({ editing, onSave, onClose }) {
 
 /* ─────── STOCK TAB ─────── */
 function StockTab({ addToast }) {
+  const { t } = useTranslation();
   const [lowStock, setLowStock] = useState([]);
   const [stockLog, setStockLog] = useState([]);
   const [adjusting, setAdjusting] = useState(null);
   const [view, setView] = useState("low");
   const load = useCallback(async () => { try { const [low, log] = await Promise.all([adminGetLowStock(10), adminGetStockLog()]); setLowStock(low); setStockLog(log); } catch {} }, []);
   useEffect(() => { load(); }, [load]);
-  const handleAdjust = async (data) => { try { await adminAdjustStock(data); addToast("Stock adjusted", "success"); load(); setAdjusting(null); } catch (e) { addToast(e.message, "error"); } };
+  const handleAdjust = async (data) => { try { await adminAdjustStock(data); addToast(t("admin.stock_adjusted"), "success"); load(); setAdjusting(null); } catch (e) { addToast(e.message, "error"); } };
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
       <div className="flex gap-2 flex-wrap">
-        <button onClick={() => setView("low")} className={`px-4 py-2 rounded-xl text-sm transition-all ${view === "low" ? "bg-rt-accent/20 text-rt-accent border border-rt-accent/30 shadow-lg shadow-rt-accent/10" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}><AlertTriangle size={14} className="inline mr-1" />Low Stock ({lowStock.length})</button>
+        <button onClick={() => setView("low")} className={`px-4 py-2 rounded-xl text-sm transition-all ${view === "low" ? "bg-rt-accent/20 text-rt-accent border border-rt-accent/30 shadow-lg shadow-rt-accent/10" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}><AlertTriangle size={14} className="inline mr-1" />{t("admin.low_stock")} ({lowStock.length})</button>
         <button onClick={() => setView("log")} className={`px-4 py-2 rounded-xl text-sm transition-all ${view === "log" ? "bg-rt-accent/20 text-rt-accent border border-rt-accent/30 shadow-lg shadow-rt-accent/10" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}><Clock size={14} className="inline mr-1" />Stock Movement</button>
       </div>
       {view === "low" && (
         <div className="glass rounded-2xl border border-white/5 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead><tr className="text-white/30 text-xs uppercase border-b border-white/5"><th className="text-left py-3 px-4">Product</th><th className="text-right px-4">Status</th><th className="text-right px-4">Stock</th><th className="text-right px-4">Price</th><th className="text-right px-4 w-24">Action</th></tr></thead>
+              <thead><tr className="text-white/30 text-xs uppercase border-b border-white/5"><th className="text-left py-3 px-4">{t("admin.product_col")}</th><th className="text-right px-4">{t("admin.status")}</th><th className="text-right px-4">{t("admin.stock")}</th><th className="text-right px-4">{t("admin.price")}</th><th className="text-right px-4 w-24">{t("admin.action")}</th></tr></thead>
               <tbody>
                 {lowStock.map((p) => (
                   <tr key={p.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
@@ -722,10 +736,10 @@ function StockTab({ addToast }) {
                     <td className="px-4 text-right"><StockBadge stock={p.stock} /></td>
                     <td className={`px-4 text-right font-mono font-bold ${p.stock === 0 ? "text-red-400" : "text-orange-400"}`}>{p.stock}</td>
                     <td className="px-4 text-right text-rt-accent font-mono">${p.price?.toFixed(2)}</td>
-                    <td className="px-4 text-right"><button onClick={() => setAdjusting(p)} className="px-3 py-1.5 rounded-lg bg-rt-accent/10 text-rt-accent text-xs hover:bg-rt-accent/20 transition-all border border-rt-accent/20">Adjust</button></td>
+                    <td className="px-4 text-right"><button onClick={() => setAdjusting(p)} className="px-3 py-1.5 rounded-lg bg-rt-accent/10 text-rt-accent text-xs hover:bg-rt-accent/20 transition-all border border-rt-accent/20">{t("admin.adjust")}</button></td>
                   </tr>
                 ))}
-                {!lowStock.length && <tr><td colSpan={5} className="py-8 text-center text-white/30">All products have sufficient stock</td></tr>}
+                {!lowStock.length && <tr><td colSpan={5} className="py-8 text-center text-white/30">{t("admin.sufficient_stock")}</td></tr>}
               </tbody>
             </table>
           </div>
@@ -735,7 +749,7 @@ function StockTab({ addToast }) {
         <div className="glass rounded-2xl border border-white/5 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead><tr className="text-white/30 text-xs uppercase border-b border-white/5"><th className="text-left py-3 px-4">Date</th><th className="text-left px-4">Product</th><th className="text-center px-4">Type</th><th className="text-right px-4">Qty</th><th className="text-left px-4">Note</th></tr></thead>
+              <thead><tr className="text-white/30 text-xs uppercase border-b border-white/5"><th className="text-left py-3 px-4">{t("admin.date")}</th><th className="text-left px-4">{t("admin.product_col")}</th><th className="text-center px-4">{t("admin.stock_type")}</th><th className="text-right px-4">{t("admin.stock_qty")}</th><th className="text-left px-4">{t("admin.stock_note")}</th></tr></thead>
               <tbody>
                 {stockLog.map((l) => (
                   <tr key={l.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
@@ -762,16 +776,17 @@ function StockTab({ addToast }) {
 }
 
 function AdjustStockForm({ product, onSave, onClose }) {
+  const { t } = useTranslation();
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={onClose}>
       <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-md glass rounded-2xl border border-white/10 p-6" onClick={(e) => e.stopPropagation()}>
-        <h2 className="text-lg font-display font-bold text-white mb-1">Adjust Stock</h2>
+        <h2 className="text-lg font-display font-bold text-white mb-1">{t("admin.adjust_stock")}</h2>
         <p className="text-sm text-white/50 mb-4">{product.name} · Current: <span className="text-rt-accent font-mono">{product.stock}</span></p>
         <form onSubmit={(e) => { e.preventDefault(); const fd = new FormData(e.target); onSave({ productId: product.id, type: fd.get("type"), quantity: Number(fd.get("quantity")), note: fd.get("note") }); }} className="space-y-3">
-          <div><label className="text-xs text-white/40 block mb-1">Type</label><select name="type" required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50"><option value="add">Add Stock</option><option value="remove">Remove Stock</option><option value="set">Set Exact</option></select></div>
-          <div><label className="text-xs text-white/40 block mb-1">Quantity</label><input name="quantity" type="number" required min="0" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
-          <div><label className="text-xs text-white/40 block mb-1">Note</label><input name="note" placeholder="Reason for adjustment" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
-          <div className="flex justify-end gap-3 pt-2"><button type="button" onClick={onClose} className="px-4 py-2 rounded-xl border border-white/10 text-white/50 hover:text-white transition-all text-sm">Cancel</button><button type="submit" className="px-6 py-2 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20">Apply</button></div>
+          <div><label className="text-xs text-white/40 block mb-1">{t("admin.stock_type")}</label><select name="type" required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50"><option value="add">{t("admin.stock_add")}</option><option value="remove">{t("admin.stock_remove")}</option><option value="set">{t("admin.stock_set")}</option></select></div>
+          <div><label className="text-xs text-white/40 block mb-1">{t("admin.stock_qty")}</label><input name="quantity" type="number" required min="0" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
+          <div><label className="text-xs text-white/40 block mb-1">{t("admin.stock_note")}</label><input name="note" placeholder={t("admin.adjust_reason")} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
+          <div className="flex justify-end gap-3 pt-2"><button type="button" onClick={onClose} className="px-4 py-2 rounded-xl border border-white/10 text-white/50 hover:text-white transition-all text-sm">{t("common.cancel")}</button><button type="submit" className="px-6 py-2 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20">{t("admin.adjust")}</button></div>
         </form>
       </motion.div>
     </motion.div>
@@ -780,13 +795,14 @@ function AdjustStockForm({ product, onSave, onClose }) {
 
 /* ─────── EXPENSES TAB ─────── */
 function ExpensesTab({ addToast }) {
+  const { t } = useTranslation();
   const [expenses, setExpenses] = useState([]);
   const [editing, setEditing] = useState(null);
   const [filter, setFilter] = useState("");
   const load = useCallback(async () => { try { setExpenses(await adminGetExpenses()); } catch {} }, []);
   useEffect(() => { load(); }, [load]);
-  const handleSave = async (data) => { try { if (editing?.id) { await adminUpdateExpense(editing.id, data); addToast("Expense updated", "success"); } else { await adminCreateExpense(data); addToast("Expense added", "success"); } setEditing(null); load(); } catch (e) { addToast(e.message, "error"); } };
-  const handleDelete = async (id) => { if (!confirm("Delete this expense?")) return; try { await adminDeleteExpense(id); addToast("Expense deleted", "success"); load(); } catch (e) { addToast(e.message, "error"); } };
+  const handleSave = async (data) => { try { if (editing?.id) { await adminUpdateExpense(editing.id, data); addToast(t("admin.expense_updated"), "success"); } else { await adminCreateExpense(data); addToast(t("admin.expense_added"), "success"); } setEditing(null); load(); } catch (e) { addToast(e.message, "error"); } };
+  const handleDelete = async (id) => { if (!confirm(t("admin.delete_confirm", { item: "expense" }))) return; try { await adminDeleteExpense(id); addToast(t("admin.expense_deleted"), "success"); load(); } catch (e) { addToast(e.message, "error"); } };
   const filtered = expenses.filter((e) => !filter || e.category === filter);
   const total = filtered.reduce((s, e) => s + e.amount, 0);
   const cats = [...new Set(expenses.map((e) => e.category))];
@@ -794,28 +810,28 @@ function ExpensesTab({ addToast }) {
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="flex gap-2 flex-wrap">
-          <button onClick={() => setFilter("")} className={`px-3 py-1.5 rounded-lg text-xs transition-all ${!filter ? "bg-rt-accent/20 text-rt-accent border border-rt-accent/30 shadow-lg shadow-rt-accent/10" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}>All</button>
+          <button onClick={() => setFilter("")} className={`px-3 py-1.5 rounded-lg text-xs transition-all ${!filter ? "bg-rt-accent/20 text-rt-accent border border-rt-accent/30 shadow-lg shadow-rt-accent/10" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}>{t("admin.all")}</button>
           {cats.map((c) => {
             const col = CATEGORY_COLORS[c] || CATEGORY_COLORS.other;
             return (
               <button key={c} onClick={() => setFilter(c)} className={`px-3 py-1.5 rounded-lg text-xs capitalize transition-all ${filter === c ? `${col.bg} ${col.text} ${col.border} border` : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}>
-                {EXPENSE_CATEGORY_LABELS[c] || c}
+                {t("admin." + (EXPENSE_CATEGORY_KEYS[c] || "expense_other"))}
               </button>
             );
           })}
         </div>
-        <button onClick={() => setEditing({})} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20"><Plus size={16} /> Add Expense</button>
+        <button onClick={() => setEditing({})} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20"><Plus size={16} /> {t("admin.add_expense")}</button>
       </div>
       <div className="flex items-center gap-3 text-sm">
-        <span className="text-white/50">Filtered Total:</span>
+        <span className="text-white/50">{t("admin.total_col")}:</span>
         <span className="text-rt-accent font-mono font-bold text-lg">${total.toFixed(2)}</span>
-        {filter && <button onClick={() => setFilter("")} className="text-xs text-white/30 hover:text-white/60"><X size={12} className="inline" /> Clear</button>}
+        {filter && <button onClick={() => setFilter("")} className="text-xs text-white/30 hover:text-white/60"><X size={12} className="inline" /> {t("common.clear")}</button>}
       </div>
       <div className="glass rounded-2xl border border-white/5 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead><tr className="text-white/30 text-xs uppercase border-b border-white/5">
-              <th className="text-left py-3 px-4">Title</th><th className="text-left px-4">Category</th><th className="text-right px-4">Amount</th><th className="text-left px-4">Note</th><th className="text-right px-4">Date</th><th className="text-right px-4 w-20">Actions</th>
+              <th className="text-left py-3 px-4">{t("admin.name")}</th><th className="text-left px-4">{t("admin.category")}</th><th className="text-right px-4">{t("admin.price")}</th><th className="text-left px-4">{t("admin.stock_note")}</th><th className="text-right px-4">{t("admin.date")}</th><th className="text-right px-4 w-20">{t("admin.actions")}</th>
             </tr></thead>
             <tbody>
               {filtered.map((e) => (
@@ -841,20 +857,21 @@ function ExpensesTab({ addToast }) {
 }
 
 function ExpenseForm({ editing, onSave, onClose }) {
+  const { t } = useTranslation();
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={onClose}>
       <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-md glass rounded-2xl border border-white/10 p-6" onClick={(e) => e.stopPropagation()}>
-        <h2 className="text-lg font-display font-bold text-white mb-4">{editing?.id ? "Edit" : "Add"} Expense</h2>
+        <h2 className="text-lg font-display font-bold text-white mb-4">{editing?.id ? t("admin.edit_category") : t("admin.add_expense")}</h2>
         <form onSubmit={(e) => { e.preventDefault(); const fd = new FormData(e.target); onSave({ title: fd.get("title"), category: fd.get("category"), amount: Number(fd.get("amount")), description: fd.get("description"), date: fd.get("date"), recurring: fd.get("recurring") === "on" }); }} className="space-y-3">
-          <input name="title" defaultValue={editing?.title} placeholder="Title" required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
+          <input name="title" defaultValue={editing?.title} placeholder={t("admin.name")} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
           <select name="category" defaultValue={editing?.category || "other"} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50">
-            {Object.entries(EXPENSE_CATEGORY_LABELS).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+            {Object.entries(EXPENSE_CATEGORY_KEYS).map(([v, k]) => <option key={v} value={v}>{t("admin." + k)}</option>)}
           </select>
-          <input name="amount" type="number" step="0.01" defaultValue={editing?.amount} placeholder="Amount" required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
+          <input name="amount" type="number" step="0.01" defaultValue={editing?.amount} placeholder={t("admin.price")} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
           <input name="description" defaultValue={editing?.description} placeholder="Description (optional)" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
           <input name="date" type="date" defaultValue={editing?.date?.slice(0, 10)} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
           <label className="flex items-center gap-2 text-sm text-white/50"><input name="recurring" type="checkbox" defaultChecked={editing?.recurring} className="accent-rt-accent" /> Recurring expense</label>
-          <div className="flex justify-end gap-3 pt-2"><button type="button" onClick={onClose} className="px-4 py-2 rounded-xl border border-white/10 text-white/50 hover:text-white transition-all text-sm">Cancel</button><button type="submit" className="px-6 py-2 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20">Save</button></div>
+          <div className="flex justify-end gap-3 pt-2"><button type="button" onClick={onClose} className="px-4 py-2 rounded-xl border border-white/10 text-white/50 hover:text-white transition-all text-sm">{t("common.cancel")}</button><button type="submit" className="px-6 py-2 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20">{t("common.save")}</button></div>
         </form>
       </motion.div>
     </motion.div>
@@ -863,15 +880,16 @@ function ExpenseForm({ editing, onSave, onClose }) {
 
 /* ─────── SUPPLIERS TAB ─────── */
 function SuppliersTab({ addToast }) {
+  const { t } = useTranslation();
   const [suppliers, setSuppliers] = useState([]);
   const [editing, setEditing] = useState(null);
   const load = useCallback(async () => { try { setSuppliers(await adminGetSuppliers()); } catch {} }, []);
   useEffect(() => { load(); }, [load]);
-  const handleSave = async (data) => { try { if (editing?.id) { await adminUpdateSupplier(editing.id, data); addToast("Supplier updated", "success"); } else { await adminCreateSupplier(data); addToast("Supplier added", "success"); } setEditing(null); load(); } catch (e) { addToast(e.message, "error"); } };
-  const handleDelete = async (id) => { if (!confirm("Delete this supplier?")) return; try { await adminDeleteSupplier(id); addToast("Supplier deleted", "success"); load(); } catch (e) { addToast(e.message, "error"); } };
+  const handleSave = async (data) => { try { if (editing?.id) { await adminUpdateSupplier(editing.id, data); addToast(t("admin.supplier_updated"), "success"); } else { await adminCreateSupplier(data); addToast(t("admin.supplier_added"), "success"); } setEditing(null); load(); } catch (e) { addToast(e.message, "error"); } };
+  const handleDelete = async (id) => { if (!confirm(t("admin.delete_confirm", { item: t("admin.tab_suppliers").toLowerCase() }))) return; try { await adminDeleteSupplier(id); addToast(t("admin.supplier_deleted"), "success"); load(); } catch (e) { addToast(e.message, "error"); } };
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-      <div className="flex justify-end"><button onClick={() => setEditing({})} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20"><Plus size={16} /> Add Supplier</button></div>
+        <div className="flex justify-end"><button onClick={() => setEditing({})} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20"><Plus size={16} /> {t("admin.add_supplier")}</button></div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {suppliers.map((s) => (
           <motion.div key={s.id} whileHover={{ y: -2, scale: 1.01 }} className="glass rounded-2xl p-5 border border-white/5 hover:border-white/15 transition-all group relative overflow-hidden">
@@ -892,7 +910,7 @@ function SuppliersTab({ addToast }) {
           </motion.div>
         ))}
       </div>
-      <AnimatePresence>{editing !== null && <SimpleForm title={editing?.id ? "Edit Supplier" : "Add Supplier"} fields={["name", "contact", "email", "phone", "address", "notes"]} defaults={editing} onSave={handleSave} onClose={() => setEditing(null)} />}</AnimatePresence>
+      <AnimatePresence>{editing !== null && <SimpleForm title={editing?.id ? t("admin.edit_category") + " " + t("admin.tab_suppliers").toLowerCase() : t("admin.add_supplier")} fields={["name", "contact", "email", "phone", "address", "notes"]} defaults={editing} onSave={handleSave} onClose={() => setEditing(null)} />}</AnimatePresence>
     </motion.div>
   );
 }
@@ -905,7 +923,7 @@ function SimpleForm({ title, fields, defaults, onSave, onClose }) {
         <h2 className="text-lg font-display font-bold text-white mb-4">{title}</h2>
         <form onSubmit={(e) => { e.preventDefault(); const fd = new FormData(e.target); const data = {}; fields.forEach((f) => data[f] = fd.get(f)); onSave(data); }} className="space-y-3">
           {fields.map((f) => <input key={f} name={f} defaultValue={defaults?.[f] || ""} placeholder={f.charAt(0).toUpperCase() + f.slice(1)} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50 capitalize" />)}
-          <div className="flex justify-end gap-3 pt-2"><button type="button" onClick={onClose} className="px-4 py-2 rounded-xl border border-white/10 text-white/50 hover:text-white transition-all text-sm">Cancel</button><button type="submit" className="px-6 py-2 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20">Save</button></div>
+          <div className="flex justify-end gap-3 pt-2"><button type="button" onClick={onClose} className="px-4 py-2 rounded-xl border border-white/10 text-white/50 hover:text-white transition-all text-sm">{t("common.cancel")}</button><button type="submit" className="px-6 py-2 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20">{t("common.save")}</button></div>
         </form>
       </motion.div>
     </motion.div>
@@ -914,20 +932,21 @@ function SimpleForm({ title, fields, defaults, onSave, onClose }) {
 
 /* ─────── COUPONS TAB ─────── */
 function CouponsTab({ addToast }) {
+  const { t } = useTranslation();
   const [coupons, setCoupons] = useState([]);
   const [editing, setEditing] = useState(null);
   const load = useCallback(async () => { try { setCoupons(await adminGetCoupons()); } catch {} }, []);
   useEffect(() => { load(); }, [load]);
-  const handleSave = async (data) => { try { if (editing?.id) { await adminUpdateCoupon(editing.id, data); addToast("Coupon updated", "success"); } else { await adminCreateCoupon(data); addToast("Coupon created", "success"); } setEditing(null); load(); } catch (e) { addToast(e.message, "error"); } };
-  const handleDelete = async (id) => { if (!confirm("Delete this coupon?")) return; try { await adminDeleteCoupon(id); addToast("Coupon deleted", "success"); load(); } catch (e) { addToast(e.message, "error"); } };
+  const handleSave = async (data) => { try { if (editing?.id) { await adminUpdateCoupon(editing.id, data); addToast(t("admin.coupon_updated"), "success"); } else { await adminCreateCoupon(data); addToast(t("admin.coupon_created"), "success"); } setEditing(null); load(); } catch (e) { addToast(e.message, "error"); } };
+  const handleDelete = async (id) => { if (!confirm(t("admin.delete_confirm", { item: t("admin.tab_coupons").toLowerCase() }))) return; try { await adminDeleteCoupon(id); addToast(t("admin.coupon_deleted"), "success"); load(); } catch (e) { addToast(e.message, "error"); } };
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-      <div className="flex justify-end"><button onClick={() => setEditing({})} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20"><Plus size={16} /> Add Coupon</button></div>
+      <div className="flex justify-end"><button onClick={() => setEditing({})} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20"><Plus size={16} /> {t("admin.add_coupon")}</button></div>
       <div className="glass rounded-2xl border border-white/5 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead><tr className="text-white/30 text-xs uppercase border-b border-white/5">
-              <th className="text-left py-3 px-4">Code</th><th className="text-right px-4">Discount</th><th className="text-center px-4">Type</th><th className="text-right px-4">Used</th><th className="text-right px-4">Max</th><th className="text-center px-4">Active</th><th className="text-right px-4">Expires</th><th className="text-right px-4 w-20">Actions</th>
+              <th className="text-left py-3 px-4">Code</th><th className="text-right px-4">{t("admin.price")}</th><th className="text-center px-4">{t("admin.stock_type")}</th><th className="text-right px-4">{t("admin.users")}</th><th className="text-right px-4">Max</th><th className="text-center px-4">{t("admin.active")}</th><th className="text-right px-4">{t("admin.date")}</th><th className="text-right px-4 w-20">{t("admin.actions")}</th>
             </tr></thead>
             <tbody>
               {coupons.map((c) => (
@@ -955,21 +974,22 @@ function CouponsTab({ addToast }) {
 }
 
 function CouponForm({ editing, onSave, onClose }) {
+  const { t } = useTranslation();
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={onClose}>
       <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-md glass rounded-2xl border border-white/10 p-6" onClick={(e) => e.stopPropagation()}>
-        <h2 className="text-lg font-display font-bold text-white mb-4">{editing?.id ? "Edit" : "Add"} Coupon</h2>
+        <h2 className="text-lg font-display font-bold text-white mb-4">{editing?.id ? t("admin.edit_product") : t("admin.add_coupon")}</h2>
         <form onSubmit={(e) => { e.preventDefault(); const fd = new FormData(e.target); onSave({ code: fd.get("code"), discount: Number(fd.get("discount")), type: fd.get("type"), minOrder: Number(fd.get("minOrder") || 0), maxUses: Number(fd.get("maxUses") || 100), active: fd.get("active") === "on", expiresAt: fd.get("expiresAt") }); }} className="space-y-3">
           <input name="code" defaultValue={editing?.code} placeholder="Code" required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50 uppercase" />
           <select name="type" defaultValue={editing?.type || "percent"} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50">
-            <option value="percent">Percentage (%)</option><option value="flat">Flat Amount ($)</option><option value="free_shipping">Free Shipping</option>
+            <option value="percent">{t("admin.coupon_type_percent")}</option><option value="flat">{t("admin.coupon_type_flat")}</option><option value="free_shipping">{t("admin.coupon_type_free_shipping")}</option>
           </select>
-          <input name="discount" type="number" step="0.01" defaultValue={editing?.discount} placeholder="Discount value" required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
-          <input name="minOrder" type="number" step="0.01" defaultValue={editing?.minOrder || 0} placeholder="Min order ($)" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
-          <input name="maxUses" type="number" defaultValue={editing?.maxUses || 100} placeholder="Max uses" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
+          <input name="discount" type="number" step="0.01" defaultValue={editing?.discount} placeholder={t("admin.coupon_discount")} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
+          <input name="minOrder" type="number" step="0.01" defaultValue={editing?.minOrder || 0} placeholder={t("admin.coupon_min_order")} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
+          <input name="maxUses" type="number" defaultValue={editing?.maxUses || 100} placeholder={t("admin.coupon_max_uses")} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
           <input name="expiresAt" type="date" defaultValue={editing?.expiresAt?.slice(0, 10)} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
-          <label className="flex items-center gap-2 text-sm text-white/50"><input name="active" type="checkbox" defaultChecked={editing?.active !== false} className="accent-rt-accent" /> Active</label>
-          <div className="flex justify-end gap-3 pt-2"><button type="button" onClick={onClose} className="px-4 py-2 rounded-xl border border-white/10 text-white/50 hover:text-white transition-all text-sm">Cancel</button><button type="submit" className="px-6 py-2 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20">Save</button></div>
+          <label className="flex items-center gap-2 text-sm text-white/50"><input name="active" type="checkbox" defaultChecked={editing?.active !== false} className="accent-rt-accent" /> {t("admin.coupon_active")}</label>
+          <div className="flex justify-end gap-3 pt-2"><button type="button" onClick={onClose} className="px-4 py-2 rounded-xl border border-white/10 text-white/50 hover:text-white transition-all text-sm">{t("common.cancel")}</button><button type="submit" className="px-6 py-2 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20">{t("common.save")}</button></div>
         </form>
       </motion.div>
     </motion.div>
@@ -978,12 +998,13 @@ function CouponForm({ editing, onSave, onClose }) {
 
 /* ─────── MESSAGES TAB ─────── */
 function MessagesTab({ addToast }) {
+  const { t } = useTranslation();
   const [sub, setSub] = useState("contacts");
   const [messages, setMessages] = useState([]);
   const load = useCallback(async () => { try { setMessages(await adminGetContacts()); } catch {} }, []);
   useEffect(() => { load(); }, [load]);
   const markRead = async (id) => { try { await adminMarkContactRead(id); load(); } catch (e) { addToast(e.message, "error"); } };
-  const handleDelete = async (id) => { if (!confirm("Delete this message?")) return; try { await adminDeleteContact(id); addToast("Deleted", "success"); load(); } catch (e) { addToast(e.message, "error"); } };
+  const handleDelete = async (id) => { if (!confirm(t("admin.delete_confirm", { item: "message" }))) return; try { await adminDeleteContact(id); addToast(t("admin.deleted"), "success"); load(); } catch (e) { addToast(e.message, "error"); } };
 
   const [convs, setConvs] = useState([]);
   const [selConv, setSelConv] = useState(null);
@@ -999,7 +1020,7 @@ function MessagesTab({ addToast }) {
   const handleReply = async (e) => {
     e.preventDefault(); if (!reply.trim()) return;
     setReplySending(true);
-    try { await adminReplyChat(selConv.id, reply.trim()); setReply(""); const d = await adminGetChatMessages(selConv.id); setConvMsgs(d.messages || []); addToast("Reply sent", "success"); } catch (err) { addToast(err.message, "error"); }
+        try { await adminReplyChat(selConv.id, reply.trim()); setReply(""); const d = await adminGetChatMessages(selConv.id); setConvMsgs(d.messages || []); addToast(t("admin.reply_sent"), "success"); } catch (err) { addToast(err.message, "error"); }
     setReplySending(false);
   };
   const closeConv = () => { setSelConv(null); setConvMsgs([]); };
@@ -1007,13 +1028,13 @@ function MessagesTab({ addToast }) {
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
       <div className="flex items-center gap-2 mb-4">
-        <button onClick={() => setSub("contacts")} className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${sub === "contacts" ? "bg-rt-accent text-white" : "bg-white/5 text-white/50 hover:text-white"}`}><MessageSquare size={14} className="inline mr-1.5" />Contact Messages</button>
-        <button onClick={() => setSub("chat")} className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${sub === "chat" ? "bg-rt-accent text-white" : "bg-white/5 text-white/50 hover:text-white"}`}><MessageCircle size={14} className="inline mr-1.5" />Live Chat ({convs.filter(c => c.status === "open").length})</button>
+        <button onClick={() => setSub("contacts")} className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${sub === "contacts" ? "bg-rt-accent text-white" : "bg-white/5 text-white/50 hover:text-white"}`}><MessageSquare size={14} className="inline mr-1.5" />{t("admin.contact_messages")}</button>
+        <button onClick={() => setSub("chat")} className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${sub === "chat" ? "bg-rt-accent text-white" : "bg-white/5 text-white/50 hover:text-white"}`}><MessageCircle size={14} className="inline mr-1.5" />{t("admin.live_chat")} ({convs.filter(c => c.status === "open").length})</button>
       </div>
 
       {sub === "contacts" ? (
         <div className="space-y-3">
-          {!messages.length && <div className="text-center py-12 text-white/30">No messages</div>}
+          {!messages.length && <div className="text-center py-12 text-white/30">{t("admin.no_messages")}</div>}
           {messages.map((m) => (
             <motion.div key={m.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className={`glass rounded-2xl p-5 border transition-all relative overflow-hidden ${m.read ? "border-white/5 opacity-70" : "border-rt-accent/20"}`} onClick={() => !m.read && markRead(m.id)}>
               {!m.read && <div className="absolute top-0 left-0 w-1 h-full bg-rt-accent" />}
@@ -1026,14 +1047,14 @@ function MessagesTab({ addToast }) {
               </div>
               {m.subject && <p className="text-sm text-white/70 font-medium mb-1">{m.subject}</p>}
               <p className="text-sm text-white/50">{m.message}</p>
-              {!m.read && <div className="mt-2"><span className="text-[10px] px-2 py-0.5 rounded-full bg-rt-accent/10 text-rt-accent border border-rt-accent/20">New</span></div>}
+              {!m.read && <div className="mt-2"><span className="text-[10px] px-2 py-0.5 rounded-full bg-rt-accent/10 text-rt-accent border border-rt-accent/20">{t("admin.new_badge")}</span></div>}
             </motion.div>
           ))}
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div className="space-y-2">
-            {!convs.length && <div className="text-center py-12 text-white/30">No chat conversations</div>}
+            {!convs.length && <div className="text-center py-12 text-white/30">{t("admin.no_chat_convs")}</div>}
             {convs.map((c) => (
               <motion.div key={c.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
                 className={`glass rounded-2xl p-4 border cursor-pointer transition-all ${selConv?.id === c.id ? "border-rt-accent/40 bg-white/[0.05]" : "border-white/5 hover:border-white/10"}`}
@@ -1051,7 +1072,7 @@ function MessagesTab({ addToast }) {
                 </div>
                 {c.subject && <p className="text-xs text-white/50 mt-1">{c.subject}</p>}
                 {c.lastMessage && <p className="text-xs text-white/30 mt-1 truncate">{c.lastMessage}</p>}
-                {c.unread > 0 && <span className="text-[10px] px-2 py-0.5 rounded-full bg-rt-accent/10 text-rt-accent border border-rt-accent/20 mt-2 inline-block">{c.unread} new</span>}
+                {c.unread > 0 && <span className="text-[10px] px-2 py-0.5 rounded-full bg-rt-accent/10 text-rt-accent border border-rt-accent/20 mt-2 inline-block">{c.unread} {t("admin.new_badge").toLowerCase()}</span>}
               </motion.div>
             ))}
           </div>
@@ -1060,7 +1081,7 @@ function MessagesTab({ addToast }) {
             {!selConv ? (
               <div className="glass rounded-2xl border border-white/5 p-12 text-center">
                 <MessageCircle size={32} className="mx-auto mb-3 text-white/20" />
-                <p className="text-white/30 text-sm">Select a conversation to view messages</p>
+                <p className="text-white/30 text-sm">{t("admin.select_conversation")}</p>
               </div>
             ) : (
               <div className="glass rounded-2xl border border-white/5 flex flex-col h-[400px]">
@@ -1072,11 +1093,11 @@ function MessagesTab({ addToast }) {
                   <button onClick={closeConv} className="p-1 rounded-lg hover:bg-white/10 text-white/40 hover:text-white"><X size={14} /></button>
                 </div>
                 <div className="flex-1 overflow-y-auto p-4 space-y-3">
-                  {!convMsgs.length && <div className="text-center py-8 text-white/30 text-sm">No messages</div>}
+                  {!convMsgs.length && <div className="text-center py-8 text-white/30 text-sm">{t("admin.no_messages")}</div>}
                   {convMsgs.map((m) => (
                     <div key={m.id} className={`flex ${m.sender === "admin" ? "justify-start" : "justify-end"}`}>
                       <div className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm ${m.sender === "admin" ? "bg-white/10 text-white/80 rounded-tl-md" : "bg-rt-accent/20 text-white border border-rt-accent/20 rounded-tr-md"}`}>
-                        <p className="text-[10px] text-white/40 mb-0.5">{m.sender === "admin" ? "Support" : m.name}</p>
+                        <p className="text-[10px] text-white/40 mb-0.5">{m.sender === "admin" ? t("admin.support_chat") : m.name}</p>
                         <p>{m.message}</p>
                         <p className="text-[10px] text-white/30 mt-1 text-right">{m.createdAt?.slice(11, 16)}</p>
                       </div>
@@ -1084,7 +1105,7 @@ function MessagesTab({ addToast }) {
                   ))}
                 </div>
                 <form onSubmit={handleReply} className="flex items-center gap-2 p-3 border-t border-white/10">
-                  <input value={reply} onChange={(e) => setReply(e.target.value)} placeholder="Type a reply..." className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
+                  <input value={reply} onChange={(e) => setReply(e.target.value)} placeholder={t("admin.type_reply")} className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
                   <button type="submit" disabled={replySending || !reply.trim()} className="p-2.5 rounded-xl bg-rt-accent text-white disabled:opacity-30 hover:bg-rt-accent2 transition-all"><Send size={16} /></button>
                 </form>
               </div>
@@ -1098,20 +1119,21 @@ function MessagesTab({ addToast }) {
 
 /* ─────── REVIEWS TAB ─────── */
 function ReviewsTab({ addToast }) {
+  const { t } = useTranslation();
   const [reviews, setReviews] = useState([]);
   const [page, setPage] = useState(1);
   const load = useCallback(async () => { try { const res = await adminGetReviews({ page, limit: 20 }); setReviews(res.items || res); } catch {} }, [page]);
   useEffect(() => { load(); }, [load]);
-  const handleDelete = async (id) => { if (!confirm("Delete this review?")) return; try { await adminDeleteReview(id); addToast("Review deleted", "success"); load(); } catch (e) { addToast(e.message, "error"); } };
+  const handleDelete = async (id) => { if (!confirm(t("admin.delete_confirm", { item: t("admin.reviews").toLowerCase().slice(0, -1) }))) return; try { await adminDeleteReview(id); addToast(t("admin.review_deleted"), "success"); load(); } catch (e) { addToast(e.message, "error"); } };
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
-      {!reviews.length && <div className="text-center py-12 text-white/30">No reviews</div>}
+      {!reviews.length && <div className="text-center py-12 text-white/30">{t("admin.no_reviews")}</div>}
       {reviews.map((r) => (
         <div key={r.id} className="glass rounded-2xl p-5 border border-white/5">
           <div className="flex items-start justify-between mb-2">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-yellow-500/10 to-yellow-500/5 border border-yellow-500/20 flex items-center justify-center"><Star size={14} className="text-yellow-400" /></div>
-              <div><span className="text-white font-medium text-sm">{r.userName || "Anonymous"}</span><span className="text-white/30 text-xs ml-2">{r.createdAt?.slice(0, 10)}</span></div>
+              <div><span className="text-white font-medium text-sm">{r.userName || t("admin.review_anonymous")}</span><span className="text-white/30 text-xs ml-2">{r.createdAt?.slice(0, 10)}</span></div>
             </div>
             <button onClick={() => handleDelete(r.id)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-red-400"><Trash2 size={14} /></button>
           </div>
@@ -1126,6 +1148,7 @@ function ReviewsTab({ addToast }) {
 
 /* ─────── SUBSCRIBERS TAB ─────── */
 function SubscribersTab() {
+  const { t } = useTranslation();
   const [subs, setSubs] = useState([]);
   const load = useCallback(async () => { try { setSubs(await adminGetSubscribers()); } catch {} }, []);
   useEffect(() => { load(); }, [load]);
@@ -1134,7 +1157,7 @@ function SubscribersTab() {
       <div className="glass rounded-2xl border border-white/5 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead><tr className="text-white/30 text-xs uppercase border-b border-white/5"><th className="text-left py-3 px-4">Email</th><th className="text-right px-4">Subscribed</th></tr></thead>
+            <thead><tr className="text-white/30 text-xs uppercase border-b border-white/5"><th className="text-left py-3 px-4">Email</th><th className="text-right px-4">{t("admin.date")}</th></tr></thead>
             <tbody>
               {subs.map((s) => (
                 <tr key={s.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
@@ -1142,18 +1165,19 @@ function SubscribersTab() {
                   <td className="px-4 text-right text-white/40 text-xs">{s.createdAt?.slice(0, 10)}</td>
                 </tr>
               ))}
-              {!subs.length && <tr><td colSpan={2} className="py-8 text-center text-white/30">No subscribers yet</td></tr>}
+              {!subs.length && <tr><td colSpan={2} className="py-8 text-center text-white/30">{t("admin.no_subscribers")}</td></tr>}
             </tbody>
           </table>
         </div>
       </div>
-      <p className="text-sm text-white/30">{subs.length} total subscribers</p>
+      <p className="text-sm text-white/30">{t("admin.total_subscribers", { count: subs.length })}</p>
     </motion.div>
   );
 }
 
 /* ─────── SETTINGS TAB ─────── */
 function SettingsTab({ addToast }) {
+  const { t } = useTranslation();
   const [settings, setSettings] = useState({});
   const [saving, setSaving] = useState(false);
   const load = useCallback(async () => { try { setSettings(await adminGetSettings()); } catch {} }, []);
@@ -1167,17 +1191,17 @@ function SettingsTab({ addToast }) {
     for (const key of Object.keys(settings)) {
       if (settings[key]?.type === "boolean" && !(key in data)) data[key] = "false";
     }
-    try { await adminUpdateSettings(data); addToast("Settings saved", "success"); load(); } catch (err) { addToast(err.message, "error"); }
+    try { await adminUpdateSettings(data); addToast(t("admin.settings_saved"), "success"); load(); } catch (err) { addToast(err.message, "error"); }
     setSaving(false);
   };
   const groups = [
-    { title: "Store Info", keys: ["store_name", "store_email", "store_phone", "store_address", "currency"] },
-    { title: "Pricing", keys: ["tax_rate", "shipping_rate", "free_shipping_min", "order_prefix"] },
-    { title: "Stock", keys: ["low_stock_threshold"] },
-    { title: "Social", keys: ["facebook_url", "twitter_url", "instagram_url"] },
-    { title: "Content", keys: ["about_text"] },
-    { title: "Site", keys: ["announcement", "announcement_active", "maintenance_mode"] },
-    { title: "Charts", keys: ["chart_revenue_color", "chart_expenses_color", "chart_profit_color", "chart_bar_animated"] },
+    { title: t("admin.settings_group_store"), keys: ["store_name", "store_email", "store_phone", "store_address", "currency"] },
+    { title: t("admin.settings_group_pricing"), keys: ["tax_rate", "shipping_rate", "free_shipping_min", "order_prefix"] },
+    { title: t("admin.settings_group_stock"), keys: ["low_stock_threshold"] },
+    { title: t("admin.settings_group_social"), keys: ["facebook_url", "twitter_url", "instagram_url"] },
+    { title: t("admin.settings_group_content"), keys: ["about_text"] },
+    { title: t("admin.settings_group_site"), keys: ["announcement", "announcement_active", "maintenance_mode"] },
+    { title: t("admin.settings_group_charts"), keys: ["chart_revenue_color", "chart_expenses_color", "chart_profit_color", "chart_bar_animated"] },
   ];
   const labels = {
     store_name: "Store Name", store_email: "Store Email", store_phone: "Store Phone",
@@ -1208,7 +1232,7 @@ function SettingsTab({ addToast }) {
                     {isBool ? (
                       <label className="flex items-center gap-3 cursor-pointer">
                         <input name={k} type="checkbox" defaultChecked={val?.value === "true"} className="w-4 h-4 rounded accent-rt-accent" />
-                        <span className="text-sm text-white/50">{val?.value === "true" ? "Enabled" : "Disabled"}</span>
+                        <span className="text-sm text-white/50">{val?.value === "true" ? t("admin.enabled") : t("admin.disabled")}</span>
                       </label>
                     ) : isTextarea ? (
                       <textarea name={k} rows={3} defaultValue={val?.value || ""} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50 resize-none" />
@@ -1221,7 +1245,7 @@ function SettingsTab({ addToast }) {
             </div>
           </div>
         ))}
-        <button type="submit" disabled={saving} className="flex items-center gap-2 px-6 py-3 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20 disabled:opacity-50">{saving ? "Saving..." : <><Save size={16} /> Save All Settings</>}</button>
+        <button type="submit" disabled={saving} className="flex items-center gap-2 px-6 py-3 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20 disabled:opacity-50">{saving ? t("admin.saving") : <><Save size={16} /> {t("admin.save_all")}</>}</button>
       </form>
     </motion.div>
   );
@@ -1229,12 +1253,13 @@ function SettingsTab({ addToast }) {
 
 /* ─────── PAGES TAB ─────── */
 function PagesTab({ addToast }) {
+  const { t } = useTranslation();
   const [pages, setPages] = useState([]);
   const [editing, setEditing] = useState(null);
   const load = useCallback(async () => { try { setPages(await adminGetPages()); } catch {} }, []);
   useEffect(() => { load(); }, [load]);
   const handleSave = async (data) => {
-    try { await adminUpdatePage(editing.id, data); addToast("Page saved", "success"); setEditing(null); load(); } catch (e) { addToast(e.message, "error"); }
+    try { await adminUpdatePage(editing.id, data); addToast(t("admin.page_saved"), "success"); setEditing(null); load(); } catch (e) { addToast(e.message, "error"); }
   };
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
@@ -1246,7 +1271,7 @@ function PagesTab({ addToast }) {
               <div><h3 className="text-white font-medium">{p.title}</h3><p className="text-xs text-white/30 font-mono">/{p.slug}</p></div>
             </div>
             <div className="flex items-center gap-2 text-xs">
-              {p.published ? <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/25">Published</span> : <span className="px-2 py-0.5 rounded-full bg-white/5 text-white/40 border border-white/10">Draft</span>}
+              {p.published ? <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/25">{t("admin.published")}</span> : <span className="px-2 py-0.5 rounded-full bg-white/5 text-white/40 border border-white/10">{t("admin.draft")}</span>}
             </div>
           </motion.div>
         ))}
@@ -1257,18 +1282,19 @@ function PagesTab({ addToast }) {
 }
 
 function PageForm({ page, onSave, onClose }) {
+  const { t } = useTranslation();
   const [content, setContent] = useState(page.content || "");
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={onClose}>
       <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-3xl max-h-[85vh] overflow-y-auto glass rounded-2xl border border-white/10 p-6" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between mb-6"><h2 className="text-xl font-display font-bold text-white">Edit: {page.title}</h2><button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40"><X size={18} /></button></div>
+        <div className="flex items-center justify-between mb-6"><h2 className="text-xl font-display font-bold text-white">{t("admin.edit_page", { title: page.title })}</h2><button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40"><X size={18} /></button></div>
         <form onSubmit={(e) => { e.preventDefault(); onSave({ title: page.title, slug: page.slug, content, published: new FormData(e.target).get("published") === "on" }); }} className="space-y-4">
-          <textarea value={content} onChange={(e) => setContent(e.target.value)} rows={16} className="w-full bg-rt-darker/50 border border-white/10 rounded-xl px-4 py-3 text-white text-sm font-mono focus:outline-none focus:border-rt-accent/50 resize-none" placeholder="HTML content..." />
+          <textarea value={content} onChange={(e) => setContent(e.target.value)} rows={16} className="w-full bg-rt-darker/50 border border-white/10 rounded-xl px-4 py-3 text-white text-sm font-mono focus:outline-none focus:border-rt-accent/50 resize-none" placeholder={t("admin.html_placeholder")} />
           <div className="flex items-center justify-between">
-            <label className="flex items-center gap-2 text-sm text-white/50"><input name="published" type="checkbox" defaultChecked={page.published} className="accent-rt-accent" /> Published</label>
+            <label className="flex items-center gap-2 text-sm text-white/50"><input name="published" type="checkbox" defaultChecked={page.published} className="accent-rt-accent" /> {t("admin.published")}</label>
             <div className="flex gap-3">
-              <button type="button" onClick={onClose} className="px-4 py-2 rounded-xl border border-white/10 text-white/50 hover:text-white transition-all text-sm">Cancel</button>
-              <button type="submit" className="px-6 py-2 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20"><Save size={14} className="inline mr-1" /> Save Page</button>
+              <button type="button" onClick={onClose} className="px-4 py-2 rounded-xl border border-white/10 text-white/50 hover:text-white transition-all text-sm">{t("common.cancel")}</button>
+              <button type="submit" className="px-6 py-2 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20"><Save size={14} className="inline mr-1" /> {t("admin.save_page")}</button>
             </div>
           </div>
         </form>

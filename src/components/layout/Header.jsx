@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import {
   ShoppingCart, Menu, X, User, Package, Heart, LogOut,
   Sun, Moon, Laptop, Smartphone, Gamepad2, Tablet, Headphones,
-  Mouse, Gem, Gift, Watch, ChevronRight, Sparkles
+  Mouse, Gem, Gift, Watch, ChevronRight, Sparkles, Globe
 } from "lucide-react";
 import { useCategories } from "../../hooks/useCategories";
 import { useCart } from "../../context/CartContext";
@@ -25,10 +26,17 @@ const CATEGORY_EMOJIS = {
 };
 
 export default function Header() {
+  const { t, i18n } = useTranslation();
   const { categories } = useCategories();
   const { totalItems } = useCart();
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const LANGUAGES = { en: "EN", fr: "FR", ar: "AR" };
+  const cycleLang = () => {
+    const order = ["en", "fr", "ar"];
+    const next = order[(order.indexOf(i18n.language) + 1) % order.length];
+    i18n.changeLanguage(next);
+  };
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [userMenu, setUserMenu] = useState(false);
@@ -60,7 +68,7 @@ export default function Header() {
 
   return (
     <header
-      className="dark-section fixed top-0 left-0 right-0 z-50 bg-black backdrop-blur-2xl border-b border-white/10 shadow-2xl shadow-black/30 transition-all duration-700"
+      className="theme-header fixed top-0 left-0 right-0 z-50 shadow-2xl shadow-black/30 transition-all duration-700"
     >
       {scrolled && (
         <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-rt-accent/15 via-cyan-500/5 to-transparent" />
@@ -77,10 +85,10 @@ export default function Header() {
             </div>
             <div>
               <span className="text-xs font-display font-bold tracking-[0.25em] text-white/70 group-hover:text-white transition-colors">
-                ELECTRONICS
+                {t("header.brand")}
               </span>
               <p className="text-[7px] text-white/15 tracking-[0.2em] uppercase font-mono -mt-0.5">
-                Future of Tech
+                {t("header.tagline")}
               </p>
             </div>
           </Link>
@@ -124,11 +132,11 @@ export default function Header() {
                         <p className="text-[10px] text-white/25 font-mono mb-2">{cat.description}</p>
                         <div className="flex items-center gap-3 text-[10px]">
                           <span className="inline-flex items-center gap-1 text-rt-accent/70 font-mono">
-                            <Sparkles size={9} /> {cat.productCount} products
+                            <Sparkles size={9} /> {t("header.products_count", { count: cat.productCount })}
                           </span>
                           <span className="text-white/20">·</span>
                           <span className="flex items-center gap-0.5 text-white/30 hover:text-rt-accent transition-colors">
-                            Browse <ChevronRight size={9} />
+                            {t("header.browse")} <ChevronRight size={9} />
                           </span>
                         </div>
                       </div>
@@ -146,7 +154,11 @@ export default function Header() {
               <SearchBar />
             </div>
 
-            <button onClick={toggleTheme} className="theme-toggle" title={theme === "dark" ? "Light mode" : "Dark mode"}>
+            <button onClick={cycleLang} className="theme-toggle" title={LANGUAGES[i18n.language]}>
+              <Globe size={13} />
+              <span className="text-[9px] font-mono ml-0.5">{LANGUAGES[i18n.language]}</span>
+            </button>
+            <button onClick={toggleTheme} className="theme-toggle" title={theme === "dark" ? t("header.light_mode") : t("header.dark_mode")}>
               {theme === "dark" ? <Sun size={13} /> : <Moon size={13} />}
             </button>
 
@@ -154,9 +166,9 @@ export default function Header() {
               <div ref={userRef} className="relative">
                 <button
                   onClick={() => setUserMenu(!userMenu)}
-                  className="flex items-center gap-1.5 p-1.5 rounded-lg bg-white/[0.02] border border-white/[0.04] hover:border-white/[0.08] transition-all duration-300"
+                  className="flex items-center gap-1.5 p-1.5 nav-btn"
                 >
-                  <div className="w-7 h-7 rounded-lg bg-white/[0.03] border border-white/[0.06] flex items-center justify-center overflow-hidden">
+                  <div className="w-7 h-7 rounded-lg bg-[var(--nav-icon-bg)] border border-[var(--nav-icon-border)] flex items-center justify-center overflow-hidden">
                     {user.avatar ? (
                       <img src={user.avatar} alt="" className="w-full h-full object-cover" />
                     ) : (
@@ -176,9 +188,9 @@ export default function Header() {
                       className="absolute right-0 top-full mt-2 w-44 card-glass-solid overflow-hidden shadow-glass"
                     >
                       {[
-                        { icon: User, label: "My Account", href: "/account" },
-                        { icon: Package, label: "My Orders", href: "/account?tab=orders" },
-                        { icon: Heart, label: "Wishlist", href: "/wishlist" },
+                        { icon: User, label: t("header.my_account"), href: "/account" },
+                        { icon: Package, label: t("header.my_orders"), href: "/account?tab=orders" },
+                        { icon: Heart, label: t("header.wishlist"), href: "/wishlist" },
                       ].map((item) => (
                         <Link
                           key={item.href}
@@ -195,7 +207,7 @@ export default function Header() {
                         onClick={() => { logout(); setUserMenu(false); navigate("/"); }}
                         className="w-full flex items-center gap-3 px-4 py-2.5 text-[11px] text-red-400/50 hover:text-red-400 hover:bg-red-500/5 transition-all"
                       >
-                        <LogOut size={13} /> Sign Out
+                        <LogOut size={13} /> {t("header.sign_out")}
                       </button>
                     </motion.div>
                   )}
@@ -204,17 +216,17 @@ export default function Header() {
             ) : (
               <Link
                 to="/login"
-                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 text-white/40 hover:text-white hover:border-white/20 text-xs font-medium transition-all duration-300"
+                className="hidden sm:flex items-center gap-1.5 nav-btn-link"
               >
-                <User size={12} /> Sign In
+                <User size={12} /> {t("header.sign_in")}
               </Link>
             )}
 
             <Link
               to="/cart"
-              className="relative p-1.5 rounded-lg bg-white/[0.02] border border-white/[0.04] hover:border-rt-accent/20 hover:bg-rt-accent/[0.02] transition-all duration-300 group"
+              className="relative nav-btn group"
             >
-              <ShoppingCart size={14} className="text-white/30 group-hover:text-rt-accent transition-colors" />
+              <ShoppingCart size={14} className="text-current group-hover:text-rt-accent transition-colors" />
               {totalItems > 0 && (
                 <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-gradient-to-br from-rt-accent to-rt-accent/80 text-white text-[7px] font-bold flex items-center justify-center shadow-lg shadow-rt-accent/30">
                   {totalItems > 9 ? "9+" : totalItems}
@@ -224,9 +236,9 @@ export default function Header() {
 
             <button
               onClick={() => setMobileMenu(!mobileMenu)}
-              className="lg:hidden p-1.5 rounded-lg bg-white/[0.02] border border-white/[0.04] hover:border-white/[0.08] transition-all"
+              className="lg:hidden nav-btn"
             >
-              {mobileMenu ? <X size={14} className="text-white/40" /> : <Menu size={14} className="text-white/40" />}
+              {mobileMenu ? <X size={14} className="text-current" /> : <Menu size={14} className="text-current" />}
             </button>
           </div>
         </div>
@@ -238,7 +250,7 @@ export default function Header() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden border-t border-white/[0.02] bg-[#07070D]/95 backdrop-blur-2xl overflow-hidden"
+            className="lg:hidden mobile-nav overflow-hidden"
           >
             <div className="px-4 py-3">
               <SearchBar />
@@ -248,9 +260,9 @@ export default function Header() {
                 <Link
                   to="/login"
                   onClick={() => setMobileMenu(false)}
-                  className="block w-full py-2.5 rounded-lg border border-white/10 text-white/50 text-center font-semibold text-[11px] hover:bg-white/[0.02] transition-all"
+                  className="block w-full py-2.5 rounded-lg border border-[var(--nav-icon-border)] text-[var(--nav-icon-color)] text-center font-semibold text-[11px] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-all"
                 >
-                  Sign In / Register
+                  {t("header.sign_in_register")}
                 </Link>
               </div>
             )}
@@ -260,11 +272,11 @@ export default function Header() {
                   key={cat.id}
                   to={`/products?category=${cat.slug}`}
                   onClick={() => setMobileMenu(false)}
-                  className="flex items-center gap-2 px-4 py-3 rounded-lg bg-white/[0.02] border border-white/[0.03] text-white/35 hover:text-white hover:border-white/10 transition-all text-[11px]"
+                  className="flex items-center gap-2 px-4 py-3 rounded-lg bg-[var(--nav-icon-bg)] border border-[var(--nav-icon-border)] text-[var(--nav-icon-color)] hover:text-[var(--color-primary)] hover:border-[var(--color-primary)] transition-all text-[11px]"
                 >
                   <span className="text-lg">{CATEGORY_EMOJIS[cat.icon] || "📦"}</span>
                   <span>{cat.name}</span>
-                  <span className="ml-auto text-[9px] text-white/15 font-mono">{cat.productCount}</span>
+                  <span className="ml-auto text-[9px] text-[var(--nav-icon-color)] font-mono opacity-50">{cat.productCount}</span>
                 </Link>
               ))}
             </nav>

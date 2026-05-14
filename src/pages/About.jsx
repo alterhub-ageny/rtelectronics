@@ -1,37 +1,40 @@
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { Zap, Shield, Truck, HeadphonesIcon, Globe, Award, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const stats = [
-  { value: "50K+", label: "Customers" },
-  { value: "10K+", label: "Deliveries" },
-  { value: "99.9%", label: "Uptime" },
-  { value: "4.9", label: "Rating" },
-];
-
-const values = [
-  { icon: Zap, title: "Innovation", text: "Cutting-edge tech at the intersection of design and performance." },
-  { icon: Shield, title: "Security", text: "Every transaction encrypted. Your data, your control." },
-  { icon: Truck, title: "Velocity", text: "Free shipping over $99 with real-time tracking worldwide." },
-  { icon: HeadphonesIcon, title: "Support", text: "Neural network assistance 24/7/365." },
-  { icon: Globe, title: "Global", text: "Serving 50+ countries with localized infrastructure." },
-  { icon: Award, title: "Quality", text: "Every product certified before reaching your door." },
-];
-
 export default function About() {
+  const { t } = useTranslation();
+
+  const stats = [
+    { value: "50K+", label: t("about.customers") },
+    { value: "10K+", label: t("about.deliveries") },
+    { value: "99.9%", label: t("about.uptime") },
+    { value: "4.9", label: t("about.rating") },
+  ];
+
+  const values = [
+    { icon: Zap, title: t("about.innovation_title"), text: t("about.innovation_text") },
+    { icon: Shield, title: t("about.security_title"), text: t("about.security_text") },
+    { icon: Truck, title: t("about.velocity_title"), text: t("about.velocity_text") },
+    { icon: HeadphonesIcon, title: t("about.support_title"), text: t("about.support_text") },
+    { icon: Globe, title: t("about.global_title"), text: t("about.global_text") },
+    { icon: Award, title: t("about.quality_title"), text: t("about.quality_text") },
+  ];
+
   return (
     <div className="max-w-site mx-auto px-4 sm:px-6 py-16">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-16">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-rt-accent/20 bg-rt-accent/5 mb-4">
           <span className="w-1.5 h-1.5 rounded-full bg-rt-accent" />
-          <span className="text-rt-accent text-[10px] font-mono tracking-[0.15em] uppercase">About</span>
+          <span className="text-rt-accent text-[10px] font-mono tracking-[0.15em] uppercase">{t("about.badge")}</span>
         </div>
         <h1 className="text-3xl md:text-5xl font-display font-bold mb-4">
-          <span className="text-white/90">BUILDING </span>
-          <span className="text-crystal">TOMORROW</span>
+          <span className="text-white/90">{t("about.title_1")}</span>
+          <span className="text-crystal">{t("about.title_2")}</span>
         </h1>
         <p className="text-white/30 text-sm font-mono max-w-xl mx-auto leading-relaxed">
-          RT ELECTRONICS engineers the future of tech retail. We partner with leading brands to bring you next-generation products at the edge of possibility.
+          {t("about.description")}
         </p>
       </motion.div>
 
@@ -80,15 +83,15 @@ export default function About() {
       >
         <div className="relative z-10">
           <h2 className="text-xl md:text-3xl font-display font-bold mb-3">
-            <span className="text-white/90">READY FOR THE </span>
-            <span className="text-crystal">NEXT LEVEL</span>
-            <span className="text-white/40">?</span>
+            <span className="text-white/90">{t("about.cta_title_1")}</span>
+            <span className="text-crystal">{t("about.cta_title_2")}</span>
+            <span className="text-white/40">{t("about.cta_title_3")}</span>
           </h2>
           <p className="text-white/25 text-xs font-mono mb-6 max-w-md mx-auto">
-            Browse our catalog and discover technology that redefines boundaries.
+            {t("about.cta_text")}
           </p>
           <Link to="/products" className="btn-crystal text-xs inline-flex items-center gap-2 px-6 py-3">
-            EXPLORE <ChevronRight size={14} />
+            {t("about.explore")} <ChevronRight size={14} />
           </Link>
         </div>
       </motion.div>

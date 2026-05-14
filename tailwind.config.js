@@ -15,9 +15,11 @@ export default {
       },
       fontFamily: {
         sans: ["'Space Grotesk'", "system-ui", "sans-serif"],
-        display: ["'Syncopate'", "sans-serif"],
+        display: ["'Playfair Display'", "Georgia", "serif"],
         mono: ["'JetBrains Mono'", "monospace"],
         inter: ["Inter", "system-ui", "sans-serif"],
+        heading: ["'Playfair Display'", "Georgia", "serif"],
+        body: ["'Space Grotesk'", "system-ui", "sans-serif"],
         orbitron: ["'Orbitron'", "sans-serif"],
       },
       animation: {

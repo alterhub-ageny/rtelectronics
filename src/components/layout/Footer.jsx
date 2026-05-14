@@ -1,25 +1,27 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Mail, Phone, MapPin, Github, Twitter, Instagram, Youtube, ChevronRight } from "lucide-react";
 import { useCategories } from "../../hooks/useCategories";
 
 export default function Footer() {
+  const { t } = useTranslation();
   const { categories } = useCategories();
   const links = [
-    { title: "Shop", items: categories.map((c) => ({ label: c.name, href: `/products?category=${c.slug}` })) },
+    { title: t("footer.shop"), items: categories.map((c) => ({ label: c.name, href: `/products?category=${c.slug}` })) },
     {
-      title: "Quick Links",
+      title: t("footer.quick_links"),
       items: [
-        { label: "About Us", href: "/about" },
-        { label: "Contact", href: "/contact" },
-        { label: "FAQ", href: "/faq" },
-        { label: "Wishlist", href: "/wishlist" },
-        { label: "My Account", href: "/account" },
+        { label: t("footer.about_us"), href: "/about" },
+        { label: t("footer.contact"), href: "/contact" },
+        { label: t("footer.faq"), href: "/faq" },
+        { label: t("footer.wishlist"), href: "/wishlist" },
+        { label: t("footer.my_account"), href: "/account" },
       ],
     },
   ];
 
   return (
-    <footer className="dark-section relative border-t border-white/10 bg-black mt-20">
+    <footer className="theme-footer relative mt-20">
       <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-rt-accent/10 via-cyan-500/5 to-transparent" />
 
       <div className="max-w-site mx-auto px-4 sm:px-6 py-16 relative">
@@ -30,16 +32,16 @@ export default function Footer() {
                 <span className="text-base font-display font-bold text-white/80">RT</span>
               </div>
               <div>
-                <span className="text-sm font-display font-bold tracking-[0.25em] text-white/60">ELECTRONICS</span>
-                <p className="text-[9px] text-white/15 tracking-[0.25em] uppercase font-mono">Future of Tech</p>
+                <span className="text-sm font-display font-bold tracking-[0.25em] text-white/60">{t("header.brand")}</span>
+                <p className="text-[9px] text-white/15 tracking-[0.25em] uppercase font-mono">{t("header.tagline")}</p>
               </div>
             </div>
             <p className="text-white/20 text-sm leading-relaxed mb-6 max-w-md">
-              Curated selection of premium electronics and gaming gear. Quality products, competitive prices, exceptional service.
+              {t("footer.description")}
             </p>
             <div className="flex gap-2">
               {[Github, Twitter, Instagram, Youtube].map((Icon, i) => (
-                <a key={i} href="#" className="w-8 h-8 rounded-lg bg-white/[0.02] border border-white/[0.03] flex items-center justify-center text-white/20 hover:text-rt-accent hover:border-rt-accent/20 hover:bg-rt-accent/[0.03] transition-all duration-300">
+                <a key={i} href="#" className="w-8 h-8 rounded-lg bg-[var(--nav-icon-bg)] border border-[var(--nav-icon-border)] flex items-center justify-center text-[var(--nav-icon-color)] hover:text-rt-accent hover:border-rt-accent/20 hover:bg-rt-accent/[0.03] transition-all duration-300">
                   <Icon size={12} />
                 </a>
               ))}
@@ -63,12 +65,12 @@ export default function Footer() {
           ))}
 
           <div>
-            <h3 className="text-white/25 font-display text-[10px] tracking-[0.2em] uppercase mb-5">Connect</h3>
+            <h3 className="text-white/25 font-display text-[10px] tracking-[0.2em] uppercase mb-5">{t("footer.connect")}</h3>
             <ul className="space-y-3">
               {[
-                { icon: MapPin, text: "123 Tech Tower, Neo District" },
-                { icon: Phone, text: "+1 (800) TECH" },
-                { icon: Mail, text: "hello@rtelectronics.com" },
+                { icon: MapPin, text: t("footer.address") },
+                { icon: Phone, text: t("footer.phone") },
+                { icon: Mail, text: t("footer.email") },
               ].map((item) => (
                 <li key={item.text} className="flex items-start gap-2.5 text-white/20 text-xs">
                   <item.icon size={12} className="mt-0.5 text-rt-accent/30 shrink-0" />
@@ -79,10 +81,10 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 pt-6 border-t border-white/[0.02] flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-white/10 text-[10px] font-mono tracking-wider">&copy; {new Date().getFullYear()} RT ELECTRONICS</p>
+        <div className="mt-12 pt-6 border-t border-[var(--footer-border)] flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-white/10 text-[10px] font-mono tracking-wider">{t("footer.copyright", { year: new Date().getFullYear() })}</p>
           <div className="flex gap-6">
-            {["Privacy", "Terms"].map((text) => (
+            {[t("footer.privacy"), t("footer.terms")].map((text) => (
               <a key={text} href="#" className="text-white/15 hover:text-white text-[10px] transition-colors font-mono">{text}</a>
             ))}
           </div>

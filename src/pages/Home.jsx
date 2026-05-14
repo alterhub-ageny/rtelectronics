@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { Send, Check, Zap, Sparkles } from "lucide-react";
 import { subscribeNewsletter, submitContact } from "../services/api";
 import HeroSection from "../components/home/HeroSection";
@@ -12,6 +13,7 @@ import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
 
 export default function Home() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
   const [contact, setContact] = useState({ name: "", email: "", message: "" });
@@ -26,22 +28,22 @@ export default function Home() {
     try {
       await subscribeNewsletter(email);
       setSubscribed(true);
-      addToast("Subscribed", "success");
-    } catch { addToast("Subscription failed", "error"); }
+      addToast(t("home.subscribed"), "success");
+    } catch { addToast(t("home.subscription_failed"), "error"); }
   };
 
   const handleContact = async (e) => {
     e.preventDefault();
     if (!contact.name || !contact.email || !contact.message) {
-      addToast("Fill in all required fields", "warning");
+      addToast(t("home.fill_required"), "warning");
       return;
     }
     setContactSending(true);
     try {
       await submitContact(contact);
       setContactSent(true);
-      addToast("Message sent", "success");
-    } catch { addToast("Failed to send", "error"); }
+      addToast(t("home.message_sent_title"), "success");
+    } catch { addToast(t("home.failed_to_send"), "error"); }
     setContactSending(false);
   };
 
@@ -74,13 +76,13 @@ export default function Home() {
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-rt-accent/10 bg-rt-accent/[0.03] mb-4">
               <Sparkles size={10} className="text-rt-accent/60" />
-              <span className="section-eyebrow">Contact</span>
+              <span className="section-eyebrow">{t("home.contact_badge")}</span>
             </div>
             <h2 className="section-title mb-2">
-              Get in Touch
+              {t("home.get_in_touch")}
             </h2>
             <p className="section-subtitle">
-              We typically respond within 24 hours
+              {t("home.contact_subtitle")}
             </p>
           </div>
 
@@ -94,21 +96,21 @@ export default function Home() {
                 <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-rt-accent/10 to-cyan-500/5 border border-rt-accent/20 flex items-center justify-center mx-auto mb-4">
                   <Check size={24} className="text-rt-accent" />
                 </div>
-                <h3 className="text-lg font-bold text-white/80 mb-2">Message Sent</h3>
-                <p className="text-white/25 text-xs font-mono">We'll get back to you shortly.</p>
+                <h3 className="text-lg font-bold text-white/80 mb-2">{t("home.message_sent_title")}</h3>
+                <p className="text-white/25 text-xs font-mono">{t("home.message_sent_text")}</p>
               </motion.div>
             ) : (
               <form onSubmit={handleContact} className="card-glass p-6 space-y-3">
                 <div className="grid sm:grid-cols-2 gap-3">
-                  <input value={contact.name} onChange={(e) => setContact({ ...contact, name: e.target.value })} placeholder="Name *" className="input text-xs" />
-                  <input type="email" value={contact.email} onChange={(e) => setContact({ ...contact, email: e.target.value })} placeholder="Email *" className="input text-xs" />
+                  <input value={contact.name} onChange={(e) => setContact({ ...contact, name: e.target.value })} placeholder={t("home.name")} className="input text-xs" />
+                  <input type="email" value={contact.email} onChange={(e) => setContact({ ...contact, email: e.target.value })} placeholder={t("home.email")} className="input text-xs" />
                 </div>
-                <textarea value={contact.message} onChange={(e) => setContact({ ...contact, message: e.target.value })} rows={3} placeholder="Message *" className="input text-xs resize-none" />
+                <textarea value={contact.message} onChange={(e) => setContact({ ...contact, message: e.target.value })} rows={3} placeholder={t("home.message")} className="input text-xs resize-none" />
                 <button type="submit" disabled={contactSending} className="btn-primary w-full justify-center text-xs">
                   {contactSending ? (
-                    <><span className="spinner w-3 h-3" /> SENDING</>
+                    <><span className="spinner w-3 h-3" /> {t("home.sending")}</>
                   ) : (
-                    <><Send size={14} /> SEND MESSAGE</>
+                    <><Send size={14} /> {t("home.send_message")}</>
                   )}
                 </button>
               </form>
@@ -122,24 +124,24 @@ export default function Home() {
           <div className="relative z-10">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-rt-accent/10 bg-rt-accent/[0.03] mb-4">
               <Sparkles size={10} className="text-rt-accent/60" />
-              <span className="section-eyebrow">Newsletter</span>
+              <span className="section-eyebrow">{t("home.newsletter_badge")}</span>
             </div>
             <h2 className="section-title mb-2">
-              Stay Updated
+              {t("home.stay_updated")}
             </h2>
             <p className="section-subtitle mb-6">
-              Early access to drops, insights, and exclusive offers.
+              {t("home.newsletter_text")}
             </p>
             {subscribed ? (
               <div className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-rt-accent/10 border border-rt-accent/20">
                 <Check size={14} className="text-rt-accent" />
-                <span className="text-rt-accent text-xs font-semibold">Subscribed</span>
+                <span className="text-rt-accent text-xs font-semibold">{t("home.subscribed")}</span>
               </div>
             ) : (
               <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 max-w-sm mx-auto">
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Enter your email" required className="input flex-1 text-xs" />
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("home.enter_email")} required className="input flex-1 text-xs" />
                 <button type="submit" className="btn-primary text-[10px]">
-                  SUBSCRIBE
+                  {t("home.subscribe")}
                 </button>
               </form>
             )}
@@ -153,7 +155,7 @@ export default function Home() {
           className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-2.5 rounded-lg card-glass-solid text-rt-accent text-xs font-semibold hover:shadow-lg transition-all"
         >
           <Zap size={14} />
-          ADMIN
+          {t("home.admin")}
         </Link>
       )}
     </>

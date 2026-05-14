@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Search, X, Zap } from "lucide-react";
 import { getProducts } from "../../services/api";
 
 export default function SearchBar() {
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [open, setOpen] = useState(false);
@@ -44,7 +46,7 @@ export default function SearchBar() {
           type="text"
           value={query}
           onChange={(e) => handleChange(e.target.value)}
-          placeholder="Search..."
+          placeholder={t("common.search")}
           className="w-full pl-8 pr-7 py-1.5 bg-white/[0.02] border border-white/[0.06] rounded-lg text-[11px] text-white/60 placeholder:text-white/15 focus:border-rt-accent/30 focus:bg-white/[0.04] transition-all duration-300 font-mono tracking-wide"
         />
         {query && (

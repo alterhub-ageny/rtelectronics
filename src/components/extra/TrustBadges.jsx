@@ -1,13 +1,15 @@
+import { useTranslation } from "react-i18next";
 import { Shield, Lock, CreditCard, BadgeCheck } from "lucide-react";
 
-const badges = [
-  { icon: Shield, text: "256-bit SSL" },
-  { icon: Lock, text: "Secure Checkout" },
-  { icon: CreditCard, text: "Visa, MC, PayPal" },
-  { icon: BadgeCheck, text: "PCI Compliant" },
-];
-
 export default function TrustBadges() {
+  const { t } = useTranslation();
+  const badges = [
+    { icon: Shield, text: t("trust_badges.ssl") },
+    { icon: Lock, text: t("trust_badges.secure") },
+    { icon: CreditCard, text: t("trust_badges.cards") },
+    { icon: BadgeCheck, text: t("trust_badges.pci") },
+  ];
+
   return (
     <div className="flex items-center justify-center gap-6 flex-wrap">
       {badges.map((b) => {

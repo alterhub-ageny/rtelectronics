@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { ArrowRight, Truck, Shield, HeadphonesIcon, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { getCategories } from "../../services/api";
@@ -10,6 +11,7 @@ const ICON_MAP = {
 };
 
 export default function HeroSection() {
+  const { t } = useTranslation();
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
@@ -37,7 +39,7 @@ export default function HeroSection() {
             >
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-rt-accent/10 bg-rt-accent/[0.03] mb-6">
                 <Sparkles size={10} className="text-rt-accent/60" />
-                <span className="section-eyebrow">Premium Electronics</span>
+                <span className="section-eyebrow">{t("hero.badge")}</span>
               </div>
             </motion.div>
 
@@ -48,11 +50,11 @@ export default function HeroSection() {
               className="text-4xl md:text-6xl lg:text-7xl font-display font-bold leading-[1.05] mb-6"
             >
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white/90 to-white/70">
-                Your Source for
+                {t("hero.heading_1")}
               </span>
               <br />
               <span className="text-gradient-dual">
-                Cutting-Edge Tech
+                {t("hero.heading_2")}
               </span>
             </motion.h1>
 
@@ -62,7 +64,7 @@ export default function HeroSection() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="text-white/30 text-base max-w-xl mb-8 leading-relaxed"
             >
-              From laptops and smartphones to gaming PCs and accessories — explore our curated collection of premium electronics at competitive prices.
+              {t("hero.description")}
             </motion.p>
 
             <motion.div
@@ -72,10 +74,10 @@ export default function HeroSection() {
               className="flex flex-wrap gap-3"
             >
               <Link to="/products" className="btn-primary text-xs">
-                SHOP ALL <ArrowRight size={12} />
+                {t("hero.shop_all")} <ArrowRight size={12} />
               </Link>
               <Link to="/products?category=gaming-pcs" className="btn-outline text-[10px]">
-                GAMING RIGS
+                {t("hero.gaming_rigs")}
               </Link>
             </motion.div>
 
@@ -86,9 +88,9 @@ export default function HeroSection() {
               className="flex items-center gap-6 mt-10 pt-6 border-t border-white/[0.04]"
             >
               {[
-                { icon: Truck, text: "Free Shipping $99+" },
-                { icon: Shield, text: "2 Year Warranty" },
-                { icon: HeadphonesIcon, text: "24/7 Support" },
+                { icon: Truck, text: t("hero.free_shipping") },
+                { icon: Shield, text: t("hero.warranty") },
+                { icon: HeadphonesIcon, text: t("hero.support") },
               ].map((item) => (
                 <div key={item.text} className="flex items-center gap-1.5 text-white/25 text-xs font-mono">
                   <item.icon size={12} className="text-rt-accent/50" />

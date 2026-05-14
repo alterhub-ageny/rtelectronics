@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { Mail, Lock, User, Eye, EyeOff, Zap, ArrowRight } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
 
 export default function Register() {
+  const { t } = useTranslation();
   const { register } = useAuth();
   const addToast = useToast();
   const navigate = useNavigate();
@@ -17,16 +19,16 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    if (!form.name || !form.email || !form.password) { setError("All fields required"); return; }
-    if (form.password.length < 6) { setError("Password minimum 6 characters"); return; }
-    if (form.password !== form.confirm) { setError("Passwords do not match"); return; }
+    if (!form.name || !form.email || !form.password) { setError(t("register.all_fields_required")); return; }
+    if (form.password.length < 6) { setError(t("register.password_min_length")); return; }
+    if (form.password !== form.confirm) { setError(t("register.passwords_mismatch")); return; }
     setLoading(true);
     try {
       await register(form.name, form.email, form.password);
-      addToast("Profile initialized", "success");
+      addToast(t("register.profile_initialized"), "success");
       navigate("/");
     } catch (err) {
-      setError(err.message || "Registration failed");
+      setError(err.message || t("register.registration_failed"));
     } finally {
       setLoading(false);
     }
@@ -42,8 +44,8 @@ export default function Register() {
                 <Zap size={16} className="text-rt-accent" />
               </div>
             </Link>
-            <h1 className="text-lg font-display font-bold text-white/90">NEW PROFILE</h1>
-            <p className="text-white/25 text-xs font-mono mt-1">Initialize your RT identity</p>
+            <h1 className="text-lg font-display font-bold text-white/90">{t("register.title")}</h1>
+            <p className="text-white/25 text-xs font-mono mt-1">{t("register.subtitle")}</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-3.5">
@@ -58,7 +60,7 @@ export default function Register() {
             )}
 
             <div>
-              <label className="text-[10px] text-white/30 font-mono tracking-wider mb-1.5 block">NAME</label>
+              <label className="text-[10px] text-white/30 font-mono tracking-wider mb-1.5 block">{t("register.name")}</label>
               <div className="relative">
                 <User size={13} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/20" />
                 <input
@@ -72,7 +74,7 @@ export default function Register() {
             </div>
 
             <div>
-              <label className="text-[10px] text-white/30 font-mono tracking-wider mb-1.5 block">EMAIL</label>
+              <label className="text-[10px] text-white/30 font-mono tracking-wider mb-1.5 block">{t("register.email")}</label>
               <div className="relative">
                 <Mail size={13} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/20" />
                 <input
@@ -86,7 +88,7 @@ export default function Register() {
             </div>
 
             <div>
-              <label className="text-[10px] text-white/30 font-mono tracking-wider mb-1.5 block">PASSWORD</label>
+              <label className="text-[10px] text-white/30 font-mono tracking-wider mb-1.5 block">{t("register.password")}</label>
               <div className="relative">
                 <Lock size={13} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/20" />
                 <input
@@ -107,7 +109,7 @@ export default function Register() {
             </div>
 
             <div>
-              <label className="text-[10px] text-white/30 font-mono tracking-wider mb-1.5 block">CONFIRM PASSWORD</label>
+              <label className="text-[10px] text-white/30 font-mono tracking-wider mb-1.5 block">{t("register.confirm_password")}</label>
               <div className="relative">
                 <Lock size={13} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/20" />
                 <input
@@ -126,17 +128,17 @@ export default function Register() {
               className="btn-crystal w-full flex items-center justify-center gap-2 text-xs py-3 mt-1"
             >
               {loading ? (
-                <><span className="spinner-crystal w-4 h-4" /> INITIALIZING</>
+                <><span className="spinner-crystal w-4 h-4" /> {t("register.initializing")}</>
               ) : (
-                <><Zap size={14} /> CREATE <ArrowRight size={13} /></>
+                <><Zap size={14} /> {t("register.create")} <ArrowRight size={13} /></>
               )}
             </button>
           </form>
 
           <p className="text-center text-white/20 text-[11px] font-mono mt-5">
-            Already have a profile?{' '}
+            {t("register.has_account")}{' '}
             <Link to="/login" className="text-rt-accent hover:text-white/70 transition-colors">
-              Sign in
+              {t("register.sign_in")}
             </Link>
           </p>
         </div>

@@ -1,22 +1,23 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { SlidersHorizontal, X } from "lucide-react";
 import { useProducts } from "../hooks/useProducts";
 import { useCategories } from "../hooks/useCategories";
 import ProductGrid from "../components/product/ProductGrid";
 import ProductFilter from "../components/product/ProductFilter";
 
-const SORT_OPTIONS = [
-  { value: "", label: "Featured" },
-  { value: "price-asc", label: "Price: Low to High" },
-  { value: "price-desc", label: "Price: High to Low" },
-  { value: "rating", label: "Highest Rated" },
-  { value: "popular", label: "Most Popular" },
-];
-
 export default function Products() {
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const SORT_OPTIONS = [
+    { value: "", label: t("products.sort_featured") },
+    { value: "price-asc", label: t("products.sort_price_asc") },
+    { value: "price-desc", label: t("products.sort_price_desc") },
+    { value: "rating", label: t("products.sort_rating") },
+    { value: "popular", label: t("products.sort_popular") },
+  ];
   const { categories } = useCategories();
   const [filters, setFilters] = useState({
     category: searchParams.get("category") || "",
@@ -61,16 +62,16 @@ export default function Products() {
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-rt-accent/20 bg-rt-accent/5 mb-4">
           <span className="w-1.5 h-1.5 rounded-full bg-rt-accent" />
           <span className="text-rt-accent text-[10px] font-mono tracking-[0.15em] uppercase">
-            {catName || "All Products"}
+            {catName || t("products.all_products")}
           </span>
         </div>
         <div className="flex items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-display font-bold text-white/90">
-              {catName || "PRODUCTS"}
+              {catName || t("products.products_title")}
             </h1>
             <p className="text-white/25 text-xs font-mono mt-1">
-              {loading ? "SCANNING..." : `${products.length} UNITS FOUND`}
+              {loading ? t("common.loading") : t("common.units_found", { count: products.length })}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -94,7 +95,7 @@ export default function Products() {
                 onClick={clearFilters}
                 className="flex items-center gap-1 px-3 py-2 rounded-xl border border-rt-accent/10 text-rt-accent text-[10px] font-mono hover:bg-rt-accent/5 transition-all"
               >
-                <X size={12} /> CLEAR
+                <X size={12} /> {t("common.clear")}
               </button>
             )}
           </div>

@@ -1,23 +1,25 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Search, Zap } from "lucide-react";
-
-const faqs = [
-  { q: "How do I track my order?", a: "Once shipped, you'll receive a tracking number via email. You can also check order status in your account dashboard." },
-  { q: "What is the return policy?", a: "We offer 30-day returns on most physical products. Digital items (game top-ups, gift cards) are non-refundable once delivered." },
-  { q: "How long does shipping take?", a: "Standard shipping: 3-7 business days. Express: 1-2 business days. Free shipping on orders over $99." },
-  { q: "Are my payments secure?", a: "All transactions are encrypted using TLS 1.3. We never store your payment credentials on our servers." },
-  { q: "How do game top-ups work?", a: "After purchase, the in-game currency is delivered to your account within minutes. You'll need to provide your in-game ID." },
-  { q: "Do you ship internationally?", a: "Yes, we deliver to 50+ countries. Duties and taxes may apply based on your location." },
-  { q: "Can I cancel my order?", a: "Orders can be cancelled within 1 hour of placement. Contact support immediately for cancellation requests." },
-  { q: "What warranty do you offer?", a: "All electronics come with a minimum 1-year warranty. Extended warranties available at checkout." },
-  { q: "How do gift cards work?", a: "Digital gift cards are delivered via email within minutes. They can be redeemed at checkout." },
-  { q: "What payment methods do you accept?", a: "We accept credit/debit cards, PayPal, Apple Pay, Google Pay, and cryptocurrency (BTC, ETH)." },
-];
+import { useTranslation } from "react-i18next";
+import { ChevronDown, Search } from "lucide-react";
 
 export default function FAQ() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(null);
   const [search, setSearch] = useState("");
+
+  const faqs = [
+    { q: t("faq.q1"), a: t("faq.a1") },
+    { q: t("faq.q2"), a: t("faq.a2") },
+    { q: t("faq.q3"), a: t("faq.a3") },
+    { q: t("faq.q4"), a: t("faq.a4") },
+    { q: t("faq.q5"), a: t("faq.a5") },
+    { q: t("faq.q6"), a: t("faq.a6") },
+    { q: t("faq.q7"), a: t("faq.a7") },
+    { q: t("faq.q8"), a: t("faq.a8") },
+    { q: t("faq.q9"), a: t("faq.a9") },
+    { q: t("faq.q10"), a: t("faq.a10") },
+  ];
 
   const filtered = faqs.filter((f) => f.q.toLowerCase().includes(search.toLowerCase()));
 
@@ -26,11 +28,11 @@ export default function FAQ() {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-rt-accent/20 bg-rt-accent/5 mb-4">
           <span className="w-1.5 h-1.5 rounded-full bg-rt-accent" />
-          <span className="text-rt-accent text-[10px] font-mono tracking-[0.15em] uppercase">FAQ</span>
+          <span className="text-rt-accent text-[10px] font-mono tracking-[0.15em] uppercase">{t("faq.badge")}</span>
         </div>
         <h1 className="text-3xl md:text-4xl font-display font-bold mb-3">
-          <span className="text-white/90">FREQUENTLY </span>
-          <span className="text-crystal">ASKED</span>
+          <span className="text-white/90">{t("faq.title_1")}</span>
+          <span className="text-crystal">{t("faq.title_2")}</span>
         </h1>
         <div className="max-w-xs mx-auto mt-4">
           <div className="relative">
@@ -38,7 +40,7 @@ export default function FAQ() {
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="SEARCH FAQ..."
+              placeholder={t("faq.search")}
               className="w-full bg-white/[0.02] border border-white/[0.08] rounded-xl pl-8 pr-3 py-2 text-white/50 text-xs font-mono placeholder:text-white/15 focus:border-rt-accent/30 transition-all"
             />
           </div>

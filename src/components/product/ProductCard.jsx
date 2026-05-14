@@ -1,11 +1,13 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { ShoppingCart, Star, Heart, Zap } from "lucide-react";
 import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
 import { useToast } from "../../context/ToastContext";
 
 export default function ProductCard({ product, index = 0 }) {
+  const { t } = useTranslation();
   const { addItem } = useCart();
   const { toggle, isWishlisted } = useWishlist();
   const addToast = useToast();
@@ -14,13 +16,13 @@ export default function ProductCard({ product, index = 0 }) {
   const handleAdd = (e) => {
     e.preventDefault();
     addItem(product);
-    addToast(`${product.name} added to cart`, "success");
+    addToast(t("product_card.added_to_cart", { name: product.name }), "success");
   };
 
   const handleWishlist = (e) => {
     e.preventDefault();
     toggle(product.id);
-    addToast(wishlisted ? "Removed from wishlist" : "Added to wishlist", "info");
+    addToast(wishlisted ? t("product_card.removed_from_wishlist") : t("product_card.added_to_wishlist"), "info");
   };
 
   return (
@@ -63,10 +65,10 @@ export default function ProductCard({ product, index = 0 }) {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#07070D]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           <div className="absolute bottom-2 left-2 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0">
-            <span className="flex items-center gap-1 text-[10px] text-white/50 bg-black/50 backdrop-blur-sm px-2 py-1 rounded-full font-mono border border-white/10">
-              <Zap size={8} className="text-rt-accent/60" />
-              VIEW
-            </span>
+              <span className="flex items-center gap-1 text-[10px] text-white/50 bg-black/50 backdrop-blur-sm px-2 py-1 rounded-full font-mono border border-white/10">
+                <Zap size={8} className="text-rt-accent/60" />
+                {t("product_card.view")}
+              </span>
           </div>
         </div>
       </Link>

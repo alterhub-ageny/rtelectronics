@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { User, Package, Heart, MapPin, LogOut, Edit3, Plus, Trash2, Mail, Zap } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
@@ -8,6 +9,7 @@ import { updateProfile, addAddress, deleteAddress, getOrders } from "../services
 import AvatarPicker from "../components/ui/AvatarPicker";
 
 export default function Account() {
+  const { t } = useTranslation();
   const { user, logout, refreshUser } = useAuth();
   const addToast = useToast();
   const navigate = useNavigate();
@@ -32,32 +34,32 @@ export default function Account() {
     try {
       await updateProfile({ name, avatar: avatarUrl || undefined });
       await refreshUser();
-      addToast("Profile updated", "success");
+      addToast(t("account.profile_updated"), "success");
       setEditing(false);
-    } catch { addToast("Update failed", "error"); }
+    } catch { addToast(t("account.update_failed"), "error"); }
   };
 
   const handleAddAddr = async () => {
-    if (!newAddr.street || !newAddr.city) { addToast("Fill required fields", "warning"); return; }
+    if (!newAddr.street || !newAddr.city) { addToast(t("account.fill_required"), "warning"); return; }
     try {
       await addAddress(newAddr);
       await refreshUser();
       setShowAddr(false);
       setNewAddr({ label: "", street: "", city: "", zip: "", phone: "" });
-      addToast("Address added", "success");
-    } catch { addToast("Failed to add address", "error"); }
+      addToast(t("account.address_added"), "success");
+    } catch { addToast(t("account.address_add_failed"), "error"); }
   };
 
   const handleDelAddr = async (id) => {
-    try { await deleteAddress(id); await refreshUser(); addToast("Address removed", "success"); }
-    catch { addToast("Failed to remove", "error"); }
+    try { await deleteAddress(id); await refreshUser(); addToast(t("account.address_removed"), "success"); }
+    catch { addToast(t("account.remove_failed"), "error"); }
   };
 
   const tabs = [
-    { id: "profile", label: "Profile", icon: User },
-    { id: "orders", label: "Orders", icon: Package },
-    { id: "wishlist", label: "Wishlist", icon: Heart },
-    { id: "addresses", label: "Addresses", icon: MapPin },
+    { id: "profile", label: t("account.profile"), icon: User },
+    { id: "orders", label: t("account.orders"), icon: Package },
+    { id: "wishlist", label: t("account.wishlist"), icon: Heart },
+    { id: "addresses", label: t("account.addresses"), icon: MapPin },
   ];
 
   return (
@@ -94,9 +96,9 @@ export default function Account() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-lg">
           <div className="crystal rounded-2xl p-6">
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-sm font-display font-bold text-white/80 tracking-wider">PROFILE DATA</h2>
+              <h2 className="text-sm font-display font-bold text-white/80 tracking-wider">{t("account.profile_data")}</h2>
               <button onClick={() => setEditing(!editing)} className="text-rt-accent text-[10px] font-mono flex items-center gap-1 hover:text-white/60 transition-colors">
-                <Edit3 size={11} /> {editing ? "CANCEL" : "EDIT"}
+                <Edit3 size={11} /> {editing ? t("account.cancel") : t("account.edit")}
               </button>
             </div>
             {editing ? (
@@ -106,30 +108,30 @@ export default function Account() {
                     {avatarUrl ? <img src={avatarUrl} alt="" className="w-full h-full object-cover" onError={(e) => { e.target.style.display = "none"; }} /> : <User size={24} className="text-rt-accent" />}
                   </div>
                   <div>
-                    <p className="text-white/60 text-xs font-medium">Avatar</p>
-                    <p className="text-white/20 text-[10px] font-mono">Select style below</p>
+                    <p className="text-white/60 text-xs font-medium">{t("account.avatar")}</p>
+                    <p className="text-white/20 text-[10px] font-mono">{t("account.avatar_hint")}</p>
                   </div>
                 </div>
                 <div className="rounded-2xl p-4 bg-white/[0.02] border border-white/[0.04]">
                   <AvatarPicker current={avatarUrl} onSelect={setAvatarUrl} />
                 </div>
                 <div>
-                  <label className="text-[10px] text-white/30 font-mono tracking-wider mb-1.5 block">NAME</label>
+                  <label className="text-[10px] text-white/30 font-mono tracking-wider mb-1.5 block">{t("account.name")}</label>
                   <input value={name} onChange={(e) => setName(e.target.value)} className="input-crystal text-xs py-2.5" />
                 </div>
                 <div>
-                  <label className="text-[10px] text-white/30 font-mono tracking-wider mb-1.5 block">IMAGE URL</label>
+                  <label className="text-[10px] text-white/30 font-mono tracking-wider mb-1.5 block">{t("account.image_url")}</label>
                   <input value={avatarUrl} onChange={(e) => setAvatarUrl(e.target.value)} placeholder="https://..." className="input-crystal text-xs py-2.5" />
                 </div>
-                <button onClick={handleUpdate} className="btn-crystal text-xs py-3 px-6">SAVE CHANGES</button>
+                <button onClick={handleUpdate} className="btn-crystal text-xs py-3 px-6">{t("account.save_changes")}</button>
               </div>
             ) : (
               <div className="space-y-2.5">
                 {[
-                  { label: "NAME", value: user.name },
-                  { label: "EMAIL", value: user.email },
-                  { label: "ROLE", value: user.role },
-                  { label: "JOINED", value: new Date(user.createdAt).toLocaleDateString() },
+                  { label: t("account.name"), value: user.name },
+                  { label: t("account.email"), value: user.email },
+                  { label: t("account.role"), value: user.role },
+                  { label: t("account.joined"), value: new Date(user.createdAt).toLocaleDateString() },
                 ].map((item) => (
                   <div key={item.label} className="flex justify-between items-center py-1.5 border-b border-white/[0.03]">
                     <span className="text-[10px] text-white/30 font-mono tracking-wider">{item.label}</span>
@@ -147,9 +149,9 @@ export default function Account() {
           {orders.length === 0 ? (
             <div className="text-center py-16">
               <Package size={36} className="mx-auto mb-3 text-white/20" />
-              <p className="text-white/40 text-sm font-display">NO ORDERS</p>
+              <p className="text-white/40 text-sm font-display">{t("account.no_orders")}</p>
               <Link to="/products" className="btn-crystal text-xs inline-flex items-center gap-2 mt-4 px-5 py-2.5">
-                <Zap size={13} /> SHOP NOW
+                <Zap size={13} /> {t("account.shop_now")}
               </Link>
             </div>
           ) : (
@@ -182,9 +184,9 @@ export default function Account() {
       {tab === "wishlist" && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-16">
           <Heart size={36} className="mx-auto mb-3 text-rt-accent/30" />
-          <p className="text-white/40 text-xs font-mono mb-4">View your saved items</p>
+          <p className="text-white/40 text-xs font-mono mb-4">{t("account.wishlist_hint")}</p>
           <Link to="/wishlist" className="btn-crystal text-xs inline-flex items-center gap-2 px-5 py-2.5">
-            <Zap size={13} /> WISHLIST
+            <Zap size={13} /> {t("account.wishlist_btn")}
           </Link>
         </motion.div>
       )}
@@ -194,7 +196,7 @@ export default function Account() {
           {user.addresses?.map((addr) => (
             <div key={addr.id} className="crystal rounded-2xl p-4 flex items-start justify-between">
               <div>
-                <p className="text-white/70 text-xs font-medium mb-0.5">{addr.label || "ADDRESS"}</p>
+                <p className="text-white/70 text-xs font-medium mb-0.5">{addr.label || t("account.address_title")}</p>
                 <p className="text-white/30 text-[11px] font-mono">{addr.street}</p>
                 <p className="text-white/30 text-[11px] font-mono">{addr.city}, {addr.zip}</p>
                 {addr.phone && <p className="text-white/20 text-[11px] font-mono">{addr.phone}</p>}
@@ -206,21 +208,21 @@ export default function Account() {
           ))}
           {showAddr ? (
             <div className="crystal rounded-2xl p-5 space-y-3">
-              <input placeholder="Label (Home/Work)" value={newAddr.label} onChange={(e) => setNewAddr({ ...newAddr, label: e.target.value })} className="input-crystal text-xs py-2.5" />
-              <input placeholder="Street *" value={newAddr.street} onChange={(e) => setNewAddr({ ...newAddr, street: e.target.value })} className="input-crystal text-xs py-2.5" />
+              <input placeholder={t("account.label_placeholder")} value={newAddr.label} onChange={(e) => setNewAddr({ ...newAddr, label: e.target.value })} className="input-crystal text-xs py-2.5" />
+              <input placeholder={t("account.street_placeholder")} value={newAddr.street} onChange={(e) => setNewAddr({ ...newAddr, street: e.target.value })} className="input-crystal text-xs py-2.5" />
               <div className="flex gap-3">
-                <input placeholder="City *" value={newAddr.city} onChange={(e) => setNewAddr({ ...newAddr, city: e.target.value })} className="flex-1 input-crystal text-xs py-2.5" />
-                <input placeholder="ZIP" value={newAddr.zip} onChange={(e) => setNewAddr({ ...newAddr, zip: e.target.value })} className="w-24 input-crystal text-xs py-2.5" />
+                <input placeholder={t("account.city_placeholder")} value={newAddr.city} onChange={(e) => setNewAddr({ ...newAddr, city: e.target.value })} className="flex-1 input-crystal text-xs py-2.5" />
+                <input placeholder={t("account.zip_placeholder")} value={newAddr.zip} onChange={(e) => setNewAddr({ ...newAddr, zip: e.target.value })} className="w-24 input-crystal text-xs py-2.5" />
               </div>
-              <input placeholder="Phone" value={newAddr.phone} onChange={(e) => setNewAddr({ ...newAddr, phone: e.target.value })} className="input-crystal text-xs py-2.5" />
+              <input placeholder={t("account.phone_placeholder")} value={newAddr.phone} onChange={(e) => setNewAddr({ ...newAddr, phone: e.target.value })} className="input-crystal text-xs py-2.5" />
               <div className="flex gap-3 pt-1">
-                <button onClick={handleAddAddr} className="btn-crystal text-xs flex-1 py-2.5">SAVE</button>
-                <button onClick={() => setShowAddr(false)} className="btn-ghost text-xs flex-1 py-2.5">CANCEL</button>
+                <button onClick={handleAddAddr} className="btn-crystal text-xs flex-1 py-2.5">{t("account.save")}</button>
+                <button onClick={() => setShowAddr(false)} className="btn-ghost text-xs flex-1 py-2.5">{t("account.cancel")}</button>
               </div>
             </div>
           ) : (
             <button onClick={() => setShowAddr(true)} className="w-full py-3.5 rounded-2xl border border-dashed border-white/10 text-white/30 hover:border-rt-accent/30 hover:text-rt-accent transition-all flex items-center justify-center gap-2 text-xs font-mono">
-              <Plus size={14} /> ADD ADDRESS
+              <Plus size={14} /> {t("account.add_address")}
             </button>
           )}
         </motion.div>
