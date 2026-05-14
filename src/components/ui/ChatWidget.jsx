@@ -37,12 +37,24 @@ export default function ChatWidget() {
     return () => clearInterval(iv);
   }, [open, convId, loadMessages]);
 
+  useEffect(() => {
+    if (user && !convId) {
+      (async () => {
+        try {
+          const d = await createChatConversation({ name: user.name, email: user.email, userId: user.id });
+          setConvId(d.id);
+          localStorage.setItem(CONV_KEY, d.id);
+        } catch {}
+      })();
+    }
+  }, [user]);
+
   const handleStart = async (e) => {
     e.preventDefault();
     if (!name || !email) return;
     setStarting(true);
     try {
-      const d = await createChatConversation({ name, email });
+      const d = await createChatConversation({ name, email, userId: user?.id });
       setConvId(d.id);
       localStorage.setItem(CONV_KEY, d.id);
     } catch {}

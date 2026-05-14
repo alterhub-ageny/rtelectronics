@@ -37,11 +37,28 @@ CREATE INDEX IF NOT EXISTS idx_expenses_date ON expenses(date);
 CREATE INDEX IF NOT EXISTS idx_chat_messages_conversation ON chat_messages("conversationId");
 `;
 
+async function seedAdmin() {
+  try {
+    const { rows: existing } = await query("SELECT id FROM users WHERE role = 'admin'");
+    if (existing.length) return;
+    const hashed = await bcrypt.hash("admin123", 10);
+    const now = new Date().toISOString();
+    await query(
+      `INSERT INTO users (id, name, email, password, role, avatar, addresses, wishlist, "createdAt")
+       VALUES ($1,$2,$3,$4,$5,$6,'[]'::jsonb,'[]'::jsonb,$7)`,
+      ["admin-root", "Admin RT", "admin@rtelectronics.com", hashed, "admin",
+       "https://api.dicebear.com/7.x/avataaars/svg?seed=admin", now]
+    );
+    console.log("Admin user seeded");
+  } catch (e) { console.error("Admin seed error:", e.message); }
+}
+
 async function initDb() {
   try {
     const stmts = SCHEMA_SQL.split(";").filter(Boolean);
     for (const s of stmts) { try { await query(s); } catch {} }
     await seedSettings();
+    await seedAdmin();
     // Seed real product/category data
     await seedRealData();
     // Seed full data synchronously (serverless can't rely on setTimeout)
@@ -592,13 +609,18 @@ app.post("/api/contact", async (req, res) => {
 /* ─────── CHAT ─────── */
 app.post("/api/chat/conversations", async (req, res) => {
   try {
-    const { name, email, subject } = req.body;
+    const { name, email, subject, userId } = req.body;
     if (!name || !email) return res.status(400).json({ error: "Name and email required" });
-    const existing = await query(`SELECT * FROM chat_conversations WHERE email=$1 AND status='open' ORDER BY "createdAt" DESC LIMIT 1`, [email]);
-    if (existing.rows.length) return res.json(existing.rows[0]);
+    if (userId) {
+      const existing = await query(`SELECT * FROM chat_conversations WHERE "userId"=$1 AND status='open' ORDER BY "createdAt" DESC LIMIT 1`, [userId]);
+      if (existing.rows.length) return res.json(existing.rows[0]);
+    } else {
+      const existing = await query(`SELECT * FROM chat_conversations WHERE email=$1 AND status='open' ORDER BY "createdAt" DESC LIMIT 1`, [email]);
+      if (existing.rows.length) return res.json(existing.rows[0]);
+    }
     const id = uuidv4();
-    await query(`INSERT INTO chat_conversations (id, name, email, subject, status, "createdAt") VALUES ($1,$2,$3,$4,'open',$5)`, [id, name, email, subject || null, new Date().toISOString()]);
-    res.status(201).json({ id, name, email, subject, status: "open" });
+    await query(`INSERT INTO chat_conversations (id, "userId", name, email, subject, status, "createdAt") VALUES ($1,$2,$3,$4,$5,'open',$6)`, [id, userId || null, name, email, subject || null, new Date().toISOString()]);
+    res.status(201).json({ id, userId: userId || null, name, email, subject, status: "open" });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
