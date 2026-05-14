@@ -9,11 +9,11 @@ export default function ProductGrid({ products, loading }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {Array.from({ length: 8 }).map((_, i) => (
           <div key={i} className="crystal rounded-2xl p-4">
-            <div className="h-48 bg-white/[0.01] rounded-xl mb-4 animate-pulse" />
-            <div className="h-3 bg-white/[0.01] rounded w-3/4 mb-2 animate-pulse" />
-            <div className="h-2 bg-white/[0.01] rounded w-full mb-1 animate-pulse" />
-            <div className="h-2 bg-white/[0.01] rounded w-2/3 mb-3 animate-pulse" />
-            <div className="h-4 bg-white/[0.01] rounded w-1/4 animate-pulse" />
+            <div className="h-48 bg-white/5 rounded-xl mb-4 animate-pulse" />
+            <div className="h-3 bg-white/5 rounded w-3/4 mb-2 animate-pulse" />
+            <div className="h-2 bg-white/5 rounded w-full mb-1 animate-pulse" />
+            <div className="h-2 bg-white/5 rounded w-2/3 mb-3 animate-pulse" />
+            <div className="h-4 bg-white/5 rounded w-1/4 animate-pulse" />
           </div>
         ))}
       </div>

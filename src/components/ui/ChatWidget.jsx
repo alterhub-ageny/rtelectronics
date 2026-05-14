@@ -70,19 +70,19 @@ export default function ChatWidget() {
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             className="mb-3 w-[320px] crystal rounded-2xl overflow-hidden shadow-2xl"
           >
-            <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.02]">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--hero-border)]">
               <div className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-rt-accent/40 animate-neural-pulse" />
-                <span className="text-white/50 text-[11px] font-display font-bold tracking-wider">{t("chat.channel")}</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-rt-accent/40 animate-pulse" />
+                <span className="text-[var(--hero-text)] text-[11px] font-display font-bold tracking-wider">{t("chat.channel")}</span>
               </div>
-              <button onClick={() => setOpen(false)} className="p-1 rounded-lg hover:bg-white/[0.03] text-white/20 hover:text-white/40 transition-all">
+              <button onClick={() => setOpen(false)} className="p-1 rounded-lg hover:bg-white/[0.03] text-[var(--hero-text)] hover:text-[var(--color-text)] transition-all">
                 <X size={13} />
               </button>
             </div>
 
             {!convId ? (
               <form onSubmit={handleStart} className="p-4 space-y-2.5">
-                <p className="text-white/20 text-[9px] font-mono mb-2 tracking-wider">{t("chat.init_text")}</p>
+                <p className="text-[var(--color-text-muted)] text-[9px] font-mono mb-2 tracking-wider">{t("chat.init_text")}</p>
                 <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t("chat.name")} required className="input-crystal text-[10px] py-2" />
                 <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("chat.email")} required className="input-crystal text-[10px] py-2" />
                 <button type="submit" disabled={starting} className="btn-crystal w-full text-[9px] py-2.5 flex items-center justify-center gap-1.5">
@@ -94,7 +94,7 @@ export default function ChatWidget() {
                 <div className="flex-1 overflow-y-auto p-3 space-y-2">
                   {!messages.length && (
                     <div className="text-center py-8">
-                      <p className="text-white/15 text-[9px] font-mono">{t("chat.channel_open")}</p>
+                      <p className="text-[var(--color-text-muted)] text-[9px] font-mono">{t("chat.channel_open")}</p>
                     </div>
                   )}
                   {messages.map((m) => (
@@ -102,21 +102,21 @@ export default function ChatWidget() {
                       <div
                         className={`max-w-[85%] rounded-xl px-3 py-2 ${
                           m.sender === "admin"
-                            ? "bg-white/[0.03] text-white/50"
-                            : "bg-rt-accent/[0.04] border border-rt-accent/[0.06] text-white/60"
+                            ? "bg-white/[0.05] border border-[var(--color-border)] text-[var(--color-text)]"
+                            : "bg-rt-accent/[0.06] border border-rt-accent/[0.12] text-[var(--color-text)]"
                         }`}
                       >
-                        <p className="text-[8px] text-white/15 font-mono mb-0.5 tracking-wider">{m.sender === "admin" ? t("chat.support") : name.toUpperCase()}</p>
+                        <p className="text-[8px] text-[var(--color-text-muted)] font-mono mb-0.5 tracking-wider">{m.sender === "admin" ? t("chat.support") : name.toUpperCase()}</p>
                         <p className="text-[11px]">{m.message}</p>
-                        <p className="text-[7px] text-white/15 mt-1 text-right font-mono">{m.createdAt?.slice(11, 16)}</p>
+                        <p className="text-[7px] text-[var(--color-text-muted)] mt-1 text-right font-mono">{m.createdAt?.slice(11, 16)}</p>
                       </div>
                     </div>
                   ))}
                   <div ref={bottomRef} />
                 </div>
-                <form onSubmit={handleSend} className="flex items-center gap-2 p-3 border-t border-white/[0.02]">
-                  <input value={text} onChange={(e) => setText(e.target.value)} placeholder={t("chat.placeholder")} className="flex-1 bg-white/[0.01] border border-white/[0.03] rounded-xl px-3 py-2 text-white/40 text-[11px] placeholder:text-white/10 focus:border-rt-accent/20 transition-all font-mono" />
-                  <button type="submit" disabled={!text.trim()} className="p-2 rounded-xl bg-rt-accent/[0.06] text-rt-accent/40 disabled:opacity-10 hover:bg-rt-accent/[0.1] hover:text-rt-accent/60 transition-all">
+                <form onSubmit={handleSend} className="flex items-center gap-2 p-3 border-t border-[var(--hero-border)]">
+                  <input value={text} onChange={(e) => setText(e.target.value)} placeholder={t("chat.placeholder")} className="flex-1 bg-white/5 border border-[var(--color-border)] rounded-xl px-3 py-2 text-[var(--color-text)] text-[11px] placeholder:text-[var(--color-text-muted)] focus:border-rt-accent/40 transition-all font-mono" />
+                  <button type="submit" disabled={!text.trim()} className="p-2 rounded-xl bg-rt-accent/[0.08] text-rt-accent/60 disabled:opacity-20 hover:bg-rt-accent/[0.12] hover:text-rt-accent transition-all">
                     <Send size={13} />
                   </button>
                 </form>

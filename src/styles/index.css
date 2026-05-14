@@ -574,6 +574,42 @@
 :root:not([data-theme="dark"]) .admin-panel .text-white\/10 { color: rgba(255,255,255,0.1); }
 :root:not([data-theme="dark"]) .admin-panel .text-white\/5 { color: rgba(255,255,255,0.05); }
 
+/* Step 5: In light mode, remap bg-white/* and border-white/* to dark equivalents */
+:root:not([data-theme="dark"]) .bg-white\/\[0\.01\],
+:root:not([data-theme="dark"]) .bg-white\/\[0\.02\],
+:root:not([data-theme="dark"]) .bg-white\/\[0\.03\],
+:root:not([data-theme="dark"]) .bg-white\/\[0\.04\],
+:root:not([data-theme="dark"]) .bg-white\/\[0\.05\],
+:root:not([data-theme="dark"]) .bg-white\/\[0\.06\],
+:root:not([data-theme="dark"]) .bg-white\/\[0\.08\],
+:root:not([data-theme="dark"]) .bg-white\/5,
+:root:not([data-theme="dark"]) .bg-white\/10 { background-color: rgba(0, 0, 0, 0.04); }
+:root:not([data-theme="dark"]) .bg-white\/\[0\.02\] { background-color: rgba(0, 0, 0, 0.02); }
+:root:not([data-theme="dark"]) .bg-white\/\[0\.03\] { background-color: rgba(0, 0, 0, 0.03); }
+:root:not([data-theme="dark"]) .bg-white\/\[0\.04\] { background-color: rgba(0, 0, 0, 0.04); }
+:root:not([data-theme="dark"]) .bg-white\/5 { background-color: rgba(0, 0, 0, 0.05); }
+:root:not([data-theme="dark"]) .bg-white\/10 { background-color: rgba(0, 0, 0, 0.1); }
+
+:root:not([data-theme="dark"]) .border-white\/\[0\.02\],
+:root:not([data-theme="dark"]) .border-white\/\[0\.03\],
+:root:not([data-theme="dark"]) .border-white\/\[0\.04\],
+:root:not([data-theme="dark"]) .border-white\/\[0\.06\],
+:root:not([data-theme="dark"]) .border-white\/\[0\.08\],
+:root:not([data-theme="dark"]) .border-white\/5,
+:root:not([data-theme="dark"]) .border-white\/10 { border-color: rgba(0, 0, 0, 0.06); }
+:root:not([data-theme="dark"]) .border-white\/5 { border-color: rgba(0, 0, 0, 0.05); }
+:root:not([data-theme="dark"]) .border-white\/10 { border-color: rgba(0, 0, 0, 0.1); }
+
+:root:not([data-theme="dark"]) .hover\:bg-white\/\[0\.03\]:hover,
+:root:not([data-theme="dark"]) .hover\:bg-white\/\[0\.04\]:hover,
+:root:not([data-theme="dark"]) .hover\:bg-white\/5:hover { background-color: rgba(0, 0, 0, 0.04); }
+:root:not([data-theme="dark"]) .hover\:bg-white\/\[0\.03\]:hover { background-color: rgba(0, 0, 0, 0.03); }
+:root:not([data-theme="dark"]) .hover\:bg-white\/\[0\.04\]:hover { background-color: rgba(0, 0, 0, 0.04); }
+:root:not([data-theme="dark"]) .hover\:bg-white\/5:hover { background-color: rgba(0, 0, 0, 0.05); }
+
+:root:not([data-theme="dark"]) .hover\:border-white\/\[0\.08\]:hover,
+:root:not([data-theme="dark"]) .hover\:border-white\/10:hover { border-color: rgba(0, 0, 0, 0.1); }
+
 /* ═══════════════════════════════════════════════
    BACKWARD COMPAT ALIASES
    ═══════════════════════════════════════════════ */

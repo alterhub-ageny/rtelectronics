@@ -51,21 +51,21 @@ export default function ProductCard({ product, index = 0 }) {
 
       <button
         onClick={handleWishlist}
-        className="absolute top-3 right-3 z-20 w-8 h-8 rounded-lg bg-black/30 backdrop-blur-sm border border-white/10 flex items-center justify-center text-white/30 hover:text-red-400 hover:border-red-400/30 transition-all opacity-0 group-hover:opacity-100"
+        className="absolute top-3 right-3 z-20 w-8 h-8 rounded-lg bg-[var(--product-overlay-bg)] backdrop-blur-sm border border-[var(--product-overlay-border)] flex items-center justify-center text-white/30 hover:text-red-400 hover:border-red-400/30 transition-all opacity-0 group-hover:opacity-100"
       >
         <Heart size={12} className={wishlisted ? "fill-red-400 text-red-400" : ""} />
       </button>
 
       <Link to={`/product/${product.id}`} className="block">
-        <div className="relative h-48 overflow-hidden bg-[#0D0D1A]">
+        <div className="relative h-48 overflow-hidden bg-[var(--product-image-bg)]">
           <img
             src={product.images?.[0] || ""}
             alt={product.name}
             className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#07070D]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: "var(--product-image-gradient)" }} />
           <div className="absolute bottom-2 left-2 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0">
-              <span className="flex items-center gap-1 text-[10px] text-white/50 bg-black/50 backdrop-blur-sm px-2 py-1 rounded-full font-mono border border-white/10">
+              <span className="flex items-center gap-1 text-[10px] text-white/50 bg-black/50 backdrop-blur-sm px-2 py-1 rounded-full font-mono border border-[var(--product-overlay-border)]">
                 <Zap size={8} className="text-rt-accent/60" />
                 {t("product_card.view")}
               </span>
