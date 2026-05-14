@@ -228,7 +228,7 @@ app.use(async (req, res, next) => {
 });
 
 app.use(helmet({ crossOriginResourcePolicy: false, contentSecurityPolicy: false }));
-app.use(cors());
+app.use(cors({ origin: process.env.CORS_ORIGIN || "http://localhost:5173", credentials: true }));
 app.use(express.json({ limit: "10mb" }));
 
 const limiter = rateLimit({ windowMs: 60 * 1000, max: 200 });
@@ -383,7 +383,7 @@ app.get("/api/orders", authMiddleware, async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-app.get("/api/orders/:id", async (req, res) => {
+app.get("/api/orders/:id", authMiddleware, async (req, res) => {
   try {
     const { rows } = await query("SELECT * FROM orders WHERE id = $1", [req.params.id]);
     res.json(rows[0] || null);
@@ -1167,7 +1167,7 @@ app.put("/api/admin/notifications/:id/read", authMiddleware, adminMiddleware, as
 });
 
 /* ─────── SEED ADMIN USER ─────── */
-app.post("/api/admin/seed", async (req, res) => {
+app.post("/api/admin/seed", authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const { rows: existing } = await query("SELECT id FROM users WHERE role = 'admin'");
     if (existing.length) return res.json({ message: "Admin already exists" });
