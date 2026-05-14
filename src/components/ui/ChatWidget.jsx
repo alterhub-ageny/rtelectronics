@@ -18,6 +18,7 @@ export default function ChatWidget() {
   const [messages, setMessages] = useState([]);
   const [starting, setStarting] = useState(false);
   const bottomRef = useRef();
+  const prevUserId = useRef(user?.id);
 
   const scroll = () => bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   useEffect(scroll, [messages]);
@@ -38,6 +39,18 @@ export default function ChatWidget() {
   }, [open, convId, loadMessages]);
 
   useEffect(() => {
+    const prevId = prevUserId.current;
+    prevUserId.current = user?.id;
+    if (prevId !== user?.id) {
+      localStorage.removeItem(CONV_KEY);
+      setConvId(null);
+      setMessages([]);
+      setName(user?.name || "");
+      setEmail(user?.email || "");
+    }
+  }, [user]);
+
+  useEffect(() => {
     if (user && !convId) {
       (async () => {
         try {
@@ -47,7 +60,7 @@ export default function ChatWidget() {
         } catch {}
       })();
     }
-  }, [user]);
+  }, [user, convId]);
 
   const handleStart = async (e) => {
     e.preventDefault();
