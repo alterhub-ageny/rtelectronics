@@ -27,8 +27,8 @@ export default function CookieConsent() {
           className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] w-[calc(100%-2rem)] max-w-lg"
         >
           <div className="glass rounded-2xl p-5 border border-white/10 shadow-2xl flex items-start gap-4">
-            <div className="w-10 h-10 rounded-xl bg-rt-accent/10 border border-rt-accent/20 flex items-center justify-center shrink-0">
-              <Cookie size={20} className="text-rt-accent" />
+            <div className="w-10 h-10 rounded-xl bg-[var(--color-primary)]/10 border border-[var(--color-primary)]/20 flex items-center justify-center shrink-0">
+              <Cookie size={20} className="text-[var(--color-primary)]" />
             </div>
             <div className="flex-1">
               <p className="text-white text-sm font-medium mb-1">{t("cookie.title")}</p>

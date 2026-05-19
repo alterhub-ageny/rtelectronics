@@ -5,7 +5,7 @@ import { CheckCircle, XCircle, AlertCircle, Info, X } from "lucide-react";
 const ToastContext = createContext();
 
 const ICONS = { success: CheckCircle, error: XCircle, warning: AlertCircle, info: Info };
-const COLORS = { success: "border-rt-accent3/40 text-rt-accent3", error: "border-red-500/40 text-red-400", warning: "border-orange-500/40 text-orange-400", info: "border-rt-accent/40 text-rt-accent" };
+const COLORS = { success: "border-emerald-500/40 text-emerald-400", error: "border-red-500/40 text-red-400", warning: "border-orange-500/40 text-orange-400", info: "border-[var(--color-primary)]/40 text-[var(--color-primary)]" };
 
 export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([]);

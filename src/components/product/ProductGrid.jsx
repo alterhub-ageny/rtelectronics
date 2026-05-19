@@ -23,8 +23,8 @@ export default function ProductGrid({ products, loading }) {
   if (!products.length) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
-        <div className="w-14 h-14 rounded-2xl bg-rt-accent/[0.02] border border-rt-accent/[0.04] flex items-center justify-center mb-4">
-          <PackageOpen size={24} className="text-rt-accent/20" />
+        <div className="w-14 h-14 rounded-2xl bg-[var(--color-primary)]/[0.02] border border-[var(--color-primary)]/[0.04] flex items-center justify-center mb-4">
+          <PackageOpen size={24} className="text-[var(--color-primary)]/20" />
         </div>
         <p className="text-sm font-display font-bold text-white/30 tracking-wider">{t("common.no_units_found")}</p>
         <p className="text-[10px] font-mono text-white/15 mt-1">{t("common.adjust_filters")}</p>

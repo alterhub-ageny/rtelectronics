@@ -19,10 +19,10 @@ export default function CartItem({ item }) {
       </Link>
 
       <div className="flex-1 min-w-0">
-        <Link to={`/product/${item.id}`} className="text-white font-medium hover:text-rt-accent transition-colors line-clamp-1">
+        <Link to={`/product/${item.id}`} className="text-white font-medium hover:text-[var(--color-primary)] transition-colors line-clamp-1">
           {item.name}
         </Link>
-        <p className="text-rt-accent font-display font-bold text-lg mt-1">
+        <p className="text-[var(--color-primary)] font-display font-bold text-lg mt-1">
           ${(item.price * item.quantity).toLocaleString()}
         </p>
       </div>

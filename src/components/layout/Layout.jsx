@@ -6,14 +6,16 @@ import ChatWidget from "../ui/ChatWidget";
 export default function Layout() {
   return (
     <div className="min-h-screen flex flex-col relative">
+      {/* Grid overlay */}
       <div
-        className="fixed inset-0 pointer-events-none z-[1] opacity-[0.012]"
+        className="fixed inset-0 pointer-events-none z-[1] opacity-[0.015]"
         style={{
-          backgroundImage: "linear-gradient(rgba(255,255,255,0.008) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.008) 1px, transparent 1px)",
-          backgroundSize: "50px 50px",
+          backgroundImage: "linear-gradient(var(--color-border) 1px, transparent 1px), linear-gradient(90deg, var(--color-border) 1px, transparent 1px)",
+          backgroundSize: "64px 64px",
         }}
       />
-      <div className="fixed top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-rt-accent/15 via-cyan-500/5 to-transparent z-50" />
+      {/* Ambient glow top */}
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[var(--color-primary)]/3 rounded-full blur-[120px] pointer-events-none z-0" />
       <Header />
       <main className="flex-1 pt-16 relative z-10">
         <Outlet />

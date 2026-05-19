@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { Send, Check, Zap, Sparkles } from "lucide-react";
+import { Send, Check, Zap, Sparkles, ArrowRight } from "lucide-react";
 import { subscribeNewsletter, submitContact } from "../services/api";
 import HeroSection from "../components/home/HeroSection";
 import FeaturedProducts from "../components/home/FeaturedProducts";
@@ -47,6 +46,9 @@ export default function Home() {
     setContactSending(false);
   };
 
+  const sectionClass = "max-w-site mx-auto px-4 sm:px-6";
+  const badgeClass = "inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[var(--color-primary)]/10 bg-[var(--color-primary)]/[0.03]";
+
   return (
     <>
       <HeroSection />
@@ -55,7 +57,7 @@ export default function Home() {
         <FeaturedProducts />
       </AnimatedSection>
 
-      <div className="mx-auto max-w-site px-4 sm:px-6">
+      <div className={`${sectionClass}`}>
         <div className="divider" />
       </div>
 
@@ -63,7 +65,7 @@ export default function Home() {
         <CategoryShowcase />
       </AnimatedSection>
 
-      <div className="mx-auto max-w-site px-4 sm:px-6">
+      <div className={`${sectionClass}`}>
         <div className="divider" />
       </div>
 
@@ -71,14 +73,15 @@ export default function Home() {
         <PromoSection />
       </AnimatedSection>
 
+      {/* Contact Section */}
       <AnimatedSection>
-        <section className="max-w-site mx-auto px-4 sm:px-6 py-24">
+        <section className={`${sectionClass} py-24`}>
           <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-rt-accent/10 bg-rt-accent/[0.03] mb-4">
-              <Sparkles size={10} className="text-rt-accent/60" />
-              <span className="section-eyebrow">{t("home.contact_badge")}</span>
+            <div className={`${badgeClass} mb-4`}>
+              <Sparkles size={10} className="text-[var(--color-primary)]/60" />
+              <span className="eyebrow">{t("home.contact_badge")}</span>
             </div>
-            <h2 className="section-title mb-2">
+            <h2 className="heading-md mb-2">
               {t("home.get_in_touch")}
             </h2>
             <p className="section-subtitle">
@@ -91,22 +94,22 @@ export default function Home() {
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="card-glass p-10 text-center"
+                className="glass-card p-10 text-center"
               >
-                <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-rt-accent/10 to-cyan-500/5 border border-rt-accent/20 flex items-center justify-center mx-auto mb-4">
-                  <Check size={24} className="text-rt-accent" />
+                <div className="w-14 h-14 rounded-lg bg-[var(--color-primary)]/10 border border-[var(--color-primary)]/20 flex items-center justify-center mx-auto mb-4">
+                  <Check size={24} className="text-[var(--color-primary)]" />
                 </div>
-                <h3 className="text-lg font-bold text-white/80 mb-2">{t("home.message_sent_title")}</h3>
-                <p className="text-white/25 text-xs font-mono">{t("home.message_sent_text")}</p>
+                <h3 className="text-lg font-bold text-[var(--color-text)] mb-2">{t("home.message_sent_title")}</h3>
+                <p className="text-[var(--color-text-muted)] text-xs font-mono">{t("home.message_sent_text")}</p>
               </motion.div>
             ) : (
-              <form onSubmit={handleContact} className="card-glass p-6 space-y-3">
+              <form onSubmit={handleContact} className="glass-card p-6 space-y-3">
                 <div className="grid sm:grid-cols-2 gap-3">
-                  <input value={contact.name} onChange={(e) => setContact({ ...contact, name: e.target.value })} placeholder={t("home.name")} className="input text-xs" />
-                  <input type="email" value={contact.email} onChange={(e) => setContact({ ...contact, email: e.target.value })} placeholder={t("home.email")} className="input text-xs" />
+                  <input value={contact.name} onChange={(e) => setContact({ ...contact, name: e.target.value })} placeholder={t("home.name")} className="input" />
+                  <input type="email" value={contact.email} onChange={(e) => setContact({ ...contact, email: e.target.value })} placeholder={t("home.email")} className="input" />
                 </div>
-                <textarea value={contact.message} onChange={(e) => setContact({ ...contact, message: e.target.value })} rows={3} placeholder={t("home.message")} className="input text-xs resize-none" />
-                <button type="submit" disabled={contactSending} className="btn-primary w-full justify-center text-xs">
+                <textarea value={contact.message} onChange={(e) => setContact({ ...contact, message: e.target.value })} rows={3} placeholder={t("home.message")} className="input resize-none" />
+                <button type="submit" disabled={contactSending} className="btn btn-primary w-full justify-center">
                   {contactSending ? (
                     <><span className="spinner w-3 h-3" /> {t("home.sending")}</>
                   ) : (
@@ -119,28 +122,29 @@ export default function Home() {
         </section>
       </AnimatedSection>
 
-      <section className="max-w-site mx-auto px-4 sm:px-6 pb-24">
-        <div className="rounded-[24px] p-10 md:p-14 text-center relative overflow-hidden bg-gradient-to-br from-rt-accent/[0.02] via-transparent to-cyan-500/[0.02] border border-white/[0.04] glass-shine">
+      {/* Newsletter */}
+      <section className={`${sectionClass} pb-24`}>
+        <div className="relative overflow-hidden rounded-[24px] p-12 md:p-16 text-center glass-panel">
           <div className="relative z-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-rt-accent/10 bg-rt-accent/[0.03] mb-4">
-              <Sparkles size={10} className="text-rt-accent/60" />
-              <span className="section-eyebrow">{t("home.newsletter_badge")}</span>
+            <div className={`${badgeClass} mb-4`}>
+              <Sparkles size={10} className="text-[var(--color-primary)]/60" />
+              <span className="eyebrow">{t("home.newsletter_badge")}</span>
             </div>
-            <h2 className="section-title mb-2">
+            <h2 className="heading-md mb-2">
               {t("home.stay_updated")}
             </h2>
-            <p className="section-subtitle mb-6">
+            <p className="section-subtitle mb-8">
               {t("home.newsletter_text")}
             </p>
             {subscribed ? (
-              <div className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-rt-accent/10 border border-rt-accent/20">
-                <Check size={14} className="text-rt-accent" />
-                <span className="text-rt-accent text-xs font-semibold">{t("home.subscribed")}</span>
+              <div className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-[var(--color-primary)]/10 border border-[var(--color-primary)]/20">
+                <Check size={14} className="text-[var(--color-primary)]" />
+                <span className="text-[var(--color-primary)] text-xs font-semibold">{t("home.subscribed")}</span>
               </div>
             ) : (
               <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 max-w-sm mx-auto">
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("home.enter_email")} required className="input flex-1 text-xs" />
-                <button type="submit" className="btn-primary text-[10px]">
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("home.enter_email")} required className="input flex-1" />
+                <button type="submit" className="btn btn-primary">
                   {t("home.subscribe")}
                 </button>
               </form>
@@ -152,7 +156,7 @@ export default function Home() {
       {isAdmin && (
         <Link
           to="/admin"
-          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-2.5 rounded-lg card-glass-solid text-rt-accent text-xs font-semibold hover:shadow-lg transition-all"
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-2.5 rounded-lg glass-card text-[var(--color-primary)] text-xs font-semibold hover:shadow-lg transition-all"
         >
           <Zap size={14} />
           {t("home.admin")}

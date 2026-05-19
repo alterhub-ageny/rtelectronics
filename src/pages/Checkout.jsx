@@ -79,13 +79,13 @@ export default function Checkout() {
   if (done) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] px-4">
-        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="crystal rounded-[24px] p-10 text-center max-w-sm">
-          <div className="w-16 h-16 rounded-2xl bg-rt-accent/10 border border-rt-accent/20 flex items-center justify-center mx-auto mb-4">
-            <Check size={28} className="text-rt-accent" />
+        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="glass-card p-10 text-center max-w-sm">
+          <div className="w-16 h-16 rounded-2xl bg-[var(--color-primary)]/10 border border-[var(--color-primary)]/20 flex items-center justify-center mx-auto mb-4">
+            <Check size={28} className="text-[var(--color-primary)]" />
           </div>
-          <h2 className="text-xl font-display font-bold text-white/90 mb-2">{t("checkout.order_confirmed")}</h2>
-          <p className="text-white/30 text-xs font-mono mb-6">{t("checkout.order_confirmed_text")}</p>
-          <Link to="/products" className="btn-crystal text-xs inline-flex items-center gap-2 px-5 py-2.5">{t("checkout.continue")}</Link>
+          <h2 className="heading-md mb-2">{t("checkout.order_confirmed")}</h2>
+          <p className="text-[var(--color-text-muted)] text-xs font-mono mb-6">{t("checkout.order_confirmed_text")}</p>
+          <Link to="/products" className="btn btn-primary">{t("checkout.continue")}</Link>
         </motion.div>
       </div>
     );
@@ -97,63 +97,62 @@ export default function Checkout() {
 
   return (
     <div className="max-w-site mx-auto px-4 sm:px-6 py-10">
-      <Link to="/cart" className="inline-flex items-center gap-1.5 text-white/30 hover:text-rt-accent transition-colors mb-6 text-[11px] font-mono">
+      <Link to="/cart" className="inline-flex items-center gap-1.5 text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors mb-6 text-[0.6875rem] font-mono">
         <ArrowLeft size={13} /> {t("checkout.back_to_cart")}
       </Link>
 
       <div className="mb-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-rt-accent/20 bg-rt-accent/5 mb-4">
-          <span className="w-1.5 h-1.5 rounded-full bg-rt-accent" />
-          <span className="text-rt-accent text-[10px] font-mono tracking-[0.15em] uppercase">{t("checkout.badge")}</span>
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[var(--color-primary)]/10 bg-[var(--color-primary)]/[0.03] mb-4">
+          <span className="eyebrow">{t("checkout.badge")}</span>
         </div>
-        <h1 className="text-2xl md:text-3xl font-display font-bold text-white/90">
+        <h1 className="heading-md">
           {t("checkout.complete_order")}
         </h1>
       </div>
 
       <form onSubmit={handleSubmit} className="grid lg:grid-cols-5 gap-6">
         <div className="lg:col-span-3 space-y-4">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="crystal rounded-2xl p-5">
-            <h2 className="text-sm font-display font-bold text-white/80 tracking-wider mb-5">{t("checkout.shipping_data")}</h2>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-card p-5">
+            <h2 className="text-sm font-semibold text-[var(--color-text)] tracking-wider mb-5">{t("checkout.shipping_data")}</h2>
             <div className="grid sm:grid-cols-2 gap-3">
               <div className="sm:col-span-2">
-                <label className="text-[10px] text-white/30 font-mono tracking-wider mb-1.5 block">{t("checkout.full_name")}</label>
-                <input required value={form.name} onChange={update("name")} placeholder="John Doe" className="input-crystal text-xs py-2.5" />
+                <label className="text-[0.625rem] text-[var(--color-text-muted)] font-mono tracking-wider mb-1.5 block">{t("checkout.full_name")}</label>
+                <input required value={form.name} onChange={update("name")} placeholder="John Doe" className="input" />
               </div>
               <div className="sm:col-span-2">
-                <label className="text-[10px] text-white/30 font-mono tracking-wider mb-1.5 block">{t("checkout.email")}</label>
-                <input required type="email" value={form.email} onChange={update("email")} placeholder="john@example.com" className="input-crystal text-xs py-2.5" />
+                <label className="text-[0.625rem] text-[var(--color-text-muted)] font-mono tracking-wider mb-1.5 block">{t("checkout.email")}</label>
+                <input required type="email" value={form.email} onChange={update("email")} placeholder="john@example.com" className="input" />
               </div>
               <div className="sm:col-span-2">
-                <label className="text-[10px] text-white/30 font-mono tracking-wider mb-1.5 block">{t("checkout.address")}</label>
-                <input required value={form.address} onChange={update("address")} placeholder="123 Tech Street" className="input-crystal text-xs py-2.5" />
+                <label className="text-[0.625rem] text-[var(--color-text-muted)] font-mono tracking-wider mb-1.5 block">{t("checkout.address")}</label>
+                <input required value={form.address} onChange={update("address")} placeholder="123 Tech Street" className="input" />
               </div>
               <div>
-                <label className="text-[10px] text-white/30 font-mono tracking-wider mb-1.5 block">{t("checkout.city")}</label>
-                <input required value={form.city} onChange={update("city")} placeholder="New York" className="input-crystal text-xs py-2.5" />
+                <label className="text-[0.625rem] text-[var(--color-text-muted)] font-mono tracking-wider mb-1.5 block">{t("checkout.city")}</label>
+                <input required value={form.city} onChange={update("city")} placeholder="New York" className="input" />
               </div>
               <div>
-                <label className="text-[10px] text-white/30 font-mono tracking-wider mb-1.5 block">{t("checkout.zip")}</label>
-                <input required value={form.zip} onChange={update("zip")} placeholder="10001" className="input-crystal text-xs py-2.5" />
+                <label className="text-[0.625rem] text-[var(--color-text-muted)] font-mono tracking-wider mb-1.5 block">{t("checkout.zip")}</label>
+                <input required value={form.zip} onChange={update("zip")} placeholder="10001" className="input" />
               </div>
             </div>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="crystal rounded-2xl p-5">
-            <h2 className="text-sm font-display font-bold text-white/80 tracking-wider mb-4 flex items-center gap-2">
-              <Truck size={14} className="text-rt-accent" /> {t("checkout.shipping_title")}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="glass-card p-5">
+            <h2 className="text-sm font-semibold text-[var(--color-text)] tracking-wider mb-4 flex items-center gap-2">
+              <Truck size={14} className="text-[var(--color-primary)]" /> {t("checkout.shipping_title")}
             </h2>
             <div className="space-y-2">
               {SHIPPING_METHODS.map((s) => (
                 <label key={s.id} className={`flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all ${
-                  shippingMethod === s.id ? "border-rt-accent/30 bg-rt-accent/8" : "border-white/[0.06] bg-white/[0.02] hover:border-white/20"
+                  shippingMethod === s.id ? "border-[var(--color-primary)]/30 bg-[var(--color-primary)]/[0.04]" : "border-[var(--card-border)] bg-[var(--card-bg)] hover:border-[var(--color-text-muted)]/30"
                 }`}>
-                  <input type="radio" name="shipping" value={s.id} checked={shippingMethod === s.id} onChange={() => setShippingMethod(s.id)} className="accent-rt-accent" />
+                  <input type="radio" name="shipping" value={s.id} checked={shippingMethod === s.id} onChange={() => setShippingMethod(s.id)} className="accent-[var(--color-primary)]" />
                   <div className="flex-1">
-                    <p className="text-white/60 text-xs font-medium">{s.label}</p>
-                    <p className="text-white/20 text-[10px] font-mono">{s.time}</p>
+                    <p className="text-[var(--color-text)] text-xs font-medium">{s.label}</p>
+                    <p className="text-[var(--color-text-muted)] text-[0.625rem] font-mono">{s.time}</p>
                   </div>
-                  <span className="text-white/50 text-xs font-mono">
+                  <span className="text-[var(--color-text-muted)] text-xs font-mono">
                     {freeShipping && s.id === "standard" ? t("checkout.free") : `$${s.cost}`}
                   </span>
                 </label>
@@ -161,34 +160,34 @@ export default function Checkout() {
             </div>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="crystal rounded-2xl p-5">
-            <h2 className="text-sm font-display font-bold text-white/80 tracking-wider mb-4 flex items-center gap-2">
-              <Gift size={14} className="text-rt-accent" /> {t("checkout.extras")}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-card p-5">
+            <h2 className="text-sm font-semibold text-[var(--color-text)] tracking-wider mb-4 flex items-center gap-2">
+              <Gift size={14} className="text-[var(--color-primary)]" /> {t("checkout.extras")}
             </h2>
-            <label className="flex items-center gap-3 mb-3 cursor-pointer p-3 rounded-xl bg-white/[0.02] border border-white/[0.04]">
-              <input type="checkbox" checked={giftWrap} onChange={() => setGiftWrap(!giftWrap)} className="accent-rt-accent w-3.5 h-3.5" />
+            <label className="flex items-center gap-3 mb-3 cursor-pointer p-3 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)]">
+              <input type="checkbox" checked={giftWrap} onChange={() => setGiftWrap(!giftWrap)} className="accent-[var(--color-primary)] w-3.5 h-3.5" />
               <div>
-                <p className="text-white/60 text-xs">{t("checkout.gift_wrap")}</p>
-                <p className="text-white/20 text-[10px] font-mono">{t("checkout.gift_wrap_desc")}</p>
+                <p className="text-[var(--color-text)] text-xs">{t("checkout.gift_wrap")}</p>
+                <p className="text-[var(--color-text-muted)] text-[0.625rem] font-mono">{t("checkout.gift_wrap_desc")}</p>
               </div>
             </label>
             <div>
-              <label className="text-[10px] text-white/30 font-mono tracking-wider mb-1.5 block flex items-center gap-1"><FileText size={11} /> {t("checkout.notes")}</label>
+              <label className="text-[0.625rem] text-[var(--color-text-muted)] font-mono tracking-wider mb-1.5 block flex items-center gap-1"><FileText size={11} /> {t("checkout.notes")}</label>
               <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} placeholder={t("checkout.special_instructions")}
-                className="input-crystal text-xs py-2 resize-none" />
+                className="input resize-none" />
             </div>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="crystal rounded-2xl p-5">
-            <h2 className="text-sm font-display font-bold text-white/80 tracking-wider mb-4 flex items-center gap-2">
-              <CreditCard size={14} className="text-rt-accent" /> {t("checkout.payment")}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="glass-card p-5">
+            <h2 className="text-sm font-semibold text-[var(--color-text)] tracking-wider mb-4 flex items-center gap-2">
+              <CreditCard size={14} className="text-[var(--color-primary)]" /> {t("checkout.payment")}
             </h2>
             <div>
-              <label className="text-[10px] text-white/30 font-mono tracking-wider mb-1.5 block">{t("checkout.card_number")}</label>
+              <label className="text-[0.625rem] text-[var(--color-text-muted)] font-mono tracking-wider mb-1.5 block">{t("checkout.card_number")}</label>
               <div className="relative">
                 <input required value={form.card} onChange={update("card")} placeholder="4242 4242 4242 4242" maxLength={19}
-                  className="input-crystal text-xs py-2.5 pl-10" />
-                <CreditCard size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/20" />
+                  className="input pl-10" />
+                <CreditCard size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" />
               </div>
             </div>
           </motion.div>
@@ -196,46 +195,46 @@ export default function Checkout() {
 
         <div className="lg:col-span-2">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="space-y-4 sticky top-28">
-            <div className="crystal rounded-2xl p-5">
-              <h3 className="text-white/60 text-xs font-display font-bold tracking-wider mb-3 flex items-center gap-2">
-                <Percent size={12} className="text-rt-accent" /> {t("checkout.coupon")}
+            <div className="glass-card p-5">
+              <h3 className="text-[var(--color-text-muted)] text-xs font-semibold tracking-wider mb-3 flex items-center gap-2">
+                <Percent size={12} className="text-[var(--color-primary)]" /> {t("checkout.coupon")}
               </h3>
               <div className="flex gap-2">
                 <input value={couponCode} onChange={(e) => setCouponCode(e.target.value)} placeholder={t("checkout.enter_code")}
-                  className="flex-1 input-crystal text-[11px] py-2" />
-                <button type="button" onClick={handleApplyCoupon} className="px-3.5 py-2 rounded-xl bg-rt-accent/10 border border-rt-accent/20 text-rt-accent text-[11px] font-medium hover:bg-rt-accent/20 transition-all">{t("checkout.apply")}</button>
+                  className="flex-1 input" />
+                <button type="button" onClick={handleApplyCoupon} className="px-3.5 py-2 rounded-xl bg-[var(--color-primary)]/10 border border-[var(--color-primary)]/20 text-[var(--color-primary)] text-[0.6875rem] font-medium hover:bg-[var(--color-primary)]/20 transition-all">{t("checkout.apply")}</button>
               </div>
-              {coupon && <p className="text-rt-accent/60 text-[10px] mt-2 font-mono">{t("checkout.coupon_applied")}</p>}
-              {couponErr && <p className="text-red-400 text-[10px] mt-2 font-mono">! {couponErr}</p>}
+              {coupon && <p className="text-[var(--color-primary)]/60 text-[0.625rem] mt-2 font-mono">{t("checkout.coupon_applied")}</p>}
+              {couponErr && <p className="text-red-400 text-[0.625rem] mt-2 font-mono">! {couponErr}</p>}
             </div>
 
-            <div className="crystal rounded-2xl p-5">
-              <h3 className="text-sm font-display font-bold text-white/80 tracking-wider mb-4">{t("checkout.summary")}</h3>
+            <div className="glass-card p-5">
+              <h3 className="text-sm font-semibold text-[var(--color-text)] tracking-wider mb-4">{t("checkout.summary")}</h3>
               <div className="space-y-2.5 mb-4 max-h-48 overflow-y-auto pr-1">
                 {items.map((item) => (
-                  <div key={item.id} className="flex items-center gap-2.5 bg-white/[0.02] rounded-xl p-2">
+                  <div key={item.id} className="flex items-center gap-2.5 bg-[var(--card-bg)] rounded-xl p-2">
                     <img src={item.images?.[0] || ""} alt={item.name} className="w-8 h-8 object-cover rounded-lg shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-white/50 text-[11px] truncate">{item.name}</p>
-                      <p className="text-white/20 text-[9px] font-mono">x{item.quantity}</p>
+                      <p className="text-[var(--color-text-muted)] text-[0.6875rem] truncate">{item.name}</p>
+                      <p className="text-[var(--color-text-muted)] text-[0.5625rem] font-mono opacity-60">x{item.quantity}</p>
                     </div>
-                    <span className="text-white/50 text-[11px] font-mono">${(item.price * item.quantity).toLocaleString()}</span>
+                    <span className="text-[var(--color-text-muted)] text-[0.6875rem] font-mono">${(item.price * item.quantity).toLocaleString()}</span>
                   </div>
                 ))}
               </div>
-              <div className="space-y-1.5 text-xs border-t border-white/[0.04] pt-3">
-                <div className="flex justify-between"><span className="text-white/30 font-mono text-[11px]">{t("checkout.subtotal")}</span><span className="text-white/60 font-mono text-[11px]">${totalPrice.toLocaleString()}</span></div>
-                <div className="flex justify-between"><span className="text-white/30 font-mono text-[11px]">{t("checkout.shipping_line")}</span><span className={`font-mono text-[11px] ${freeShipping ? "text-rt-accent" : "text-white/60"}`}>{freeShipping ? t("checkout.free") : `$${effectiveShipping.toFixed(2)}`}</span></div>
-                <div className="flex justify-between"><span className="text-white/30 font-mono text-[11px]">{t("checkout.tax_line")}</span><span className="text-white/60 font-mono text-[11px]">${tax.toFixed(2)}</span></div>
-                {giftWrap && <div className="flex justify-between"><span className="text-white/30 font-mono text-[11px]">{t("checkout.gift_wrap_line")}</span><span className="text-white/60 font-mono text-[11px]">$4.99</span></div>}
-                {coupon && <div className="flex justify-between"><span className="text-rt-accent/50 font-mono text-[11px]">{t("checkout.discount", { code: coupon.code })}</span><span className="text-rt-accent font-mono text-[11px]">-${couponDiscount.toFixed(2)}</span></div>}
-                <div className="flex justify-between border-t border-white/[0.06] pt-2 mt-2">
-                  <span className="text-white/70 text-xs font-bold">{t("checkout.total")}</span>
-                  <span className="text-rt-accent font-display font-bold text-base">${total.toFixed(2)}</span>
+              <div className="space-y-1.5 text-xs border-t border-[var(--card-border)] pt-3">
+                <div className="flex justify-between"><span className="text-[var(--color-text-muted)] font-mono text-[0.6875rem]">{t("checkout.subtotal")}</span><span className="text-[var(--color-text)] font-mono text-[0.6875rem] opacity-70">${totalPrice.toLocaleString()}</span></div>
+                <div className="flex justify-between"><span className="text-[var(--color-text-muted)] font-mono text-[0.6875rem]">{t("checkout.shipping_line")}</span><span className={`font-mono text-[0.6875rem] ${freeShipping ? "text-emerald-400" : "text-[var(--color-text)] opacity-70"}`}>{freeShipping ? t("checkout.free") : `$${effectiveShipping.toFixed(2)}`}</span></div>
+                <div className="flex justify-between"><span className="text-[var(--color-text-muted)] font-mono text-[0.6875rem]">{t("checkout.tax_line")}</span><span className="text-[var(--color-text)] font-mono text-[0.6875rem] opacity-70">${tax.toFixed(2)}</span></div>
+                {giftWrap && <div className="flex justify-between"><span className="text-[var(--color-text-muted)] font-mono text-[0.6875rem]">{t("checkout.gift_wrap_line")}</span><span className="text-[var(--color-text)] font-mono text-[0.6875rem] opacity-70">$4.99</span></div>}
+                {coupon && <div className="flex justify-between"><span className="text-[var(--color-primary)]/50 font-mono text-[0.6875rem]">{t("checkout.discount", { code: coupon.code })}</span><span className="text-[var(--color-primary)] font-mono text-[0.6875rem]">-${couponDiscount.toFixed(2)}</span></div>}
+                <div className="flex justify-between border-t border-[var(--card-border)] pt-2 mt-2">
+                  <span className="text-[var(--color-text)] text-sm font-bold">{t("checkout.total")}</span>
+                  <span className="price text-base">${total.toFixed(2)}</span>
                 </div>
               </div>
-              <button type="submit" disabled={submitting} className="w-full mt-4 btn-crystal text-xs py-3 flex items-center justify-center gap-2">
-                {submitting ? <><span className="spinner-crystal w-4 h-4" /> {t("checkout.processing")}</> : <><Lock size={13} /> {t("checkout.place_order")}</>}
+              <button type="submit" disabled={submitting} className="btn btn-primary w-full justify-center mt-4">
+                {submitting ? <><span className="spinner w-4 h-4" /> {t("checkout.processing")}</> : <><Lock size={13} /> {t("checkout.place_order")}</>}
               </button>
               <div className="mt-3"><TrustBadges /></div>
             </div>

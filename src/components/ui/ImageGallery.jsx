@@ -54,7 +54,7 @@ export default function ImageGallery({ images, productName }) {
             <button
               key={i}
               onClick={() => setActive(i)}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${i === active ? "bg-rt-accent w-6" : "bg-white/40 hover:bg-white/60"}`}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${i === active ? "bg-[var(--color-primary)] w-6" : "bg-white/40 hover:bg-white/60"}`}
             />
           ))}
         </div>
@@ -67,7 +67,7 @@ export default function ImageGallery({ images, productName }) {
               key={i}
               onClick={() => setActive(i)}
               className={`w-20 h-20 rounded-xl overflow-hidden border-2 transition-all shrink-0 ${
-                i === active ? "border-rt-accent" : "border-white/10 hover:border-white/30"
+                i === active ? "border-[var(--color-primary)]" : "border-white/10 hover:border-white/30"
               }`}
             >
               <img src={img} alt="" className="w-full h-full object-cover" />

@@ -39,7 +39,7 @@ export default function ShareButtons({ product }) {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => share(b.action)}
-            className="p-2 rounded-lg bg-white/5 border border-white/10 text-white/40 hover:text-rt-accent hover:border-rt-accent/30 transition-all"
+            className="p-2 rounded-lg bg-white/5 border border-white/10 text-white/40 hover:text-[var(--color-primary)] hover:border-[var(--color-primary)]/30 transition-all"
             title={b.label}
           >
             <Icon size={14} />

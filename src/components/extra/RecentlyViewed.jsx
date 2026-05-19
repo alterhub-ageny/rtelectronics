@@ -33,7 +33,7 @@ export default function RecentlyViewed() {
   return (
     <section className="max-w-site mx-auto px-4 sm:px-6 py-10">
       <div className="flex items-center gap-2 mb-6">
-        <Clock size={18} className="text-rt-accent" />
+        <Clock size={18} className="text-[var(--color-primary)]" />
         <h2 className="text-lg font-display font-bold text-white">Recently Viewed</h2>
       </div>
       <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-thin">
@@ -43,8 +43,8 @@ export default function RecentlyViewed() {
               <div className="aspect-square rounded-xl overflow-hidden bg-rt-dark mb-2">
                 <img src={p.images?.[0]} alt={p.name} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
               </div>
-              <p className="text-white text-xs font-medium truncate group-hover:text-rt-accent transition-colors">{p.name}</p>
-              <p className="text-rt-accent font-mono text-xs">${p.price?.toLocaleString()}</p>
+              <p className="text-white text-xs font-medium truncate group-hover:text-[var(--color-primary)] transition-colors">{p.name}</p>
+              <p className="text-[var(--color-primary)] font-mono text-xs">${p.price?.toLocaleString()}</p>
             </Link>
           </motion.div>
         ))}

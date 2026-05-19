@@ -5,7 +5,8 @@ import { useTranslation } from "react-i18next";
 import {
   ShoppingCart, Menu, X, User, Package, Heart, LogOut,
   Sun, Moon, Laptop, Smartphone, Gamepad2, Tablet, Headphones,
-  Mouse, Gem, Gift, Watch, ChevronRight, Sparkles, Globe
+  Mouse, Gem, Gift, Watch, ChevronRight, Sparkles, Globe,
+  Zap
 } from "lucide-react";
 import { useCategories } from "../../hooks/useCategories";
 import { useCart } from "../../context/CartContext";
@@ -19,10 +20,6 @@ const NAV_ICONS = {
 };
 const NAV_LABELS = {
   "Headphones & Audio": "Audio", "Gaming PCs": "Gaming PCs", "Game Top-Ups": "Top-Ups",
-};
-const CATEGORY_EMOJIS = {
-  laptop: "💻", smartphone: "📱", "gamepad-2": "🎮", tablet: "📟",
-  watch: "⌚", headphones: "🎧", keyboard: "⌨️", dices: "🎲", gift: "🎁",
 };
 
 export default function Header() {
@@ -40,10 +37,9 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [userMenu, setUserMenu] = useState(false);
-  const [activeMega, setActiveMega] = useState(null);
+  const [searchOpen, setSearchOpen] = useState(false);
   const navigate = useNavigate();
   const userRef = useRef();
-  const megaTimeout = useRef();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -58,227 +54,192 @@ export default function Header() {
     };
   }, []);
 
-  const handleMegaEnter = (id) => {
-    clearTimeout(megaTimeout.current);
-    setActiveMega(id);
-  };
-  const handleMegaLeave = () => {
-    megaTimeout.current = setTimeout(() => setActiveMega(null), 150);
-  };
-
   return (
-    <header
-      className="theme-header fixed top-0 left-0 right-0 z-50 shadow-2xl shadow-black/30 transition-all duration-700"
-    >
-      {scrolled && (
-        <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-rt-accent/15 via-cyan-500/5 to-transparent" />
-      )}
+    <header className={`theme-header fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'scrolled' : ''}`}>
+      {/* Accent line */}
+      <div className={`absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-[var(--color-primary)] to-transparent transition-opacity duration-500 ${scrolled ? 'opacity-60' : 'opacity-0'}`} />
 
-      <div className="max-w-site mx-auto px-3 sm:px-4">
+      <div className="max-w-site mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center gap-2.5 group shrink-0">
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-3 group shrink-0">
             <div className="relative">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-rt-accent/10 to-cyan-500/5 border border-rt-accent/10 flex items-center justify-center">
-                <span className="text-sm font-display font-bold text-white/90">RT</span>
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-hover)] flex items-center justify-center shadow-lg shadow-[var(--color-primary)]/20">
+                <Zap size={16} className="text-white" />
               </div>
-              <div className="absolute -inset-1 bg-rt-accent/10 blur-lg rounded-full scale-150 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute -inset-1 bg-[var(--color-primary)]/20 blur-xl rounded-full scale-150 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </div>
             <div>
-              <span className="text-xs font-display font-bold tracking-[0.25em] text-white/70 group-hover:text-white transition-colors">
-                {t("header.brand")}
+              <span className="text-sm font-bold tracking-[0.2em] text-[var(--color-text)] group-hover:text-[var(--color-primary)] transition-colors">
+                RT
               </span>
-              <p className="text-[7px] text-white/15 tracking-[0.2em] uppercase font-mono -mt-0.5">
-                {t("header.tagline")}
+              <p className="text-[8px] text-[var(--color-text-muted)] tracking-[0.2em] uppercase font-mono -mt-0.5">
+                ELECTRONICS
               </p>
             </div>
           </Link>
 
-          <nav className="hidden lg:flex items-center gap-0.5 mx-1 scrollbar-none">
+          {/* Desktop Nav */}
+          <nav className="hidden lg:flex items-center gap-1">
             {categories.map((cat) => {
               const Icon = NAV_ICONS[cat.icon] || Package;
               const label = NAV_LABELS[cat.name] || cat.name;
-              const isActive = activeMega === cat.id;
               return (
-                <div
+                <Link
                   key={cat.id}
-                  className="relative group-mega"
-                  onMouseEnter={() => handleMegaEnter(cat.id)}
-                  onMouseLeave={handleMegaLeave}
+                  to={`/products?category=${cat.slug}`}
+                  className="group relative px-3 py-2 text-[0.8125rem] font-medium text-[var(--nav-link)] hover:text-[var(--color-text)] transition-all duration-300"
                 >
-                  <Link
-                    to={`/products?category=${cat.slug}`}
-                    className={`relative flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] rounded-lg transition-all duration-300 whitespace-nowrap ${
-                      isActive
-                        ? "text-white bg-white/[0.03]"
-                        : "text-white/35 hover:text-white/70"
-                    }`}
-                  >
-                    <Icon size={10} className={`transition-all duration-300 ${isActive ? "text-rt-accent" : ""}`} />
-                    <span className="relative tracking-wider uppercase font-medium">
-                      {label}
-                      <span className={`absolute -bottom-0.5 left-0 h-[1px] bg-gradient-to-r from-rt-accent/60 to-cyan-500/30 transition-all duration-300 ${isActive ? "w-full" : "w-0 group-hover:w-full"}`} />
-                    </span>
-                  </Link>
-
-                  <div className="mega-menu pointer-events-none group-mega:hover:pointer-events-auto">
-                    <div className="flex items-start gap-4 min-w-[240px]">
-                      <div className="text-3xl opacity-50">
-                        {CATEGORY_EMOJIS[cat.icon] || "📦"}
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm text-white/90 font-semibold mb-0.5">
-                          {cat.name}
-                        </p>
-                        <p className="text-[10px] text-white/25 font-mono mb-2">{cat.description}</p>
-                        <div className="flex items-center gap-3 text-[10px]">
-                          <span className="inline-flex items-center gap-1 text-rt-accent/70 font-mono">
-                            <Sparkles size={9} /> {t("header.products_count", { count: cat.productCount })}
-                          </span>
-                          <span className="text-white/20">·</span>
-                          <span className="flex items-center gap-0.5 text-white/30 hover:text-rt-accent transition-colors">
-                            {t("header.browse")} <ChevronRight size={9} />
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-rt-accent/20 to-transparent" />
-                    <div className="absolute -top-[5px] left-1/2 -translate-x-1/2 w-2 h-2 bg-[#12121E] border-l border-t border-white/[0.06] rotate-45" />
-                  </div>
-                </div>
+                  <span className="flex items-center gap-1.5">
+                    <Icon size={12} className="group-hover:text-[var(--color-primary)] transition-colors" />
+                    {label}
+                  </span>
+                  <span className="absolute bottom-0 left-2 right-2 h-[2px] bg-[var(--color-primary)] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-full" />
+                </Link>
               );
             })}
           </nav>
 
-          <div className="flex items-center gap-1.5">
-            <div className="hidden md:block w-28 lg:w-40">
+          {/* Actions */}
+          <div className="flex items-center gap-2">
+            {/* Search - desktop */}
+            <div className="hidden md:block">
               <SearchBar />
             </div>
 
-            <button onClick={cycleLang} className="theme-toggle" title={LANGUAGES[i18n.language]}>
-              <Globe size={13} />
-              <span className="text-[9px] font-mono ml-0.5">{LANGUAGES[i18n.language]}</span>
+            {/* Search toggle - mobile */}
+            <button onClick={() => setSearchOpen(!searchOpen)} className="nav-btn md:hidden">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
             </button>
-            <button onClick={toggleTheme} className="theme-toggle" title={theme === "dark" ? t("header.light_mode") : t("header.dark_mode")}>
+
+            {/* Language */}
+            <button onClick={cycleLang} className="nav-btn" title={LANGUAGES[i18n.language]}>
+              <Globe size={12} />
+              <span className="text-[9px] font-mono font-semibold">{LANGUAGES[i18n.language]}</span>
+            </button>
+
+            {/* Theme */}
+            <button onClick={toggleTheme} className="nav-btn" title={theme === "dark" ? t("header.light_mode") : t("header.dark_mode")}>
               {theme === "dark" ? <Sun size={13} /> : <Moon size={13} />}
             </button>
 
+            {/* User */}
             {user ? (
               <div ref={userRef} className="relative">
-                <button
-                  onClick={() => setUserMenu(!userMenu)}
-                  className="flex items-center gap-1.5 p-1.5 nav-btn"
-                >
-                  <div className="w-7 h-7 rounded-lg bg-[var(--nav-icon-bg)] border border-[var(--nav-icon-border)] flex items-center justify-center overflow-hidden">
+                <button onClick={() => setUserMenu(!userMenu)} className="flex items-center gap-2 nav-btn px-2">
+                  <div className="w-7 h-7 rounded-lg bg-[var(--color-primary-subtle)] border border-[var(--color-primary)]/20 flex items-center justify-center overflow-hidden">
                     {user.avatar ? (
                       <img src={user.avatar} alt="" className="w-full h-full object-cover" />
                     ) : (
-                      <User size={12} className="text-white/40" />
+                      <User size={12} className="text-[var(--color-primary)]" />
                     )}
                   </div>
-                  <span className="text-white/50 text-xs hidden sm:block max-w-[70px] truncate">
+                  <span className="text-[0.8125rem] text-[var(--color-text)] hidden sm:block max-w-[80px] truncate font-medium">
                     {user.name}
                   </span>
                 </button>
                 <AnimatePresence>
                   {userMenu && (
                     <motion.div
-                      initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                      initial={{ opacity: 0, y: -6, scale: 0.96 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: -8, scale: 0.96 }}
-                      className="absolute right-0 top-full mt-2 w-44 card-glass-solid overflow-hidden shadow-glass"
+                      exit={{ opacity: 0, y: -6, scale: 0.96 }}
+                      transition={{ duration: 0.15, ease: "easeOut" }}
+                      className="absolute right-0 top-full mt-2 w-48 glass-card overflow-hidden p-1"
                     >
                       {[
                         { icon: User, label: t("header.my_account"), href: "/account" },
                         { icon: Package, label: t("header.my_orders"), href: "/account?tab=orders" },
                         { icon: Heart, label: t("header.wishlist"), href: "/wishlist" },
                       ].map((item) => (
-                        <Link
-                          key={item.href}
-                          to={item.href}
-                          onClick={() => setUserMenu(false)}
-                          className="flex items-center gap-3 px-4 py-2.5 text-white/40 hover:text-white hover:bg-white/[0.02] transition-all text-[11px]"
+                        <Link key={item.href} to={item.href} onClick={() => setUserMenu(false)}
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[0.8125rem] text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:bg-[var(--color-primary-subtle)] transition-all"
                         >
-                          <item.icon size={13} className="text-rt-accent/60" />
+                          <item.icon size={14} className="text-[var(--color-primary)]/60" />
                           {item.label}
                         </Link>
                       ))}
-                      <div className="divider mx-3" />
-                      <button
-                        onClick={() => { logout(); setUserMenu(false); navigate("/"); }}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 text-[11px] text-red-400/50 hover:text-red-400 hover:bg-red-500/5 transition-all"
+                      <div className="h-[1px] bg-[var(--color-border)] mx-3 my-1" />
+                      <button onClick={() => { logout(); setUserMenu(false); navigate("/"); }}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[0.8125rem] text-[var(--color-error)]/70 hover:text-[var(--color-error)] hover:bg-[var(--color-error)]/5 transition-all"
                       >
-                        <LogOut size={13} /> {t("header.sign_out")}
+                        <LogOut size={14} /> {t("header.sign_out")}
                       </button>
                     </motion.div>
                   )}
                 </AnimatePresence>
               </div>
             ) : (
-              <Link
-                to="/login"
-                className="hidden sm:flex items-center gap-1.5 nav-btn-link"
-              >
-                <User size={12} /> {t("header.sign_in")}
+              <Link to="/login" className="btn btn-primary btn-sm hidden sm:flex">
+                <User size={13} /> {t("header.sign_in")}
               </Link>
             )}
 
-            <Link
-              to="/cart"
-              className="relative nav-btn group"
-            >
-              <ShoppingCart size={14} className="text-current group-hover:text-rt-accent transition-colors" />
+            {/* Cart */}
+            <Link to="/cart" className="nav-btn relative">
+              <ShoppingCart size={14} />
               {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-gradient-to-br from-rt-accent to-rt-accent/80 text-white text-[7px] font-bold flex items-center justify-center shadow-lg shadow-rt-accent/30">
+                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-[var(--color-primary)] text-white text-[7px] font-bold flex items-center justify-center shadow-lg shadow-[var(--color-primary)]/30">
                   {totalItems > 9 ? "9+" : totalItems}
                 </span>
               )}
             </Link>
 
-            <button
-              onClick={() => setMobileMenu(!mobileMenu)}
-              className="lg:hidden nav-btn"
-            >
-              {mobileMenu ? <X size={14} className="text-current" /> : <Menu size={14} className="text-current" />}
+            {/* Mobile menu */}
+            <button onClick={() => setMobileMenu(!mobileMenu)} className="nav-btn lg:hidden">
+              {mobileMenu ? <X size={14} /> : <Menu size={14} />}
             </button>
           </div>
         </div>
       </div>
 
+      {/* Mobile Search */}
+      <AnimatePresence>
+        {searchOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden border-t border-[var(--nav-border)]"
+          >
+            <div className="px-4 py-3">
+              <SearchBar />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Mobile Nav */}
       <AnimatePresence>
         {mobileMenu && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
             className="lg:hidden mobile-nav overflow-hidden"
           >
-            <div className="px-4 py-3">
-              <SearchBar />
-            </div>
             {!user && (
-              <div className="px-4 pb-3">
-                <Link
-                  to="/login"
-                  onClick={() => setMobileMenu(false)}
-                  className="block w-full py-2.5 rounded-lg border border-[var(--nav-icon-border)] text-[var(--nav-icon-color)] text-center font-semibold text-[11px] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-all"
+              <div className="px-4 pt-4 pb-2">
+                <Link to="/login" onClick={() => setMobileMenu(false)}
+                  className="btn btn-primary w-full"
                 >
                   {t("header.sign_in_register")}
                 </Link>
               </div>
             )}
-            <nav className="px-4 pb-6 grid grid-cols-2 gap-2">
-              {categories.map((cat) => (
-                <Link
-                  key={cat.id}
-                  to={`/products?category=${cat.slug}`}
-                  onClick={() => setMobileMenu(false)}
-                  className="flex items-center gap-2 px-4 py-3 rounded-lg bg-[var(--nav-icon-bg)] border border-[var(--nav-icon-border)] text-[var(--nav-icon-color)] hover:text-[var(--color-primary)] hover:border-[var(--color-primary)] transition-all text-[11px]"
-                >
-                  <span className="text-lg">{CATEGORY_EMOJIS[cat.icon] || "📦"}</span>
-                  <span>{cat.name}</span>
-                  <span className="ml-auto text-[9px] text-[var(--nav-icon-color)] font-mono opacity-50">{cat.productCount}</span>
-                </Link>
-              ))}
+            <nav className="px-4 pb-6 pt-2 grid grid-cols-2 gap-2">
+              {categories.map((cat) => {
+                const Icon = NAV_ICONS[cat.icon] || Package;
+                return (
+                  <Link key={cat.id} to={`/products?category=${cat.slug}`} onClick={() => setMobileMenu(false)}
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl border border-[var(--nav-border)] text-[var(--nav-link)] hover:text-[var(--color-primary)] hover:border-[var(--color-primary)]/30 hover:bg-[var(--color-primary-subtle)] transition-all text-[0.8125rem] font-medium"
+                  >
+                    <Icon size={14} className="shrink-0" />
+                    <span>{cat.name}</span>
+                  </Link>
+                );
+              })}
             </nav>
           </motion.div>
         )}

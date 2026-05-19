@@ -79,7 +79,7 @@ export default function Carousel({ items, interval = 5000 }) {
             key={i}
             onClick={() => setCurrent(i)}
             className={`w-2 h-2 rounded-full transition-all duration-300 ${
-              i === current ? "bg-gradient-to-r from-rt-accent to-cyan-500 w-8" : "bg-white/30 hover:bg-white/50"
+              i === current ? "bg-gradient-to-r from-[var(--color-primary)] to-cyan-500 w-8" : "bg-white/30 hover:bg-white/50"
             }`}
           />
         ))}

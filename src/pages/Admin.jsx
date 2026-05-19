@@ -17,7 +17,7 @@ class ErrorBoundary extends Component {
             <AlertTriangle size={28} className="text-red-400" />
           </div>
           <p className="text-red-400 text-sm max-w-md text-center">{this.state.error.message}</p>
-          <button onClick={() => this.setState({ error: null })} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all">Retry</button>
+          <button onClick={() => this.setState({ error: null })} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--color-primary)] text-white text-sm font-medium hover:bg-[var(--color-primary)] transition-all">Retry</button>
         </div>
       );
     }
@@ -144,7 +144,7 @@ export default function Admin() {
   const tabs = TABS(t);
 
   useEffect(() => { if (!loading && !user) navigate("/login"); else if (!loading && !isAdmin) navigate("/"); }, [user, isAdmin, loading]);
-  if (loading) return <div className="min-h-screen bg-rt-darker flex items-center justify-center"><div className="w-8 h-8 border-2 border-rt-accent border-t-transparent rounded-full animate-spin" /></div>;
+  if (loading) return <div className="min-h-screen bg-[var(--admin-surface)] flex items-center justify-center"><div className="w-8 h-8 border-2 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" /></div>;
   if (!user || !isAdmin) return null;
 
   const TabContent = () => {
@@ -169,28 +169,28 @@ export default function Admin() {
   };
 
   return (
-    <div className="admin-panel min-h-screen bg-rt-darker flex relative overflow-hidden">
+    <div className="admin-panel min-h-screen flex relative overflow-hidden">
       <div className="fixed inset-0 pointer-events-none opacity-[0.03]">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-white"/></pattern></defs><rect width="100%" height="100%" fill="url(#grid)" /></svg>
       </div>
-      <aside className={`fixed lg:sticky top-0 left-0 h-full z-40 w-64 bg-rt-darker/95 backdrop-blur-xl border-r border-white/5 overflow-y-auto transition-transform ${sidebar ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
+      <aside className={`fixed lg:sticky top-0 left-0 h-full z-40 w-64 bg-[var(--admin-surface)]/95 backdrop-blur-xl border-r border-white/5 overflow-y-auto transition-transform ${sidebar ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
         <div className="p-4 border-b border-white/5">
           <Link to="/" className="flex items-center gap-2 group">
             <div className="relative">
-              <Zap size={24} className="text-rt-accent relative z-10" />
-              <div className="absolute inset-0 bg-rt-accent/20 blur-xl rounded-full scale-150 group-hover:scale-175 transition-transform" />
+              <Zap size={24} className="text-[var(--color-primary)] relative z-10" />
+              <div className="absolute inset-0 bg-[var(--color-primary)]/20 blur-xl rounded-full scale-150 group-hover:scale-175 transition-transform" />
             </div>
-            <span className="text-lg font-display font-bold"><span className="text-white">{t("admin.title_1")}</span><span className="text-rt-accent">{t("admin.title_2")}</span></span>
+            <span className="text-lg font-display font-bold"><span className="text-white">{t("admin.title_1")}</span><span className="text-[var(--color-primary)]">{t("admin.title_2")}</span></span>
           </Link>
         </div>
         <nav className="p-2 space-y-0.5">
           {tabs.map((tabItem) => (
             <button key={tabItem.id} onClick={() => { setTab(tabItem.id); setSidebar(false); }}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-300 relative overflow-hidden group ${
-                tab === tabItem.id ? "text-rt-accent" : "text-white/50 hover:text-white hover:bg-white/5"
+                tab === tabItem.id ? "text-[var(--color-primary)]" : "text-white/50 hover:text-white hover:bg-white/5"
               }`}
             >
-              {tab === tabItem.id && <div className="absolute inset-0 bg-rt-accent/10 border border-rt-accent/30 rounded-xl" />}
+              {tab === tabItem.id && <div className="absolute inset-0 bg-[var(--color-primary)]/10 border border-[var(--color-primary)]/30 rounded-xl" />}
               <span className="relative z-10 flex items-center gap-3">
                 <tabItem.icon size={16} />
                 {tabItem.label}
@@ -206,7 +206,7 @@ export default function Admin() {
       </aside>
       {sidebar && <div className="fixed inset-0 bg-black/50 z-30 lg:hidden" onClick={() => setSidebar(false)} />}
       <main className="flex-1 min-h-screen overflow-x-hidden relative">
-        <header className="sticky top-0 z-20 bg-rt-darker/90 backdrop-blur-xl border-b border-white/5 px-4 lg:px-8 py-3 flex items-center justify-between">
+        <header className="sticky top-0 z-20 bg-[var(--admin-surface)]/90 backdrop-blur-xl border-b border-white/5 px-4 lg:px-8 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button onClick={() => setSidebar(true)} className="lg:hidden p-2 rounded-xl bg-white/5 border border-white/10 text-white">
               <MenuIcon />
@@ -215,9 +215,9 @@ export default function Admin() {
           </div>
           <div className="flex items-center gap-3">
             <span className="text-sm text-white/40 hidden sm:block">{user?.name}</span>
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-rt-accent/20 to-rt-accent2/20 flex items-center justify-center relative">
-              <Crown size={14} className="text-rt-accent relative z-10" />
-              <div className="absolute inset-0 bg-rt-accent/10 blur-md rounded-lg animate-pulse" />
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--color-primary)]/10 to-[var(--color-primary)]/20 flex items-center justify-center relative">
+              <Crown size={14} className="text-[var(--color-primary)] relative z-10" />
+              <div className="absolute inset-0 bg-[var(--color-primary)]/10 blur-md rounded-lg animate-pulse" />
             </div>
           </div>
         </header>
@@ -276,12 +276,12 @@ function BarChart({ data, height = 160, color = "#ff2a2a" }) {
 }
 
 /* ─────── KPI CARD ─────── */
-function KpiCard({ title, value, icon: Icon, trend, subtitle, color = "text-rt-accent", chart, onClick }) {
+function KpiCard({ title, value, icon: Icon, trend, subtitle, color = "text-[var(--color-primary)]", chart, onClick }) {
   return (
     <motion.div whileHover={{ scale: 1.02, y: -2 }} onClick={onClick} className={`glass rounded-2xl p-5 border border-white/5 ${onClick ? "cursor-pointer" : ""} hover:border-white/15 transition-all relative overflow-hidden group`}>
       <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-white/[0.02] to-transparent rounded-full -translate-y-1/2 translate-x-1/2" />
       <div className="flex items-start justify-between mb-3 relative">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-white/5 to-white/10 border border-white/10 flex items-center justify-center group-hover:border-rt-accent/30 transition-all">
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-white/5 to-white/10 border border-white/10 flex items-center justify-center group-hover:border-[var(--color-primary)]/30 transition-all">
           {Icon && <Icon size={18} className={`${color} group-hover:scale-110 transition-transform`} />}
         </div>
         {chart}
@@ -320,8 +320,8 @@ function DashboardTab() {
   if (loading && !stats) return (
     <div className="flex flex-col items-center justify-center py-20 gap-4">
       <div className="relative">
-        <div className="w-12 h-12 border-2 border-rt-accent/30 border-t-rt-accent rounded-full animate-spin" />
-        <div className="absolute inset-0 bg-rt-accent/10 blur-xl rounded-full animate-pulse" />
+        <div className="w-12 h-12 border-2 border-[var(--color-primary)]/30 border-t-[var(--color-primary)] rounded-full animate-spin" />
+        <div className="absolute inset-0 bg-[var(--color-primary)]/10 blur-xl rounded-full animate-pulse" />
       </div>
       <p className="text-white/30 text-sm animate-pulse">{t("admin.loading")}</p>
     </div>
@@ -333,7 +333,7 @@ function DashboardTab() {
         <AlertTriangle size={28} className="text-red-400" />
       </div>
       <p className="text-red-400 text-sm">{error}</p>
-      <button onClick={load} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all"><RefreshCw size={14} /> {t("admin.retry")}</button>
+      <button onClick={load} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--color-primary)] text-white text-sm font-medium hover:bg-[var(--color-primary)] transition-all"><RefreshCw size={14} /> {t("admin.retry")}</button>
     </div>
   );
 
@@ -360,12 +360,12 @@ function DashboardTab() {
         <KpiCard title={t("admin.subscribers")} value={stats.totalSubscribers} icon={Mail} />
       </div>
       <div className="glass rounded-2xl p-5 border border-white/5 relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-rt-accent/50 to-transparent" />
+        <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-[var(--color-primary)]/30 to-transparent" />
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-white font-display font-semibold">{t("admin.revenue_vs_expenses")}</h3>
           <div className="flex gap-1">
             {[7, 30].map((d) => (
-              <button key={d} onClick={() => setPeriod(d)} className={`px-3 py-1 text-xs rounded-lg transition-all ${period === d ? "bg-rt-accent text-white shadow-lg shadow-rt-accent/25" : "bg-white/5 text-white/50 hover:text-white"}`}>{d}d</button>
+              <button key={d} onClick={() => setPeriod(d)} className={`px-3 py-1 text-xs rounded-lg transition-all ${period === d ? "bg-[var(--color-primary)] text-white shadow-lg shadow-[var(--color-primary)]/20" : "bg-white/5 text-white/50 hover:text-white"}`}>{d}d</button>
             ))}
           </div>
         </div>
@@ -385,7 +385,7 @@ function DashboardTab() {
         </div>
       </div>
       <div className="glass rounded-2xl p-5 border border-white/5 relative">
-        <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-rt-accent/50 to-transparent" />
+        <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-[var(--color-primary)]/30 to-transparent" />
         <h3 className="text-white font-display font-semibold mb-3">{t("admin.recent_sales", { days: period })}</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -399,7 +399,7 @@ function DashboardTab() {
                   <td className="py-2 pr-4 text-right text-white/70">{h.orders}</td>
                   <td className="py-2 pr-4 text-right text-emerald-400 font-mono">${sf(h.revenue)}</td>
                   <td className="py-2 pr-4 text-right text-orange-400 font-mono">${sf(h.expenses)}</td>
-                  <td className={`py-2 text-right font-mono ${h.profit >= 0 ? "text-rt-accent" : "text-red-400"}`}>${sf(h.profit)}</td>
+                  <td className={`py-2 text-right font-mono ${h.profit >= 0 ? "text-[var(--color-primary)]" : "text-red-400"}`}>${sf(h.profit)}</td>
                 </tr>
               ))}
             </tbody>
@@ -440,9 +440,9 @@ function ProductsTab({ addToast }) {
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="relative flex-1 max-w-xs">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("admin.search_products")} className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50 transition-all" />
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("admin.search_products")} className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50 transition-all" />
         </div>
-        <button onClick={() => setEditing({})} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20"><Plus size={16} /> {t("admin.add_product")}</button>
+        <button onClick={() => setEditing({})} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--color-primary)] text-white text-sm font-medium hover:bg-[var(--color-primary)] transition-all shadow-lg shadow-[var(--color-primary)]/20"><Plus size={16} /> {t("admin.add_product")}</button>
       </div>
       <div className="glass rounded-2xl border border-white/5 overflow-hidden">
         <div className="overflow-x-auto">
@@ -461,11 +461,11 @@ function ProductsTab({ addToast }) {
                       <div><p className="text-white font-medium truncate max-w-[200px]">{p.name}</p><p className="text-white/25 text-[10px]">{p.category}</p></div>
                     </div>
                   </td>
-                  <td className="px-4 text-right text-rt-accent font-mono">${p.price?.toFixed(2)}</td>
+                  <td className="px-4 text-right text-[var(--color-primary)] font-mono">${p.price?.toFixed(2)}</td>
                   <td className="px-4 text-right"><StockBadge stock={p.stock} /></td>
                   <td className="px-4 text-right text-white/70">{p.rating?.toFixed(1)}</td>
                   <td className="px-4 text-right"><div className="flex items-center justify-end gap-1">
-                    <button onClick={() => setEditing(p)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-rt-accent transition-all"><Edit3 size={14} /></button>
+                    <button onClick={() => setEditing(p)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-[var(--color-primary)] transition-all"><Edit3 size={14} /></button>
                     <button onClick={() => handleDelete(p.id)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-red-400 transition-all"><Trash2 size={14} /></button>
                   </div></td>
                 </tr>
@@ -502,19 +502,19 @@ function ProductForm({ product, categories, onSave, onClose }) {
         <div className="flex items-center justify-between mb-6"><h2 className="text-xl font-display font-bold text-white">{product?.id ? t("admin.edit_product") : t("admin.new_product")}</h2><button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40"><X size={18} /></button></div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <div className="col-span-2"><label className="text-xs text-white/40 block mb-1">{t("admin.name")}</label><input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
-            <div><label className="text-xs text-white/40 block mb-1">{t("admin.category")}</label><select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50">
+            <div className="col-span-2"><label className="text-xs text-white/40 block mb-1">{t("admin.name")}</label><input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50" /></div>
+            <div><label className="text-xs text-white/40 block mb-1">{t("admin.category")}</label><select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50">
               <option value="">{t("admin.select")}</option>{categories.map((c) => <option key={c.id} value={c.slug}>{c.name}</option>)}
             </select></div>
-            <div><label className="text-xs text-white/40 block mb-1">{t("admin.badge")}</label><input value={form.badge} onChange={(e) => setForm({ ...form, badge: e.target.value })} placeholder="Featured, New, Sale..." className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
-            <div><label className="text-xs text-white/40 block mb-1">{t("admin.price")} ($)</label><input type="number" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
-            <div><label className="text-xs text-white/40 block mb-1">{t("admin.original_price")}</label><input type="number" step="0.01" value={form.originalPrice || ""} onChange={(e) => setForm({ ...form, originalPrice: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
-            <div><label className="text-xs text-white/40 block mb-1">{t("admin.stock")}</label><input type="number" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
+            <div><label className="text-xs text-white/40 block mb-1">{t("admin.badge")}</label><input value={form.badge} onChange={(e) => setForm({ ...form, badge: e.target.value })} placeholder="Featured, New, Sale..." className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50" /></div>
+            <div><label className="text-xs text-white/40 block mb-1">{t("admin.price")} ($)</label><input type="number" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50" /></div>
+            <div><label className="text-xs text-white/40 block mb-1">{t("admin.original_price")}</label><input type="number" step="0.01" value={form.originalPrice || ""} onChange={(e) => setForm({ ...form, originalPrice: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50" /></div>
+            <div><label className="text-xs text-white/40 block mb-1">{t("admin.stock")}</label><input type="number" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50" /></div>
           </div>
-          <div><label className="text-xs text-white/40 block mb-1">{t("admin.description")}</label><textarea rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50 resize-none" /></div>
-          <div><label className="text-xs text-white/40 block mb-1">{t("admin.features")}</label><textarea rows={3} value={form.features} onChange={(e) => setForm({ ...form, features: e.target.value })} placeholder="Feature 1&#10;Feature 2" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50 resize-none font-mono" /></div>
-          <div><label className="text-xs text-white/40 block mb-1">{t("admin.images")}</label><textarea rows={2} value={form.images} onChange={(e) => setForm({ ...form, images: e.target.value })} placeholder="https://..." className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50 resize-none font-mono" /></div>
-          <div className="flex justify-end gap-3 pt-2"><button type="button" onClick={onClose} className="px-4 py-2 rounded-xl border border-white/10 text-white/50 hover:text-white transition-all text-sm">{t("common.cancel")}</button><button type="submit" className="px-6 py-2 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20">{product?.id ? t("admin.update") : t("admin.create")} {t("admin.product_col")}</button></div>
+          <div><label className="text-xs text-white/40 block mb-1">{t("admin.description")}</label><textarea rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50 resize-none" /></div>
+          <div><label className="text-xs text-white/40 block mb-1">{t("admin.features")}</label><textarea rows={3} value={form.features} onChange={(e) => setForm({ ...form, features: e.target.value })} placeholder="Feature 1&#10;Feature 2" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50 resize-none font-mono" /></div>
+          <div><label className="text-xs text-white/40 block mb-1">{t("admin.images")}</label><textarea rows={2} value={form.images} onChange={(e) => setForm({ ...form, images: e.target.value })} placeholder="https://..." className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50 resize-none font-mono" /></div>
+          <div className="flex justify-end gap-3 pt-2"><button type="button" onClick={onClose} className="px-4 py-2 rounded-xl border border-white/10 text-white/50 hover:text-white transition-all text-sm">{t("common.cancel")}</button><button type="submit" className="px-6 py-2 rounded-xl bg-[var(--color-primary)] text-white text-sm font-medium hover:bg-[var(--color-primary)] transition-all shadow-lg shadow-[var(--color-primary)]/20">{product?.id ? t("admin.update") : t("admin.create")} {t("admin.product_col")}</button></div>
         </form>
       </motion.div>
     </motion.div>
@@ -542,9 +542,9 @@ function OrdersTab({ addToast }) {
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
       <div className="flex gap-2 flex-wrap">
-        <button onClick={() => setStatusFilter("")} className={`px-3 py-1.5 rounded-lg text-xs transition-all ${!statusFilter ? "bg-rt-accent/20 text-rt-accent border border-rt-accent/30 shadow-lg shadow-rt-accent/10" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}>{t("admin.all")}</button>
+        <button onClick={() => setStatusFilter("")} className={`px-3 py-1.5 rounded-lg text-xs transition-all ${!statusFilter ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)] border border-[var(--color-primary)]/30 shadow-lg shadow-[var(--color-primary)]/20" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}>{t("admin.all")}</button>
         {statuses.map((s) => (
-          <button key={s} onClick={() => setStatusFilter(s)} className={`px-3 py-1.5 rounded-lg text-xs capitalize transition-all ${statusFilter === s ? "bg-rt-accent/20 text-rt-accent border border-rt-accent/30 shadow-lg shadow-rt-accent/10" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}>{s}</button>
+          <button key={s} onClick={() => setStatusFilter(s)} className={`px-3 py-1.5 rounded-lg text-xs capitalize transition-all ${statusFilter === s ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)] border border-[var(--color-primary)]/30 shadow-lg shadow-[var(--color-primary)]/20" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}>{s}</button>
         ))}
       </div>
       <div className="glass rounded-2xl border border-white/5 overflow-hidden">
@@ -559,11 +559,11 @@ function OrdersTab({ addToast }) {
                   <td className="py-3 px-4 font-mono text-xs text-white/50">#{o.id.slice(0, 8)}</td>
                   <td className="px-4 text-white/70">{o.address?.name || "—"}</td>
                   <td className="px-4 text-right text-white/70">{o.items?.length || 0}</td>
-                  <td className="px-4 text-right text-rt-accent font-mono">${o.total?.toFixed(2)}</td>
+                  <td className="px-4 text-right text-[var(--color-primary)] font-mono">${o.total?.toFixed(2)}</td>
                   <td className="px-4 text-center"><StatusBadge status={o.status} /></td>
                   <td className="px-4 text-right text-white/40 text-xs">{o.createdAt?.slice(0, 10)}</td>
                   <td className="px-4 text-right">
-                    <select onChange={(e) => { if (e.target.value) updateStatus(o.id, e.target.value); e.target.value = ""; }} value="" className="bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:border-rt-accent/50">
+                    <select onChange={(e) => { if (e.target.value) updateStatus(o.id, e.target.value); e.target.value = ""; }} value="" className="bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:border-[var(--color-primary)]/50">
                       <option value="" disabled>{t("admin.update")}</option>
                       {statuses.filter((s) => s !== o.status).map((s) => <option key={s} value={s}>{s}</option>)}
                     </select>
@@ -608,14 +608,14 @@ function UsersTab({ addToast }) {
                   <td className="py-3 px-4"><span className="text-white font-medium">{u.name}</span></td>
                   <td className="px-4 text-white/50">{u.email}</td>
                   <td className="px-4 text-center">
-                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium ${u.role === "admin" ? "bg-rt-accent/15 text-rt-accent border border-rt-accent/25" : "bg-white/5 text-white/50 border border-white/10"}`}>
+                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium ${u.role === "admin" ? "bg-[var(--color-primary)]/15 text-[var(--color-primary)] border border-[var(--color-primary)]/25" : "bg-white/5 text-white/50 border border-white/10"}`}>
                       <Crown size={10} />{u.role}
                     </span>
                   </td>
                     <td className="px-4 text-center">{u.banned ? <span className="text-[10px] px-2 py-1 rounded-full bg-red-500/15 text-red-300 border border-red-500/25">{t("admin.user_banned_label")}</span> : <span className="text-[10px] px-2 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/25">{t("admin.user_active")}</span>}</td>
                   <td className="px-4 text-right text-white/40 text-xs">{u.createdAt?.slice(0, 10)}</td>
                   <td className="px-4 text-right"><div className="flex items-center justify-end gap-1">
-                    <button onClick={() => toggleRole(u)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-rt-accent transition-all" title={t("admin.toggle_admin")}><Crown size={14} /></button>
+                    <button onClick={() => toggleRole(u)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-[var(--color-primary)] transition-all" title={t("admin.toggle_admin")}><Crown size={14} /></button>
                     <button onClick={() => toggleBan(u)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-red-400 transition-all" title={u.banned ? t("admin.unban") : t("admin.ban")}><Ban size={14} /></button>
                   </div></td>
                 </tr>
@@ -650,32 +650,32 @@ function CategoriesTab({ addToast }) {
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="flex gap-2 flex-wrap">
-          <button onClick={() => setFilterFeatured("all")} className={`px-3 py-1.5 rounded-lg text-xs transition-all ${filterFeatured === "all" ? "bg-rt-accent/20 text-rt-accent border border-rt-accent/30" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}>{t("admin.all")} ({cats.length})</button>
-          <button onClick={() => setFilterFeatured("featured")} className={`px-3 py-1.5 rounded-lg text-xs transition-all ${filterFeatured === "featured" ? "bg-rt-accent/20 text-rt-accent border border-rt-accent/30" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}>{t("admin.featured")}</button>
-          <button onClick={() => setFilterFeatured("standard")} className={`px-3 py-1.5 rounded-lg text-xs transition-all ${filterFeatured === "standard" ? "bg-rt-accent/20 text-rt-accent border border-rt-accent/30" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}>Standard</button>
+          <button onClick={() => setFilterFeatured("all")} className={`px-3 py-1.5 rounded-lg text-xs transition-all ${filterFeatured === "all" ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)] border border-[var(--color-primary)]/30" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}>{t("admin.all")} ({cats.length})</button>
+          <button onClick={() => setFilterFeatured("featured")} className={`px-3 py-1.5 rounded-lg text-xs transition-all ${filterFeatured === "featured" ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)] border border-[var(--color-primary)]/30" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}>{t("admin.featured")}</button>
+          <button onClick={() => setFilterFeatured("standard")} className={`px-3 py-1.5 rounded-lg text-xs transition-all ${filterFeatured === "standard" ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)] border border-[var(--color-primary)]/30" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}>Standard</button>
         </div>
-        <button onClick={() => setEditing({})} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20"><Plus size={16} /> {t("admin.add_category_btn")}</button>
+        <button onClick={() => setEditing({})} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--color-primary)] text-white text-sm font-medium hover:bg-[var(--color-primary)] transition-all shadow-lg shadow-[var(--color-primary)]/20"><Plus size={16} /> {t("admin.add_category_btn")}</button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filtered.map((c) => (
-          <motion.div key={c.id} whileHover={{ y: -2, scale: 1.01 }} className={`glass rounded-2xl p-5 border transition-all group hover:border-white/20 relative overflow-hidden ${c.featured ? "border-rt-accent/20" : "border-white/5"}`}>
-            {c.featured && <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-rt-accent/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/2" />}
+          <motion.div key={c.id} whileHover={{ y: -2, scale: 1.01 }} className={`glass rounded-2xl p-5 border transition-all group hover:border-white/20 relative overflow-hidden ${c.featured ? "border-[var(--color-primary)]/20" : "border-white/5"}`}>
+            {c.featured && <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-[var(--color-primary)]/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/2" />}
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-rt-accent/10 to-rt-accent2/10 border border-white/10 flex items-center justify-center">
-                  {c.icon ? <span className="text-rt-accent text-lg font-display font-bold">{c.icon.charAt(0)}</span> : <FolderTree size={20} className="text-rt-accent" />}
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[var(--color-primary)]/10 to-[var(--color-primary-hover)]/10 border border-white/10 flex items-center justify-center">
+                  {c.icon ? <span className="text-[var(--color-primary)] text-lg font-display font-bold">{c.icon.charAt(0)}</span> : <FolderTree size={20} className="text-[var(--color-primary)]" />}
                 </div>
                 <div><h3 className="text-white font-medium">{c.name}</h3><p className="text-xs text-white/30 font-mono">/{c.slug}</p></div>
               </div>
               <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button onClick={() => setEditing(c)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-rt-accent"><Edit3 size={14} /></button>
+                <button onClick={() => setEditing(c)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-[var(--color-primary)]"><Edit3 size={14} /></button>
                 <button onClick={() => handleDelete(c.id)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-red-400"><Trash2 size={14} /></button>
               </div>
             </div>
             <p className="text-sm text-white/50 mb-3 line-clamp-2">{c.description || t("admin.no_description")}</p>
             <div className="flex items-center justify-between text-xs">
               <span className="text-white/40"><Package size={12} className="inline mr-1" />{c.productCount || 0} products</span>
-              {c.featured ? <span className="px-2 py-0.5 rounded-full bg-rt-accent/10 text-rt-accent flex items-center gap-1 border border-rt-accent/20"><Star size={10} /> {t("admin.featured")}</span> : <span className="text-white/20">Standard</span>}
+              {c.featured ? <span className="px-2 py-0.5 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] flex items-center gap-1 border border-[var(--color-primary)]/20"><Star size={10} /> {t("admin.featured")}</span> : <span className="text-white/20">Standard</span>}
             </div>
             <div className="mt-2 text-[10px] text-white/20">Order: {c.order || 0}</div>
           </motion.div>
@@ -694,14 +694,14 @@ function CategoryForm({ editing, onSave, onClose }) {
         <h2 className="text-lg font-display font-bold text-white mb-4">{editing?.id ? t("admin.edit_category") : t("admin.new_category")} {t("admin.category_name")}</h2>
         <form onSubmit={(e) => { e.preventDefault(); const fd = new FormData(e.target); onSave({ name: fd.get("name"), slug: fd.get("slug"), description: fd.get("description"), icon: fd.get("icon"), order: Number(fd.get("order") || 0), featured: fd.get("featured") === "on" }); }} className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
-            <div className="col-span-2"><label className="text-xs text-white/40 block mb-1">{t("admin.category_name")}</label><input name="name" defaultValue={editing?.name} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
-            <div><label className="text-xs text-white/40 block mb-1">{t("admin.slug")}</label><input name="slug" defaultValue={editing?.slug} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
-            <div><label className="text-xs text-white/40 block mb-1">{t("admin.icon")}</label><input name="icon" defaultValue={editing?.icon || ""} placeholder="Monitor, Smartphone..." className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
-            <div className="col-span-2"><label className="text-xs text-white/40 block mb-1">{t("admin.description")}</label><textarea name="description" rows={2} defaultValue={editing?.description || ""} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50 resize-none" /></div>
-            <div><label className="text-xs text-white/40 block mb-1">{t("admin.sort_order")}</label><input name="order" type="number" defaultValue={editing?.order || 0} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
-            <div className="flex items-end pb-2"><label className="flex items-center gap-2 text-sm text-white/50"><input name="featured" type="checkbox" defaultChecked={editing?.featured || false} className="accent-rt-accent" /> {t("admin.featured")}</label></div>
+            <div className="col-span-2"><label className="text-xs text-white/40 block mb-1">{t("admin.category_name")}</label><input name="name" defaultValue={editing?.name} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50" /></div>
+            <div><label className="text-xs text-white/40 block mb-1">{t("admin.slug")}</label><input name="slug" defaultValue={editing?.slug} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50" /></div>
+            <div><label className="text-xs text-white/40 block mb-1">{t("admin.icon")}</label><input name="icon" defaultValue={editing?.icon || ""} placeholder="Monitor, Smartphone..." className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50" /></div>
+            <div className="col-span-2"><label className="text-xs text-white/40 block mb-1">{t("admin.description")}</label><textarea name="description" rows={2} defaultValue={editing?.description || ""} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50 resize-none" /></div>
+            <div><label className="text-xs text-white/40 block mb-1">{t("admin.sort_order")}</label><input name="order" type="number" defaultValue={editing?.order || 0} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50" /></div>
+            <div className="flex items-end pb-2"><label className="flex items-center gap-2 text-sm text-white/50"><input name="featured" type="checkbox" defaultChecked={editing?.featured || false} className="accent-[var(--color-primary)]" /> {t("admin.featured")}</label></div>
           </div>
-          <div className="flex justify-end gap-3 pt-2"><button type="button" onClick={onClose} className="px-4 py-2 rounded-xl border border-white/10 text-white/50 hover:text-white transition-all text-sm">{t("common.cancel")}</button><button type="submit" className="px-6 py-2 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20">{t("common.save")}</button></div>
+          <div className="flex justify-end gap-3 pt-2"><button type="button" onClick={onClose} className="px-4 py-2 rounded-xl border border-white/10 text-white/50 hover:text-white transition-all text-sm">{t("common.cancel")}</button><button type="submit" className="px-6 py-2 rounded-xl bg-[var(--color-primary)] text-white text-sm font-medium hover:bg-[var(--color-primary)] transition-all shadow-lg shadow-[var(--color-primary)]/20">{t("common.save")}</button></div>
         </form>
       </motion.div>
     </motion.div>
@@ -721,8 +721,8 @@ function StockTab({ addToast }) {
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
       <div className="flex gap-2 flex-wrap">
-        <button onClick={() => setView("low")} className={`px-4 py-2 rounded-xl text-sm transition-all ${view === "low" ? "bg-rt-accent/20 text-rt-accent border border-rt-accent/30 shadow-lg shadow-rt-accent/10" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}><AlertTriangle size={14} className="inline mr-1" />{t("admin.low_stock")} ({lowStock.length})</button>
-        <button onClick={() => setView("log")} className={`px-4 py-2 rounded-xl text-sm transition-all ${view === "log" ? "bg-rt-accent/20 text-rt-accent border border-rt-accent/30 shadow-lg shadow-rt-accent/10" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}><Clock size={14} className="inline mr-1" />Stock Movement</button>
+        <button onClick={() => setView("low")} className={`px-4 py-2 rounded-xl text-sm transition-all ${view === "low" ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)] border border-[var(--color-primary)]/30 shadow-lg shadow-[var(--color-primary)]/20" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}><AlertTriangle size={14} className="inline mr-1" />{t("admin.low_stock")} ({lowStock.length})</button>
+        <button onClick={() => setView("log")} className={`px-4 py-2 rounded-xl text-sm transition-all ${view === "log" ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)] border border-[var(--color-primary)]/30 shadow-lg shadow-[var(--color-primary)]/20" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}><Clock size={14} className="inline mr-1" />Stock Movement</button>
       </div>
       {view === "low" && (
         <div className="glass rounded-2xl border border-white/5 overflow-hidden">
@@ -735,8 +735,8 @@ function StockTab({ addToast }) {
                     <td className="py-3 px-4"><span className="text-white">{p.name}</span></td>
                     <td className="px-4 text-right"><StockBadge stock={p.stock} /></td>
                     <td className={`px-4 text-right font-mono font-bold ${p.stock === 0 ? "text-red-400" : "text-orange-400"}`}>{p.stock}</td>
-                    <td className="px-4 text-right text-rt-accent font-mono">${p.price?.toFixed(2)}</td>
-                    <td className="px-4 text-right"><button onClick={() => setAdjusting(p)} className="px-3 py-1.5 rounded-lg bg-rt-accent/10 text-rt-accent text-xs hover:bg-rt-accent/20 transition-all border border-rt-accent/20">{t("admin.adjust")}</button></td>
+                    <td className="px-4 text-right text-[var(--color-primary)] font-mono">${p.price?.toFixed(2)}</td>
+                    <td className="px-4 text-right"><button onClick={() => setAdjusting(p)} className="px-3 py-1.5 rounded-lg bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs hover:bg-[var(--color-primary)]/20 transition-all border border-[var(--color-primary)]/20">{t("admin.adjust")}</button></td>
                   </tr>
                 ))}
                 {!lowStock.length && <tr><td colSpan={5} className="py-8 text-center text-white/30">{t("admin.sufficient_stock")}</td></tr>}
@@ -781,12 +781,12 @@ function AdjustStockForm({ product, onSave, onClose }) {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={onClose}>
       <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-md glass rounded-2xl border border-white/10 p-6" onClick={(e) => e.stopPropagation()}>
         <h2 className="text-lg font-display font-bold text-white mb-1">{t("admin.adjust_stock")}</h2>
-        <p className="text-sm text-white/50 mb-4">{product.name} · Current: <span className="text-rt-accent font-mono">{product.stock}</span></p>
+        <p className="text-sm text-white/50 mb-4">{product.name} · Current: <span className="text-[var(--color-primary)] font-mono">{product.stock}</span></p>
         <form onSubmit={(e) => { e.preventDefault(); const fd = new FormData(e.target); onSave({ productId: product.id, type: fd.get("type"), quantity: Number(fd.get("quantity")), note: fd.get("note") }); }} className="space-y-3">
-          <div><label className="text-xs text-white/40 block mb-1">{t("admin.stock_type")}</label><select name="type" required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50"><option value="add">{t("admin.stock_add")}</option><option value="remove">{t("admin.stock_remove")}</option><option value="set">{t("admin.stock_set")}</option></select></div>
-          <div><label className="text-xs text-white/40 block mb-1">{t("admin.stock_qty")}</label><input name="quantity" type="number" required min="0" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
-          <div><label className="text-xs text-white/40 block mb-1">{t("admin.stock_note")}</label><input name="note" placeholder={t("admin.adjust_reason")} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" /></div>
-          <div className="flex justify-end gap-3 pt-2"><button type="button" onClick={onClose} className="px-4 py-2 rounded-xl border border-white/10 text-white/50 hover:text-white transition-all text-sm">{t("common.cancel")}</button><button type="submit" className="px-6 py-2 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20">{t("admin.adjust")}</button></div>
+          <div><label className="text-xs text-white/40 block mb-1">{t("admin.stock_type")}</label><select name="type" required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50"><option value="add">{t("admin.stock_add")}</option><option value="remove">{t("admin.stock_remove")}</option><option value="set">{t("admin.stock_set")}</option></select></div>
+          <div><label className="text-xs text-white/40 block mb-1">{t("admin.stock_qty")}</label><input name="quantity" type="number" required min="0" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50" /></div>
+          <div><label className="text-xs text-white/40 block mb-1">{t("admin.stock_note")}</label><input name="note" placeholder={t("admin.adjust_reason")} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50" /></div>
+          <div className="flex justify-end gap-3 pt-2"><button type="button" onClick={onClose} className="px-4 py-2 rounded-xl border border-white/10 text-white/50 hover:text-white transition-all text-sm">{t("common.cancel")}</button><button type="submit" className="px-6 py-2 rounded-xl bg-[var(--color-primary)] text-white text-sm font-medium hover:bg-[var(--color-primary)] transition-all shadow-lg shadow-[var(--color-primary)]/20">{t("admin.adjust")}</button></div>
         </form>
       </motion.div>
     </motion.div>
@@ -810,7 +810,7 @@ function ExpensesTab({ addToast }) {
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="flex gap-2 flex-wrap">
-          <button onClick={() => setFilter("")} className={`px-3 py-1.5 rounded-lg text-xs transition-all ${!filter ? "bg-rt-accent/20 text-rt-accent border border-rt-accent/30 shadow-lg shadow-rt-accent/10" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}>{t("admin.all")}</button>
+          <button onClick={() => setFilter("")} className={`px-3 py-1.5 rounded-lg text-xs transition-all ${!filter ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)] border border-[var(--color-primary)]/30 shadow-lg shadow-[var(--color-primary)]/20" : "bg-white/5 text-white/50 border border-white/10 hover:text-white"}`}>{t("admin.all")}</button>
           {cats.map((c) => {
             const col = CATEGORY_COLORS[c] || CATEGORY_COLORS.other;
             return (
@@ -820,11 +820,11 @@ function ExpensesTab({ addToast }) {
             );
           })}
         </div>
-        <button onClick={() => setEditing({})} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20"><Plus size={16} /> {t("admin.add_expense")}</button>
+        <button onClick={() => setEditing({})} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--color-primary)] text-white text-sm font-medium hover:bg-[var(--color-primary)] transition-all shadow-lg shadow-[var(--color-primary)]/20"><Plus size={16} /> {t("admin.add_expense")}</button>
       </div>
       <div className="flex items-center gap-3 text-sm">
         <span className="text-white/50">{t("admin.total_col")}:</span>
-        <span className="text-rt-accent font-mono font-bold text-lg">${total.toFixed(2)}</span>
+        <span className="text-[var(--color-primary)] font-mono font-bold text-lg">${total.toFixed(2)}</span>
         {filter && <button onClick={() => setFilter("")} className="text-xs text-white/30 hover:text-white/60"><X size={12} className="inline" /> {t("common.clear")}</button>}
       </div>
       <div className="glass rounded-2xl border border-white/5 overflow-hidden">
@@ -842,7 +842,7 @@ function ExpensesTab({ addToast }) {
                   <td className="px-4 text-white/40 text-xs truncate max-w-[150px]">{e.description || "—"}</td>
                   <td className="px-4 text-right text-white/40 text-xs">{e.date?.slice(0, 10)}</td>
                   <td className="px-4 text-right"><div className="flex items-center justify-end gap-1">
-                    <button onClick={() => setEditing(e)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-rt-accent"><Edit3 size={14} /></button>
+                    <button onClick={() => setEditing(e)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-[var(--color-primary)]"><Edit3 size={14} /></button>
                     <button onClick={() => handleDelete(e.id)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-red-400"><Trash2 size={14} /></button>
                   </div></td>
                 </tr>
@@ -863,15 +863,15 @@ function ExpenseForm({ editing, onSave, onClose }) {
       <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-md glass rounded-2xl border border-white/10 p-6" onClick={(e) => e.stopPropagation()}>
         <h2 className="text-lg font-display font-bold text-white mb-4">{editing?.id ? t("admin.edit_category") : t("admin.add_expense")}</h2>
         <form onSubmit={(e) => { e.preventDefault(); const fd = new FormData(e.target); onSave({ title: fd.get("title"), category: fd.get("category"), amount: Number(fd.get("amount")), description: fd.get("description"), date: fd.get("date"), recurring: fd.get("recurring") === "on" }); }} className="space-y-3">
-          <input name="title" defaultValue={editing?.title} placeholder={t("admin.name")} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
-          <select name="category" defaultValue={editing?.category || "other"} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50">
+          <input name="title" defaultValue={editing?.title} placeholder={t("admin.name")} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50" />
+          <select name="category" defaultValue={editing?.category || "other"} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50">
             {Object.entries(EXPENSE_CATEGORY_KEYS).map(([v, k]) => <option key={v} value={v}>{t("admin." + k)}</option>)}
           </select>
-          <input name="amount" type="number" step="0.01" defaultValue={editing?.amount} placeholder={t("admin.price")} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
-          <input name="description" defaultValue={editing?.description} placeholder="Description (optional)" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
-          <input name="date" type="date" defaultValue={editing?.date?.slice(0, 10)} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
-          <label className="flex items-center gap-2 text-sm text-white/50"><input name="recurring" type="checkbox" defaultChecked={editing?.recurring} className="accent-rt-accent" /> Recurring expense</label>
-          <div className="flex justify-end gap-3 pt-2"><button type="button" onClick={onClose} className="px-4 py-2 rounded-xl border border-white/10 text-white/50 hover:text-white transition-all text-sm">{t("common.cancel")}</button><button type="submit" className="px-6 py-2 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20">{t("common.save")}</button></div>
+          <input name="amount" type="number" step="0.01" defaultValue={editing?.amount} placeholder={t("admin.price")} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50" />
+          <input name="description" defaultValue={editing?.description} placeholder="Description (optional)" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50" />
+          <input name="date" type="date" defaultValue={editing?.date?.slice(0, 10)} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50" />
+          <label className="flex items-center gap-2 text-sm text-white/50"><input name="recurring" type="checkbox" defaultChecked={editing?.recurring} className="accent-[var(--color-primary)]" /> Recurring expense</label>
+          <div className="flex justify-end gap-3 pt-2"><button type="button" onClick={onClose} className="px-4 py-2 rounded-xl border border-white/10 text-white/50 hover:text-white transition-all text-sm">{t("common.cancel")}</button><button type="submit" className="px-6 py-2 rounded-xl bg-[var(--color-primary)] text-white text-sm font-medium hover:bg-[var(--color-primary)] transition-all shadow-lg shadow-[var(--color-primary)]/20">{t("common.save")}</button></div>
         </form>
       </motion.div>
     </motion.div>
@@ -889,16 +889,16 @@ function SuppliersTab({ addToast }) {
   const handleDelete = async (id) => { if (!confirm(t("admin.delete_confirm", { item: t("admin.tab_suppliers").toLowerCase() }))) return; try { await adminDeleteSupplier(id); addToast(t("admin.supplier_deleted"), "success"); load(); } catch (e) { addToast(e.message, "error"); } };
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-        <div className="flex justify-end"><button onClick={() => setEditing({})} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20"><Plus size={16} /> {t("admin.add_supplier")}</button></div>
+        <div className="flex justify-end"><button onClick={() => setEditing({})} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--color-primary)] text-white text-sm font-medium hover:bg-[var(--color-primary)] transition-all shadow-lg shadow-[var(--color-primary)]/20"><Plus size={16} /> {t("admin.add_supplier")}</button></div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {suppliers.map((s) => (
           <motion.div key={s.id} whileHover={{ y: -2, scale: 1.01 }} className="glass rounded-2xl p-5 border border-white/5 hover:border-white/15 transition-all group relative overflow-hidden">
             <div className="flex items-start justify-between mb-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rt-accent/10 to-rt-accent2/10 border border-white/10 flex items-center justify-center">
-                <Truck size={18} className="text-rt-accent" />
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--color-primary)]/10 to-[var(--color-primary-hover)]/10 border border-white/10 flex items-center justify-center">
+                <Truck size={18} className="text-[var(--color-primary)]" />
               </div>
               <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button onClick={() => setEditing(s)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-rt-accent"><Edit3 size={14} /></button>
+                <button onClick={() => setEditing(s)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-[var(--color-primary)]"><Edit3 size={14} /></button>
                 <button onClick={() => handleDelete(s.id)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-red-400"><Trash2 size={14} /></button>
               </div>
             </div>
@@ -922,8 +922,8 @@ function SimpleForm({ title, fields, defaults, onSave, onClose }) {
       <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-md glass rounded-2xl border border-white/10 p-6" onClick={(e) => e.stopPropagation()}>
         <h2 className="text-lg font-display font-bold text-white mb-4">{title}</h2>
         <form onSubmit={(e) => { e.preventDefault(); const fd = new FormData(e.target); const data = {}; fields.forEach((f) => data[f] = fd.get(f)); onSave(data); }} className="space-y-3">
-          {fields.map((f) => <input key={f} name={f} defaultValue={defaults?.[f] || ""} placeholder={f.charAt(0).toUpperCase() + f.slice(1)} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50 capitalize" />)}
-          <div className="flex justify-end gap-3 pt-2"><button type="button" onClick={onClose} className="px-4 py-2 rounded-xl border border-white/10 text-white/50 hover:text-white transition-all text-sm">{t("common.cancel")}</button><button type="submit" className="px-6 py-2 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20">{t("common.save")}</button></div>
+          {fields.map((f) => <input key={f} name={f} defaultValue={defaults?.[f] || ""} placeholder={f.charAt(0).toUpperCase() + f.slice(1)} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50 capitalize" />)}
+          <div className="flex justify-end gap-3 pt-2"><button type="button" onClick={onClose} className="px-4 py-2 rounded-xl border border-white/10 text-white/50 hover:text-white transition-all text-sm">{t("common.cancel")}</button><button type="submit" className="px-6 py-2 rounded-xl bg-[var(--color-primary)] text-white text-sm font-medium hover:bg-[var(--color-primary)] transition-all shadow-lg shadow-[var(--color-primary)]/20">{t("common.save")}</button></div>
         </form>
       </motion.div>
     </motion.div>
@@ -941,7 +941,7 @@ function CouponsTab({ addToast }) {
   const handleDelete = async (id) => { if (!confirm(t("admin.delete_confirm", { item: t("admin.tab_coupons").toLowerCase() }))) return; try { await adminDeleteCoupon(id); addToast(t("admin.coupon_deleted"), "success"); load(); } catch (e) { addToast(e.message, "error"); } };
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-      <div className="flex justify-end"><button onClick={() => setEditing({})} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20"><Plus size={16} /> {t("admin.add_coupon")}</button></div>
+      <div className="flex justify-end"><button onClick={() => setEditing({})} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--color-primary)] text-white text-sm font-medium hover:bg-[var(--color-primary)] transition-all shadow-lg shadow-[var(--color-primary)]/20"><Plus size={16} /> {t("admin.add_coupon")}</button></div>
       <div className="glass rounded-2xl border border-white/5 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -951,7 +951,7 @@ function CouponsTab({ addToast }) {
             <tbody>
               {coupons.map((c) => (
                 <tr key={c.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                  <td className="py-3 px-4 font-mono text-rt-accent font-bold">{c.code}</td>
+                  <td className="py-3 px-4 font-mono text-[var(--color-primary)] font-bold">{c.code}</td>
                   <td className="px-4 text-right text-white/70">{c.type === "percent" ? `${c.discount}%` : c.type === "flat" ? `$${c.discount}` : c.discount}</td>
                   <td className="px-4 text-center"><span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium bg-white/5 text-white/50 border border-white/10 capitalize">{c.type}</span></td>
                   <td className="px-4 text-right text-white/50">{c.used}/{c.maxUses}</td>
@@ -959,7 +959,7 @@ function CouponsTab({ addToast }) {
                   <td className="px-4 text-center">{c.active ? <Check size={14} className="text-emerald-400 mx-auto" /> : <X size={14} className="text-red-400 mx-auto" />}</td>
                   <td className="px-4 text-right text-white/40 text-xs">{c.expiresAt?.slice(0, 10) || "—"}</td>
                   <td className="px-4 text-right"><div className="flex items-center justify-end gap-1">
-                    <button onClick={() => setEditing(c)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-rt-accent"><Edit3 size={14} /></button>
+                    <button onClick={() => setEditing(c)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-[var(--color-primary)]"><Edit3 size={14} /></button>
                     <button onClick={() => handleDelete(c.id)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-red-400"><Trash2 size={14} /></button>
                   </div></td>
                 </tr>
@@ -980,16 +980,16 @@ function CouponForm({ editing, onSave, onClose }) {
       <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-md glass rounded-2xl border border-white/10 p-6" onClick={(e) => e.stopPropagation()}>
         <h2 className="text-lg font-display font-bold text-white mb-4">{editing?.id ? t("admin.edit_product") : t("admin.add_coupon")}</h2>
         <form onSubmit={(e) => { e.preventDefault(); const fd = new FormData(e.target); onSave({ code: fd.get("code"), discount: Number(fd.get("discount")), type: fd.get("type"), minOrder: Number(fd.get("minOrder") || 0), maxUses: Number(fd.get("maxUses") || 100), active: fd.get("active") === "on", expiresAt: fd.get("expiresAt") }); }} className="space-y-3">
-          <input name="code" defaultValue={editing?.code} placeholder="Code" required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50 uppercase" />
-          <select name="type" defaultValue={editing?.type || "percent"} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50">
+          <input name="code" defaultValue={editing?.code} placeholder="Code" required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50 uppercase" />
+          <select name="type" defaultValue={editing?.type || "percent"} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50">
             <option value="percent">{t("admin.coupon_type_percent")}</option><option value="flat">{t("admin.coupon_type_flat")}</option><option value="free_shipping">{t("admin.coupon_type_free_shipping")}</option>
           </select>
-          <input name="discount" type="number" step="0.01" defaultValue={editing?.discount} placeholder={t("admin.coupon_discount")} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
-          <input name="minOrder" type="number" step="0.01" defaultValue={editing?.minOrder || 0} placeholder={t("admin.coupon_min_order")} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
-          <input name="maxUses" type="number" defaultValue={editing?.maxUses || 100} placeholder={t("admin.coupon_max_uses")} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
-          <input name="expiresAt" type="date" defaultValue={editing?.expiresAt?.slice(0, 10)} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
-          <label className="flex items-center gap-2 text-sm text-white/50"><input name="active" type="checkbox" defaultChecked={editing?.active !== false} className="accent-rt-accent" /> {t("admin.coupon_active")}</label>
-          <div className="flex justify-end gap-3 pt-2"><button type="button" onClick={onClose} className="px-4 py-2 rounded-xl border border-white/10 text-white/50 hover:text-white transition-all text-sm">{t("common.cancel")}</button><button type="submit" className="px-6 py-2 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20">{t("common.save")}</button></div>
+          <input name="discount" type="number" step="0.01" defaultValue={editing?.discount} placeholder={t("admin.coupon_discount")} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50" />
+          <input name="minOrder" type="number" step="0.01" defaultValue={editing?.minOrder || 0} placeholder={t("admin.coupon_min_order")} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50" />
+          <input name="maxUses" type="number" defaultValue={editing?.maxUses || 100} placeholder={t("admin.coupon_max_uses")} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50" />
+          <input name="expiresAt" type="date" defaultValue={editing?.expiresAt?.slice(0, 10)} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50" />
+          <label className="flex items-center gap-2 text-sm text-white/50"><input name="active" type="checkbox" defaultChecked={editing?.active !== false} className="accent-[var(--color-primary)]" /> {t("admin.coupon_active")}</label>
+          <div className="flex justify-end gap-3 pt-2"><button type="button" onClick={onClose} className="px-4 py-2 rounded-xl border border-white/10 text-white/50 hover:text-white transition-all text-sm">{t("common.cancel")}</button><button type="submit" className="px-6 py-2 rounded-xl bg-[var(--color-primary)] text-white text-sm font-medium hover:bg-[var(--color-primary)] transition-all shadow-lg shadow-[var(--color-primary)]/20">{t("common.save")}</button></div>
         </form>
       </motion.div>
     </motion.div>
@@ -1028,16 +1028,16 @@ function MessagesTab({ addToast }) {
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
       <div className="flex items-center gap-2 mb-4">
-        <button onClick={() => setSub("contacts")} className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${sub === "contacts" ? "bg-rt-accent text-white" : "bg-white/5 text-white/50 hover:text-white"}`}><MessageSquare size={14} className="inline mr-1.5" />{t("admin.contact_messages")}</button>
-        <button onClick={() => setSub("chat")} className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${sub === "chat" ? "bg-rt-accent text-white" : "bg-white/5 text-white/50 hover:text-white"}`}><MessageCircle size={14} className="inline mr-1.5" />{t("admin.live_chat")} ({convs.filter(c => c.status === "open").length})</button>
+        <button onClick={() => setSub("contacts")} className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${sub === "contacts" ? "bg-[var(--color-primary)] text-white" : "bg-white/5 text-white/50 hover:text-white"}`}><MessageSquare size={14} className="inline mr-1.5" />{t("admin.contact_messages")}</button>
+        <button onClick={() => setSub("chat")} className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${sub === "chat" ? "bg-[var(--color-primary)] text-white" : "bg-white/5 text-white/50 hover:text-white"}`}><MessageCircle size={14} className="inline mr-1.5" />{t("admin.live_chat")} ({convs.filter(c => c.status === "open").length})</button>
       </div>
 
       {sub === "contacts" ? (
         <div className="space-y-3">
           {!messages.length && <div className="text-center py-12 text-white/30">{t("admin.no_messages")}</div>}
           {messages.map((m) => (
-            <motion.div key={m.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className={`glass rounded-2xl p-5 border transition-all relative overflow-hidden ${m.read ? "border-white/5 opacity-70" : "border-rt-accent/20"}`} onClick={() => !m.read && markRead(m.id)}>
-              {!m.read && <div className="absolute top-0 left-0 w-1 h-full bg-rt-accent" />}
+            <motion.div key={m.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className={`glass rounded-2xl p-5 border transition-all relative overflow-hidden ${m.read ? "border-white/5 opacity-70" : "border-[var(--color-primary)]/20"}`} onClick={() => !m.read && markRead(m.id)}>
+              {!m.read && <div className="absolute top-0 left-0 w-1 h-full bg-[var(--color-primary)]" />}
               <div className="flex items-start justify-between mb-2">
                 <div><span className="text-white font-medium text-sm">{m.name}</span><span className="text-white/30 text-xs ml-2">{m.email}</span></div>
                 <div className="flex items-center gap-2">
@@ -1047,7 +1047,7 @@ function MessagesTab({ addToast }) {
               </div>
               {m.subject && <p className="text-sm text-white/70 font-medium mb-1">{m.subject}</p>}
               <p className="text-sm text-white/50">{m.message}</p>
-              {!m.read && <div className="mt-2"><span className="text-[10px] px-2 py-0.5 rounded-full bg-rt-accent/10 text-rt-accent border border-rt-accent/20">{t("admin.new_badge")}</span></div>}
+              {!m.read && <div className="mt-2"><span className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/20">{t("admin.new_badge")}</span></div>}
             </motion.div>
           ))}
         </div>
@@ -1057,7 +1057,7 @@ function MessagesTab({ addToast }) {
             {!convs.length && <div className="text-center py-12 text-white/30">{t("admin.no_chat_convs")}</div>}
             {convs.map((c) => (
               <motion.div key={c.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
-                className={`glass rounded-2xl p-4 border cursor-pointer transition-all ${selConv?.id === c.id ? "border-rt-accent/40 bg-white/[0.05]" : "border-white/5 hover:border-white/10"}`}
+                className={`glass rounded-2xl p-4 border cursor-pointer transition-all ${selConv?.id === c.id ? "border-[var(--color-primary)]/40 bg-white/[0.05]" : "border-white/5 hover:border-white/10"}`}
                 onClick={() => openConv(c)}
               >
                 <div className="flex items-start justify-between">
@@ -1072,7 +1072,7 @@ function MessagesTab({ addToast }) {
                 </div>
                 {c.subject && <p className="text-xs text-white/50 mt-1">{c.subject}</p>}
                 {c.lastMessage && <p className="text-xs text-white/30 mt-1 truncate">{c.lastMessage}</p>}
-                {c.unread > 0 && <span className="text-[10px] px-2 py-0.5 rounded-full bg-rt-accent/10 text-rt-accent border border-rt-accent/20 mt-2 inline-block">{c.unread} {t("admin.new_badge").toLowerCase()}</span>}
+                {c.unread > 0 && <span className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/20 mt-2 inline-block">{c.unread} {t("admin.new_badge").toLowerCase()}</span>}
               </motion.div>
             ))}
           </div>
@@ -1096,7 +1096,7 @@ function MessagesTab({ addToast }) {
                   {!convMsgs.length && <div className="text-center py-8 text-white/30 text-sm">{t("admin.no_messages")}</div>}
                   {convMsgs.map((m) => (
                     <div key={m.id} className={`flex ${m.sender === "admin" ? "justify-start" : "justify-end"}`}>
-                      <div className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm ${m.sender === "admin" ? "bg-white/10 text-white/80 rounded-tl-md" : "bg-rt-accent/20 text-white border border-rt-accent/20 rounded-tr-md"}`}>
+                      <div className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm ${m.sender === "admin" ? "bg-white/10 text-white/80 rounded-tl-md" : "bg-[var(--color-primary)]/20 text-white border border-[var(--color-primary)]/20 rounded-tr-md"}`}>
                         <p className="text-[10px] text-white/40 mb-0.5">{m.sender === "admin" ? t("admin.support_chat") : m.name}</p>
                         <p>{m.message}</p>
                         <p className="text-[10px] text-white/30 mt-1 text-right">{m.createdAt?.slice(11, 16)}</p>
@@ -1105,8 +1105,8 @@ function MessagesTab({ addToast }) {
                   ))}
                 </div>
                 <form onSubmit={handleReply} className="flex items-center gap-2 p-3 border-t border-white/10">
-                  <input value={reply} onChange={(e) => setReply(e.target.value)} placeholder={t("admin.type_reply")} className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
-                  <button type="submit" disabled={replySending || !reply.trim()} className="p-2.5 rounded-xl bg-rt-accent text-white disabled:opacity-30 hover:bg-rt-accent2 transition-all"><Send size={16} /></button>
+                  <input value={reply} onChange={(e) => setReply(e.target.value)} placeholder={t("admin.type_reply")} className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50" />
+                  <button type="submit" disabled={replySending || !reply.trim()} className="p-2.5 rounded-xl bg-[var(--color-primary)] text-white disabled:opacity-30 hover:bg-[var(--color-primary)] transition-all"><Send size={16} /></button>
                 </form>
               </div>
             )}
@@ -1219,8 +1219,8 @@ function SettingsTab({ addToast }) {
       <form onSubmit={handleSave} className="space-y-6">
         {groups.map((g) => (
           <div key={g.title} className="glass rounded-2xl p-5 border border-white/5">
-            <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-rt-accent/30 to-transparent" />
-            <h3 className="text-white font-display font-semibold mb-4 text-sm uppercase tracking-wider text-rt-accent">{g.title}</h3>
+            <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-[var(--color-primary)]/30 to-transparent" />
+            <h3 className="text-white font-display font-semibold mb-4 text-sm uppercase tracking-wider text-[var(--color-primary)]">{g.title}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {g.keys.map((k) => {
                 const val = settings[k];
@@ -1231,13 +1231,13 @@ function SettingsTab({ addToast }) {
                     <label className="text-xs text-white/40 block mb-1">{labels[k] || k}</label>
                     {isBool ? (
                       <label className="flex items-center gap-3 cursor-pointer">
-                        <input name={k} type="checkbox" defaultChecked={val?.value === "true"} className="w-4 h-4 rounded accent-rt-accent" />
+                        <input name={k} type="checkbox" defaultChecked={val?.value === "true"} className="w-4 h-4 rounded accent-[var(--color-primary)]" />
                         <span className="text-sm text-white/50">{val?.value === "true" ? t("admin.enabled") : t("admin.disabled")}</span>
                       </label>
                     ) : isTextarea ? (
-                      <textarea name={k} rows={3} defaultValue={val?.value || ""} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50 resize-none" />
+                      <textarea name={k} rows={3} defaultValue={val?.value || ""} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50 resize-none" />
                     ) : (
-                      <input name={k} defaultValue={val?.value || ""} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rt-accent/50" />
+                      <input name={k} defaultValue={val?.value || ""} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[var(--color-primary)]/50" />
                     )}
                   </div>
                 );
@@ -1245,7 +1245,7 @@ function SettingsTab({ addToast }) {
             </div>
           </div>
         ))}
-        <button type="submit" disabled={saving} className="flex items-center gap-2 px-6 py-3 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20 disabled:opacity-50">{saving ? t("admin.saving") : <><Save size={16} /> {t("admin.save_all")}</>}</button>
+        <button type="submit" disabled={saving} className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[var(--color-primary)] text-white text-sm font-medium hover:bg-[var(--color-primary)] transition-all shadow-lg shadow-[var(--color-primary)]/20 disabled:opacity-50">{saving ? t("admin.saving") : <><Save size={16} /> {t("admin.save_all")}</>}</button>
       </form>
     </motion.div>
   );
@@ -1267,7 +1267,7 @@ function PagesTab({ addToast }) {
         {pages.map((p) => (
           <motion.div key={p.id} whileHover={{ y: -2 }} className="glass rounded-2xl p-5 border border-white/5 hover:border-white/15 transition-all cursor-pointer" onClick={() => setEditing(p)}>
             <div className="flex items-center gap-3 mb-2">
-              <FileText size={18} className="text-rt-accent" />
+              <FileText size={18} className="text-[var(--color-primary)]" />
               <div><h3 className="text-white font-medium">{p.title}</h3><p className="text-xs text-white/30 font-mono">/{p.slug}</p></div>
             </div>
             <div className="flex items-center gap-2 text-xs">
@@ -1289,12 +1289,12 @@ function PageForm({ page, onSave, onClose }) {
       <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-3xl max-h-[85vh] overflow-y-auto glass rounded-2xl border border-white/10 p-6" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-6"><h2 className="text-xl font-display font-bold text-white">{t("admin.edit_page", { title: page.title })}</h2><button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40"><X size={18} /></button></div>
         <form onSubmit={(e) => { e.preventDefault(); onSave({ title: page.title, slug: page.slug, content, published: new FormData(e.target).get("published") === "on" }); }} className="space-y-4">
-          <textarea value={content} onChange={(e) => setContent(e.target.value)} rows={16} className="w-full bg-rt-darker/50 border border-white/10 rounded-xl px-4 py-3 text-white text-sm font-mono focus:outline-none focus:border-rt-accent/50 resize-none" placeholder={t("admin.html_placeholder")} />
+          <textarea value={content} onChange={(e) => setContent(e.target.value)} rows={16} className="w-full bg-[var(--admin-surface)]/50 border border-white/10 rounded-xl px-4 py-3 text-white text-sm font-mono focus:outline-none focus:border-[var(--color-primary)]/50 resize-none" placeholder={t("admin.html_placeholder")} />
           <div className="flex items-center justify-between">
-            <label className="flex items-center gap-2 text-sm text-white/50"><input name="published" type="checkbox" defaultChecked={page.published} className="accent-rt-accent" /> {t("admin.published")}</label>
+            <label className="flex items-center gap-2 text-sm text-white/50"><input name="published" type="checkbox" defaultChecked={page.published} className="accent-[var(--color-primary)]" /> {t("admin.published")}</label>
             <div className="flex gap-3">
               <button type="button" onClick={onClose} className="px-4 py-2 rounded-xl border border-white/10 text-white/50 hover:text-white transition-all text-sm">{t("common.cancel")}</button>
-              <button type="submit" className="px-6 py-2 rounded-xl bg-rt-accent text-white text-sm font-medium hover:bg-rt-accent2 transition-all shadow-lg shadow-rt-accent/20"><Save size={14} className="inline mr-1" /> {t("admin.save_page")}</button>
+              <button type="submit" className="px-6 py-2 rounded-xl bg-[var(--color-primary)] text-white text-sm font-medium hover:bg-[var(--color-primary)] transition-all shadow-lg shadow-[var(--color-primary)]/20"><Save size={14} className="inline mr-1" /> {t("admin.save_page")}</button>
             </div>
           </div>
         </form>

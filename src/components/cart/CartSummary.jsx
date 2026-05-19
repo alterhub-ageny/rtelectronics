@@ -26,7 +26,7 @@ export default function CartSummary() {
         </div>
         <div className="flex justify-between text-sm">
           <span className="text-white/50">{t("cart_summary.shipping")}</span>
-          <span className={shipping === 0 ? "text-rt-accent3 font-mono" : "text-white font-mono"}>
+          <span className={shipping === 0 ? "text-emerald-400 font-mono" : "text-white font-mono"}>
             {shipping === 0 ? t("cart_summary.free") : `$${shipping.toFixed(2)}`}
           </span>
         </div>
@@ -36,7 +36,7 @@ export default function CartSummary() {
         </div>
         <div className="border-t border-white/10 pt-3 flex justify-between">
           <span className="text-white font-semibold">{t("cart_summary.total")}</span>
-          <span className="text-rt-accent font-display font-bold text-xl">${total.toFixed(2)}</span>
+          <span className="text-[var(--color-primary)] font-display font-bold text-xl">${total.toFixed(2)}</span>
         </div>
       </div>
 
@@ -52,7 +52,7 @@ export default function CartSummary() {
           { icon: CreditCard, text: t("cart_summary.payment_methods") },
         ].map(({ icon: Icon, text }) => (
           <div key={text} className="flex items-center gap-2 text-xs text-white/40">
-            <Icon size={14} className="text-rt-accent shrink-0" />
+            <Icon size={14} className="text-[var(--color-primary)] shrink-0" />
             {text}
           </div>
         ))}

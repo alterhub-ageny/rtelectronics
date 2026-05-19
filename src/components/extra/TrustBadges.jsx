@@ -16,7 +16,7 @@ export default function TrustBadges() {
         const Icon = b.icon;
         return (
           <div key={b.text} className="flex items-center gap-2 text-white/30 text-xs">
-            <Icon size={16} className="text-rt-accent" />
+            <Icon size={16} className="text-[var(--color-primary)]" />
             {b.text}
           </div>
         );

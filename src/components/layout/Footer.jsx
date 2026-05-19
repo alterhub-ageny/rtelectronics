@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Mail, Phone, MapPin, Github, Twitter, Instagram, Youtube, ChevronRight } from "lucide-react";
+import { Mail, Phone, MapPin, Github, Twitter, Instagram, Youtube, ChevronRight, Zap } from "lucide-react";
 import { useCategories } from "../../hooks/useCategories";
 
 export default function Footer() {
@@ -15,34 +15,35 @@ export default function Footer() {
         { label: t("footer.contact"), href: "/contact" },
         { label: t("footer.faq"), href: "/faq" },
         { label: t("footer.wishlist"), href: "/wishlist" },
-        { label: t("footer.my_account"), href: "/account" },
       ],
     },
   ];
 
   return (
-    <footer className="theme-footer relative mt-20">
-      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-rt-accent/10 via-cyan-500/5 to-transparent" />
+    <footer className="theme-footer relative mt-32">
+      {/* Top gradient line */}
+      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[var(--color-primary)]/20 to-transparent" />
 
-      <div className="max-w-site mx-auto px-4 sm:px-6 py-16 relative">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
+      <div className="max-w-site mx-auto px-4 sm:px-6 py-20 relative">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
+          {/* Brand */}
           <div className="lg:col-span-2">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-rt-accent/10 to-cyan-500/5 border border-rt-accent/10 flex items-center justify-center">
-                <span className="text-base font-display font-bold text-white/80">RT</span>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-hover)] flex items-center justify-center shadow-lg shadow-[var(--color-primary)]/20">
+                <Zap size={18} className="text-white" />
               </div>
               <div>
-                <span className="text-sm font-display font-bold tracking-[0.25em] text-white/60">{t("header.brand")}</span>
-                <p className="text-[9px] text-white/15 tracking-[0.25em] uppercase font-mono">{t("header.tagline")}</p>
+                <span className="text-sm font-bold tracking-[0.2em] text-[var(--footer-heading)]">RT</span>
+                <p className="text-[8px] text-[var(--footer-text)] tracking-[0.2em] uppercase font-mono">ELECTRONICS</p>
               </div>
             </div>
-            <p className="text-white/20 text-sm leading-relaxed mb-6 max-w-md">
+            <p className="text-[var(--footer-text)] text-sm leading-relaxed mb-8 max-w-md">
               {t("footer.description")}
             </p>
             <div className="flex gap-2">
               {[Github, Twitter, Instagram, Youtube].map((Icon, i) => (
-                <a key={i} href="#" className="w-8 h-8 rounded-lg bg-[var(--nav-icon-bg)] border border-[var(--nav-icon-border)] flex items-center justify-center text-[var(--nav-icon-color)] hover:text-rt-accent hover:border-rt-accent/20 hover:bg-rt-accent/[0.03] transition-all duration-300">
-                  <Icon size={12} />
+                <a key={i} href="#" className="w-9 h-9 rounded-xl border border-[var(--footer-border)] bg-white/[0.02] flex items-center justify-center text-[var(--footer-text)] hover:text-[var(--color-primary)] hover:border-[var(--color-primary)]/30 hover:bg-[var(--color-primary)]/5 transition-all duration-300">
+                  <Icon size={13} />
                 </a>
               ))}
             </div>
@@ -50,12 +51,12 @@ export default function Footer() {
 
           {links.map((group) => (
             <div key={group.title}>
-              <h3 className="text-white/25 font-display text-[10px] tracking-[0.2em] uppercase mb-5">{group.title}</h3>
-              <ul className="space-y-2.5">
+              <h3 className="text-[var(--footer-heading)] text-[0.6875rem] font-semibold tracking-[0.15em] uppercase mb-6">{group.title}</h3>
+              <ul className="space-y-3">
                 {group.items.map((item) => (
                   <li key={item.href}>
-                    <Link to={item.href} className="text-white/20 hover:text-white text-[12px] transition-colors duration-300 flex items-center gap-1.5 group/link">
-                      <ChevronRight size={8} className="text-rt-accent/30 group-hover/link:text-rt-accent transition-colors" />
+                    <Link to={item.href} className="text-[var(--footer-text)] hover:text-[var(--footer-text-hover)] text-[0.875rem] transition-colors duration-300 flex items-center gap-2 group/link">
+                      <ChevronRight size={10} className="text-[var(--color-primary)]/40 group-hover/link:text-[var(--color-primary)] transition-colors" />
                       {item.label}
                     </Link>
                   </li>
@@ -64,16 +65,17 @@ export default function Footer() {
             </div>
           ))}
 
+          {/* Contact */}
           <div>
-            <h3 className="text-white/25 font-display text-[10px] tracking-[0.2em] uppercase mb-5">{t("footer.connect")}</h3>
-            <ul className="space-y-3">
+            <h3 className="text-[var(--footer-heading)] text-[0.6875rem] font-semibold tracking-[0.15em] uppercase mb-6">{t("footer.connect")}</h3>
+            <ul className="space-y-4">
               {[
                 { icon: MapPin, text: t("footer.address") },
                 { icon: Phone, text: t("footer.phone") },
                 { icon: Mail, text: t("footer.email") },
               ].map((item) => (
-                <li key={item.text} className="flex items-start gap-2.5 text-white/20 text-xs">
-                  <item.icon size={12} className="mt-0.5 text-rt-accent/30 shrink-0" />
+                <li key={item.text} className="flex items-start gap-3 text-[var(--footer-text)] text-[0.875rem]">
+                  <item.icon size={14} className="mt-0.5 text-[var(--color-primary)]/50 shrink-0" />
                   {item.text}
                 </li>
               ))}
@@ -81,11 +83,12 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 pt-6 border-t border-[var(--footer-border)] flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-white/10 text-[10px] font-mono tracking-wider">{t("footer.copyright", { year: new Date().getFullYear() })}</p>
+        {/* Bottom bar */}
+        <div className="mt-16 pt-8 border-t border-[var(--footer-border)] flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-[var(--footer-text)] text-[0.8125rem] font-mono opacity-60">{t("footer.copyright", { year: new Date().getFullYear() })}</p>
           <div className="flex gap-6">
             {[t("footer.privacy"), t("footer.terms")].map((text) => (
-              <a key={text} href="#" className="text-white/15 hover:text-white text-[10px] transition-colors font-mono">{text}</a>
+              <a key={text} href="#" className="text-[var(--footer-text)] hover:text-[var(--footer-text-hover)] text-[0.8125rem] transition-colors">{text}</a>
             ))}
           </div>
         </div>

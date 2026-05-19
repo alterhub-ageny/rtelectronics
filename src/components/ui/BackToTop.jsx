@@ -21,7 +21,7 @@ export default function BackToTop() {
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           className="fixed bottom-6 left-6 z-50 w-11 h-11 rounded-2xl hologram flex items-center justify-center group cursor-pointer"
         >
-          <ArrowUp size={18} className="text-rt-accent group-hover:scale-110 transition-transform" />
+          <ArrowUp size={18} className="text-[var(--color-primary)] group-hover:scale-110 transition-transform" />
         </motion.button>
       )}
     </AnimatePresence>

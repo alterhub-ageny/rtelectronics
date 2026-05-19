@@ -97,7 +97,7 @@ export default function ChatWidget() {
           >
             <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--hero-border)]">
               <div className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-rt-accent/40 animate-pulse" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)]/40 animate-pulse" />
                 <span className="text-[var(--hero-text)] text-[11px] font-display font-bold tracking-wider">{t("chat.channel")}</span>
               </div>
               <button onClick={() => setOpen(false)} className="p-1 rounded-lg hover:bg-white/[0.03] text-[var(--hero-text)] hover:text-[var(--color-text)] transition-all">
@@ -128,7 +128,7 @@ export default function ChatWidget() {
                         className={`max-w-[85%] rounded-xl px-3 py-2 ${
                           m.sender === "admin"
                             ? "bg-white/[0.05] border border-[var(--color-border)] text-[var(--color-text)]"
-                            : "bg-rt-accent/[0.06] border border-rt-accent/[0.12] text-[var(--color-text)]"
+                            : "bg-[var(--color-primary)]/[0.06] border border-[var(--color-primary)]/[0.12] text-[var(--color-text)]"
                         }`}
                       >
                         <p className="text-[8px] text-[var(--color-text-muted)] font-mono mb-0.5 tracking-wider">{m.sender === "admin" ? t("chat.support") : name.toUpperCase()}</p>
@@ -140,8 +140,8 @@ export default function ChatWidget() {
                   <div ref={bottomRef} />
                 </div>
                 <form onSubmit={handleSend} className="flex items-center gap-2 p-3 border-t border-[var(--hero-border)]">
-                  <input value={text} onChange={(e) => setText(e.target.value)} placeholder={t("chat.placeholder")} className="flex-1 bg-white/5 border border-[var(--color-border)] rounded-xl px-3 py-2 text-[var(--color-text)] text-[11px] placeholder:text-[var(--color-text-muted)] focus:border-rt-accent/40 transition-all font-mono" />
-                  <button type="submit" disabled={!text.trim()} className="p-2 rounded-xl bg-rt-accent/[0.08] text-rt-accent/60 disabled:opacity-20 hover:bg-rt-accent/[0.12] hover:text-rt-accent transition-all">
+                  <input value={text} onChange={(e) => setText(e.target.value)} placeholder={t("chat.placeholder")} className="flex-1 bg-white/5 border border-[var(--color-border)] rounded-xl px-3 py-2 text-[var(--color-text)] text-[11px] placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-primary)]/40 transition-all font-mono" />
+                  <button type="submit" disabled={!text.trim()} className="p-2 rounded-xl bg-[var(--color-primary)]/[0.08] text-[var(--color-primary)]/60 disabled:opacity-20 hover:bg-[var(--color-primary)]/[0.12] hover:text-[var(--color-primary)] transition-all">
                     <Send size={13} />
                   </button>
                 </form>
@@ -156,9 +156,9 @@ export default function ChatWidget() {
         className="w-11 h-11 rounded-2xl crystal flex items-center justify-center group shadow-2xl hover:scale-105 transition-transform duration-500"
       >
         {open ? (
-          <X size={17} className="text-rt-accent/40" />
+          <X size={17} className="text-[var(--color-primary)]/40" />
         ) : (
-          <MessageCircle size={17} className="text-rt-accent/40 animate-neural-pulse" />
+          <MessageCircle size={17} className="text-[var(--color-primary)]/40 animate-neural-pulse" />
         )}
       </button>
     </div>

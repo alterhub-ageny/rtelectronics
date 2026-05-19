@@ -47,7 +47,7 @@ export default function SearchBar() {
           value={query}
           onChange={(e) => handleChange(e.target.value)}
           placeholder={t("common.search")}
-          className="w-full pl-8 pr-7 py-1.5 bg-white/[0.02] border border-white/[0.06] rounded-lg text-[11px] text-[var(--nav-icon-color)] placeholder:text-[var(--nav-icon-color)]/50 focus:border-rt-accent/30 focus:bg-white/[0.04] transition-all duration-300 font-mono tracking-wide"
+          className="w-full pl-8 pr-7 py-1.5 bg-white/[0.02] border border-white/[0.06] rounded-lg text-[11px] text-[var(--nav-icon-color)] placeholder:text-[var(--nav-icon-color)]/50 focus:border-[var(--color-primary)]/30 focus:bg-white/[0.04] transition-all duration-300 font-mono tracking-wide"
         />
         {query && (
           <button
@@ -71,12 +71,12 @@ export default function SearchBar() {
                 {p.images?.[0] ? (
                   <img src={p.images[0]} alt="" className="w-full h-full object-cover" />
                 ) : (
-                  <Zap size={10} className="text-rt-accent/40" />
+                  <Zap size={10} className="text-[var(--color-primary)]/40" />
                 )}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[var(--nav-icon-color)] text-[11px] font-medium truncate">{p.name}</p>
-                <p className="text-rt-accent text-[10px] font-mono">${Number(p.price).toLocaleString()}</p>
+                <p className="text-[var(--color-primary)] text-[10px] font-mono">${Number(p.price).toLocaleString()}</p>
               </div>
             </button>
           ))}

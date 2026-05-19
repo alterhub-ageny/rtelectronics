@@ -59,18 +59,15 @@ export default function Products() {
   return (
     <div className="max-w-site mx-auto px-4 sm:px-6 py-10">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-rt-accent/20 bg-rt-accent/5 mb-4">
-          <span className="w-1.5 h-1.5 rounded-full bg-rt-accent" />
-          <span className="text-rt-accent text-[10px] font-mono tracking-[0.15em] uppercase">
-            {catName || t("products.all_products")}
-          </span>
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[var(--color-primary)]/10 bg-[var(--color-primary)]/[0.03] mb-4">
+          <span className="eyebrow">{catName || t("products.all_products")}</span>
         </div>
         <div className="flex items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-display font-bold text-white/90">
+            <h1 className="heading-md">
               {catName || t("products.products_title")}
             </h1>
-            <p className="text-white/25 text-xs font-mono mt-1">
+            <p className="text-[var(--color-text-muted)] text-[0.75rem] font-mono mt-1">
               {loading ? t("common.loading") : t("common.units_found", { count: products.length })}
             </p>
           </div>
@@ -78,7 +75,7 @@ export default function Products() {
             <select
               value={filters.sort || ""}
               onChange={(e) => handleFilterChange({ ...filters, sort: e.target.value })}
-              className="bg-white/[0.03] border border-white/[0.08] rounded-xl px-3 py-2 text-white/60 text-[11px] font-mono focus:border-rt-accent/40 transition-all appearance-none cursor-pointer hidden sm:block"
+              className="select hidden sm:block"
             >
               {SORT_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -86,14 +83,14 @@ export default function Products() {
             </select>
             <button
               onClick={() => setShowFilter(!showFilter)}
-              className="lg:hidden p-2 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white/40 hover:text-rt-accent hover:border-rt-accent/30 transition-all"
+              className="lg:hidden p-2 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--color-text-muted)] hover:text-[var(--color-primary)] hover:border-[var(--color-primary)]/30 transition-all"
             >
               <SlidersHorizontal size={14} />
             </button>
             {hasFilters && (
               <button
                 onClick={clearFilters}
-                className="flex items-center gap-1 px-3 py-2 rounded-xl border border-rt-accent/10 text-rt-accent text-[10px] font-mono hover:bg-rt-accent/5 transition-all"
+                className="flex items-center gap-1 px-3 py-2 rounded-xl border border-[var(--color-primary)]/10 text-[var(--color-primary)] text-[0.625rem] font-mono hover:bg-[var(--color-primary)]/5 transition-all"
               >
                 <X size={12} /> {t("common.clear")}
               </button>

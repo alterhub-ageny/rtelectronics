@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { ArrowRight, Truck, Shield, HeadphonesIcon, Sparkles } from "lucide-react";
+import { ArrowRight, Truck, Shield, HeadphonesIcon, Sparkles, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { getCategories } from "../../services/api";
 
@@ -18,45 +18,42 @@ export default function HeroSection() {
     getCategories().then(setCategories).catch(() => {});
   }, []);
 
+  const featuredCats = categories.filter(c => c.featured).slice(0, 4);
+
   return (
     <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-[var(--hero-bg)]">
-      <div
-        className="absolute inset-0"
-        style={{ backgroundImage: "radial-gradient(var(--hero-grid) 1px, transparent 1px)", backgroundSize: "28px 28px" }}
-      />
-      <div
-        className="absolute inset-0"
-        style={{ background: "radial-gradient(ellipse at 50% 0%, var(--hero-glow-1) 0%, transparent 70%), radial-gradient(ellipse at 70% 50%, var(--hero-glow-2) 0%, transparent 50%)" }}
-      />
+      {/* Grid */}
+      <div className="absolute inset-0" style={{ backgroundImage: "radial-gradient(var(--hero-grid) 1px, transparent 1px)", backgroundSize: "32px 32px" }} />
+      
+      {/* Gradient overlays */}
+      <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at 30% 0%, var(--hero-glow-1) 0%, transparent 60%), radial-gradient(ellipse at 70% 100%, var(--hero-glow-2) 0%, transparent 50%)" }} />
+      
+      {/* Floating orbs */}
+      <div className="absolute top-[15%] left-[10%] w-[500px] h-[500px] rounded-full bg-[var(--color-primary)]/3 blur-[150px] animate-pulse-glow" />
+      <div className="absolute bottom-[20%] right-[15%] w-[400px] h-[400px] rounded-full bg-[var(--color-info)]/2 blur-[120px]" />
 
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-[120px] animate-glow-pulse" style={{ background: "var(--hero-glow-1)" }} />
-      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full blur-[100px] animate-float" style={{ background: "var(--hero-glow-2)" }} />
-
-      <div className="max-w-site mx-auto px-4 sm:px-6 relative z-10 py-20 w-full">
-        <div className="grid lg:grid-cols-5 gap-12 items-center">
+      <div className="max-w-site mx-auto px-4 sm:px-6 relative z-10 py-24 w-full">
+        <div className="grid lg:grid-cols-5 gap-16 items-center">
+          {/* Left content */}
           <div className="lg:col-span-3">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-rt-accent/10 bg-rt-accent/[0.03] mb-6">
-                <Sparkles size={10} className="text-rt-accent/60" />
-                <span className="section-eyebrow">{t("hero.badge")}</span>
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[var(--color-primary)]/15 bg-[var(--color-primary-subtle)] mb-8">
+                <Sparkles size={11} className="text-[var(--color-primary)]" />
+                <span className="font-mono text-[0.6875rem] font-semibold uppercase tracking-[0.15em] text-[var(--color-primary)]">{t("hero.badge")}</span>
               </div>
             </motion.div>
 
             <motion.h1
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, delay: 0.1 }}
-              className="text-4xl md:text-6xl lg:text-7xl font-display font-bold leading-[1.05] mb-6"
+              transition={{ duration: 0.7, delay: 0.1 }}
+              className="heading-xl mb-6"
             >
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--hero-heading-from)] via-[var(--hero-heading-via)] to-[var(--hero-heading-to)]">
+              <span className="text-[var(--hero-heading-from)]">
                 {t("hero.heading_1")}
               </span>
               <br />
-              <span className="text-gradient-dual">
+              <span className="text-gradient">
                 {t("hero.heading_2")}
               </span>
             </motion.h1>
@@ -64,8 +61,8 @@ export default function HeroSection() {
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-[var(--hero-text)] text-base max-w-xl mb-8 leading-relaxed"
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-[var(--hero-text)] text-[1.0625rem] max-w-xl mb-10 leading-relaxed"
             >
               {t("hero.description")}
             </motion.p>
@@ -73,13 +70,14 @@ export default function HeroSection() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
               className="flex flex-wrap gap-3"
             >
-              <Link to="/products" className="btn-primary text-xs">
-                {t("hero.shop_all")} <ArrowRight size={12} />
+              <Link to="/products" className="btn btn-primary btn-lg group">
+                {t("hero.shop_all")}
+                <ArrowRight size={15} className="group-hover:translate-x-0.5 transition-transform" />
               </Link>
-              <Link to="/products?category=gaming-pcs" className="btn-outline text-[10px]">
+              <Link to="/products?category=gaming-pcs" className="btn btn-outline btn-lg">
                 {t("hero.gaming_rigs")}
               </Link>
             </motion.div>
@@ -88,47 +86,51 @@ export default function HeroSection() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1 }}
-              className="flex items-center gap-6 mt-10 pt-6 border-t border-[var(--hero-border)]"
+              className="flex items-center gap-8 mt-12 pt-8 border-t border-[var(--hero-border)]"
             >
               {[
                 { icon: Truck, text: t("hero.free_shipping") },
                 { icon: Shield, text: t("hero.warranty") },
                 { icon: HeadphonesIcon, text: t("hero.support") },
               ].map((item) => (
-                <div key={item.text} className="flex items-center gap-1.5 text-[var(--hero-text)] text-xs font-mono">
-                  <item.icon size={12} className="text-rt-accent/50" />
-                  {item.text}
+                <div key={item.text} className="flex items-center gap-2 text-[var(--hero-text)] text-[0.8125rem]">
+                  <item.icon size={14} className="text-[var(--color-primary)]/60" />
+                  <span className="font-medium">{item.text}</span>
                 </div>
               ))}
             </motion.div>
           </div>
 
+          {/* Right - category cards */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, delay: 0.3 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
             className="lg:col-span-2"
           >
             <div className="grid grid-cols-2 gap-3">
-              {categories.filter(c => c.featured).slice(0, 4).map((cat) => (
-                <Link
+              {featuredCats.map((cat, i) => (
+                <motion.div
                   key={cat.id}
-                  to={`/products?category=${cat.slug}`}
-                  className="group card-glass p-4"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 + i * 0.1 }}
                 >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-2xl opacity-60 group-hover:opacity-100 transition-opacity duration-300">
-                      {ICON_MAP[cat.icon] || "📦"}
-                    </span>
-                    <ArrowRight size={11} className="text-white/20 group-hover:text-rt-accent/60 transition-colors -translate-x-2 group-hover:translate-x-0 opacity-0 group-hover:opacity-100 transition-all duration-300" />
-                  </div>
-                  <p className="text-white/70 font-semibold text-base group-hover:text-white transition-colors">
-                    {cat.name}
-                  </p>
-                  <p className="text-white/25 text-[10px] mt-0.5 font-mono tracking-wider">
-                    {cat.productCount} products
-                  </p>
-                </Link>
+                  <Link to={`/products?category=${cat.slug}`}
+                    className="group premium-card p-5 block"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-2xl">{ICON_MAP[cat.icon] || "📦"}</span>
+                      <ArrowRight size={12} className="text-[var(--color-text-muted)] group-hover:text-[var(--color-primary)] group-hover:translate-x-0.5 transition-all" />
+                    </div>
+                    <p className="font-semibold text-[0.9375rem] text-[var(--color-text)] group-hover:text-[var(--color-primary)] transition-colors">
+                      {cat.name}
+                    </p>
+                    <p className="text-[var(--color-text-muted)] text-[0.75rem] mt-1 font-mono">
+                      {cat.productCount} products
+                    </p>
+                  </Link>
+                </motion.div>
               ))}
             </div>
           </motion.div>
