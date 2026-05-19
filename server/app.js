@@ -17,6 +17,7 @@ import {
 } from "./validate.js";
 
 function sanitizeError(e) {
+  console.error("Server error:", e?.message, e?.stack?.slice(0, 200));
   if (process.env.NODE_ENV === "production") return "Internal server error";
   return e.message;
 }
@@ -78,7 +79,7 @@ async function initDb() {
 
 async function seedSettings() {
   try {
-    await query("INSERT INTO settings (key, value, type) VALUES ('store_name','RT ELECTRONICS','text'),('store_email','support@rtelectronics.com','text'),('store_phone','+1 (555) 123-4567','text'),('store_address','123 Tech Street, Silicon Valley, CA 94025','text'),('currency','USD','text'),('tax_rate','0.08','number'),('free_shipping_min','100','number'),('shipping_rate','10','number'),('low_stock_threshold','5','number'),('order_prefix','RT-','text'),('facebook_url','','text'),('twitter_url','','text'),('instagram_url','','text'),('about_text','RT Electronics is your premier destination for cutting-edge technology and electronics.','textarea'),('announcement','','text'),('announcement_active','false','boolean'),('maintenance_mode','false','boolean'),('chart_revenue_color','#22c55e','text'),('chart_expenses_color','#f97316','text'),('chart_profit_color','#a855f7','text'),('chart_bar_animated','true','boolean') ON CONFLICT (key) DO NOTHING");
+    await query("INSERT INTO settings (key, value, type) VALUES ('store_name','RT ELECTRONICS','text'),('store_email','support@rtelectronics.com','text'),('store_phone','+1 (555) 123-4567','text'),('store_address','123 Tech Street, Silicon Valley, CA 94025','text'),('currency','MAD','text'),('tax_rate','0.08','number'),('free_shipping_min','100','number'),('shipping_rate','10','number'),('low_stock_threshold','5','number'),('order_prefix','RT-','text'),('facebook_url','','text'),('twitter_url','','text'),('instagram_url','','text'),('about_text','RT Electronics is your premier destination for cutting-edge technology and electronics.','textarea'),('announcement','','text'),('announcement_active','false','boolean'),('maintenance_mode','false','boolean'),('chart_revenue_color','#22c55e','text'),('chart_expenses_color','#f97316','text'),('chart_profit_color','#a855f7','text'),('chart_bar_animated','true','boolean') ON CONFLICT (key) DO NOTHING");
     await query("INSERT INTO pages (id, slug, title, content, published) VALUES ('about-page','about','About Us','',true),('faq-page','faq','Frequently Asked Questions','',true),('privacy-page','privacy','Privacy Policy','',true),('terms-page','terms','Terms of Service','',true) ON CONFLICT (slug) DO NOTHING");
   } catch {}
 }
@@ -419,19 +420,20 @@ app.get("/api/orders/:id", authMiddleware, async (req, res) => {
 
 app.post("/api/orders", authMiddleware, validate(orderSchema), async (req, res) => {
   try {
-    const { items, total, shipping, tax, coupon, shippingMethod, giftWrap, notes, address } = req.body;
+    const { items, total, shipping, tax, coupon, shippingMethod, giftWrap, notes, address, phone } = req.body;
 
     const id = uuidv4();
     const now = new Date().toISOString();
     const estimatedDelivery = new Date(Date.now() + 7 * 86400000).toISOString();
     const statusHistory = JSON.stringify([{ status: "confirmed", date: now }]);
+    const advancePayment = JSON.stringify({ amount: Math.round(total * 0.1 * 100) / 100, status: "pending", paidAt: null });
 
     await query(
-      `INSERT INTO orders (id, "userId", items, total, shipping, tax, coupon, "shippingMethod", "giftWrap", notes, address, status, "statusHistory", "estimatedDelivery", "createdAt")
-       VALUES ($1,$2,$3::jsonb,$4,$5,$6,$7::jsonb,$8,$9,$10,$11::jsonb,$12,$13::jsonb,$14,$15)`,
+      `INSERT INTO orders (id, "userId", items, total, shipping, tax, coupon, "shippingMethod", "giftWrap", notes, address, status, "statusHistory", "estimatedDelivery", "advancePayment", "createdAt")
+       VALUES ($1,$2,$3::jsonb,$4,$5,$6,$7::jsonb,$8,$9,$10,$11::jsonb,$12,$13::jsonb,$14,$15::jsonb,$16)`,
       [id, req.user.id, JSON.stringify(items), total, shipping, tax,
-       JSON.stringify(coupon), shippingMethod, giftWrap, notes, JSON.stringify(address),
-       "confirmed", statusHistory, estimatedDelivery, now]
+       JSON.stringify(coupon), shippingMethod, giftWrap, notes, JSON.stringify({ ...address, phone }),
+       "confirmed", statusHistory, estimatedDelivery, advancePayment, now]
     );
 
     for (const item of items) {

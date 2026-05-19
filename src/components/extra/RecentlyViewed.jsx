@@ -44,7 +44,7 @@ export default function RecentlyViewed() {
                 <img src={p.images?.[0]} alt={p.name} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
               </div>
               <p className="text-white text-xs font-medium truncate group-hover:text-[var(--color-primary)] transition-colors">{p.name}</p>
-              <p className="text-[var(--color-primary)] font-mono text-xs">${p.price?.toLocaleString()}</p>
+              <p className="text-[var(--color-primary)] font-mono text-xs">MAD {p.price?.toLocaleString()}</p>
             </Link>
           </motion.div>
         ))}

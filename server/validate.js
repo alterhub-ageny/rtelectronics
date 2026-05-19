@@ -66,6 +66,7 @@ export const orderSchema = z.object({
   shippingMethod: z.string().optional(),
   giftWrap: z.boolean().optional(),
   notes: z.string().max(1000).optional(),
+  phone: z.string().min(1).max(20),
   address: addressSchema,
 });
 

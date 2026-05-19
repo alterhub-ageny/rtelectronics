@@ -126,9 +126,9 @@ export default function ProductDetailPage() {
           </div>
 
           <div className="flex items-baseline gap-4 mb-8">
-            <span className="price text-5xl">${product.price.toLocaleString()}</span>
+            <span className="price text-5xl">MAD {product.price.toLocaleString()}</span>
             {product.originalPrice && (
-              <><span className="text-2xl text-[var(--color-text-muted)] line-through">${product.originalPrice.toLocaleString()}</span>
+              <><span className="text-2xl text-[var(--color-text-muted)] line-through">MAD {product.originalPrice.toLocaleString()}</span>
               <span className="px-3 py-1 text-sm font-bold rounded-full bg-red-500/20 text-red-400">-{discount}% OFF</span></>
             )}
           </div>
@@ -160,13 +160,13 @@ export default function ProductDetailPage() {
               ? "Out of Stock"
               : added
               ? <><Check size={22} /> Added!</>
-              : <><ShoppingCart size={22} /> Add to Cart - ${(product.price * quantity).toLocaleString()}</>
+              : <><ShoppingCart size={22} /> Add to Cart - MAD {(product.price * quantity).toLocaleString()}</>
             }
           </motion.button>
 
           <div className="grid grid-cols-3 gap-4 mt-8">
             {[
-              { icon: Truck, text: "Free Shipping", sub: "On orders $499+" },
+              { icon: Truck, text: "Free Shipping", sub: "On orders MAD 499+" },
               { icon: Shield, text: "2 Year Warranty", sub: "Full coverage" },
               { icon: RotateCcw, text: "30-Day Returns", sub: "No questions asked" },
             ].map(({ icon: Icon, text, sub }) => (

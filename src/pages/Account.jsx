@@ -172,7 +172,7 @@ export default function Account() {
                       <p className="text-[var(--color-text)] text-xs">{order.items?.length || 0} item{(order.items?.length || 0) !== 1 ? "s" : ""}</p>
                       <p className="text-[var(--color-text-muted)] text-[0.625rem] font-mono">{new Date(order.createdAt).toLocaleDateString()}</p>
                     </div>
-                    <span className="price text-sm">${Number(order.total || 0).toFixed(2)}</span>
+                    <span className="price text-sm">MAD {Number(order.total || 0).toFixed(2)}</span>
                   </div>
                 </Link>
               ))}

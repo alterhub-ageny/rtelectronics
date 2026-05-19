@@ -89,10 +89,10 @@ export default function OrderDetailPage() {
         <div className="glass-card p-5">
           <h3 className="font-semibold text-[var(--color-text)] flex items-center gap-2 mb-3"><CreditCard size={16} className="text-[var(--color-primary)]" /> Order Summary</h3>
           <div className="space-y-1 text-sm">
-            <div className="flex justify-between"><span className="text-[var(--color-text-muted)]">Subtotal</span><span className="text-[var(--color-text)]">${order.items?.reduce((s, i) => s + i.price * i.quantity, 0).toFixed(2)}</span></div>
-            {order.shipping > 0 && <div className="flex justify-between"><span className="text-[var(--color-text-muted)]">Shipping</span><span className="text-[var(--color-text)]">${order.shipping?.toFixed(2)}</span></div>}
+            <div className="flex justify-between"><span className="text-[var(--color-text-muted)]">Subtotal</span><span className="text-[var(--color-text)]">MAD {order.items?.reduce((s, i) => s + i.price * i.quantity, 0).toFixed(2)}</span></div>
+            {order.shipping > 0 && <div className="flex justify-between"><span className="text-[var(--color-text-muted)]">Shipping</span><span className="text-[var(--color-text)]">MAD {order.shipping?.toFixed(2)}</span></div>}
             {order.coupon && <div className="flex justify-between"><span className="text-emerald-400/70">Coupon ({order.coupon.code})</span><span className="text-emerald-400">Applied</span></div>}
-            <div className="flex justify-between border-t border-[var(--card-border)] pt-2 mt-2"><span className="font-semibold text-[var(--color-text)]">Total</span><span className="price text-lg">${order.total?.toFixed(2)}</span></div>
+            <div className="flex justify-between border-t border-[var(--card-border)] pt-2 mt-2"><span className="font-semibold text-[var(--color-text)]">Total</span><span className="price text-lg">MAD {order.total?.toFixed(2)}</span></div>
           </div>
         </div>
       </div>
@@ -104,9 +104,9 @@ export default function OrderDetailPage() {
             <img src={item.images?.[0]} alt={item.name} className="w-16 h-16 object-cover rounded-xl shrink-0" />
             <div className="flex-1 min-w-0">
               <Link to={`/product/${item.id}`} className="font-medium text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors line-clamp-1">{item.name}</Link>
-              <p className="text-[var(--color-text-muted)] text-sm">Qty: {item.quantity} &times; ${item.price.toLocaleString()}</p>
+              <p className="text-[var(--color-text-muted)] text-sm">Qty: {item.quantity} &times; MAD {item.price.toLocaleString()}</p>
             </div>
-            <span className="font-mono text-[var(--color-text)]">${(item.price * item.quantity).toLocaleString()}</span>
+            <span className="font-mono text-[var(--color-text)]">MAD {(item.price * item.quantity).toLocaleString()}</span>
           </div>
         ))}
       </div>

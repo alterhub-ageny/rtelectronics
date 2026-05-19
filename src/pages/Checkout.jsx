@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, Check, CreditCard, Lock, Gift, Truck, Percent, FileText } from "lucide-react";
-import TrustBadges from "../components/extra/TrustBadges";
+import { ArrowLeft, Check, Gift, Truck, Percent, FileText, X, Banknote } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
@@ -22,6 +21,8 @@ export default function Checkout() {
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  const [showAdvance, setShowAdvance] = useState(false);
+  const [advanceAmount, setAdvanceAmount] = useState(0);
   const [couponCode, setCouponCode] = useState("");
   const [coupon, setCoupon] = useState(null);
   const [couponErr, setCouponErr] = useState("");
@@ -30,7 +31,7 @@ export default function Checkout() {
   const [notes, setNotes] = useState("");
   const [form, setForm] = useState({
     name: user?.name || "", email: user?.email || "", address: "",
-    city: "", zip: "", card: "",
+    city: "", phone: "",
   });
 
   const shipping = SHIPPING_METHODS.find((s) => s.id === shippingMethod)?.cost || 0;
@@ -56,7 +57,7 @@ export default function Checkout() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name || !form.email || !form.address) { addToast(t("checkout.fill_required"), "warning"); return; }
+    if (!form.name || !form.email || !form.phone || !form.address) { addToast(t("checkout.fill_required"), "warning"); return; }
     setSubmitting(true);
     try {
       await createOrder({
@@ -68,10 +69,13 @@ export default function Checkout() {
         shippingMethod,
         giftWrap,
         notes,
-        address: { street: form.address, city: form.city, zip: form.zip },
+        phone: form.phone,
+        address: { street: form.address, city: form.city },
       });
       clearCart();
+      setAdvanceAmount(Math.round(total * 0.1 * 100) / 100);
       setDone(true);
+      setShowAdvance(true);
     } catch { addToast(t("checkout.order_failed"), "error"); }
     finally { setSubmitting(false); }
   };
@@ -85,8 +89,42 @@ export default function Checkout() {
           </div>
           <h2 className="heading-md mb-2">{t("checkout.order_confirmed")}</h2>
           <p className="text-[var(--color-text-muted)] text-xs font-mono mb-6">{t("checkout.order_confirmed_text")}</p>
-          <Link to="/products" className="btn btn-primary">{t("checkout.continue")}</Link>
+          <button onClick={() => setShowAdvance(true)} className="btn btn-primary mb-3 w-full justify-center">
+            {t("checkout.advance_pay_now")}
+          </button>
+          <Link to="/products" className="block text-[var(--color-text-muted)] hover:text-[var(--color-primary)] text-xs font-mono transition-colors">{t("checkout.continue")}</Link>
         </motion.div>
+
+        <AnimatePresence>
+          {showAdvance && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setShowAdvance(false)}>
+              <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="glass-card p-6 max-w-md w-full relative" onClick={(e) => e.stopPropagation()}>
+                <button onClick={() => setShowAdvance(false)} className="absolute top-3 right-3 p-1.5 rounded-lg hover:bg-[var(--card-bg)] text-[var(--color-text-muted)] transition-all"><X size={16} /></button>
+                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-4">
+                  <Banknote size={22} className="text-amber-400" />
+                </div>
+                <h3 className="text-sm font-semibold text-[var(--color-text)] tracking-wider mb-1">{t("checkout.advance_title")}</h3>
+                <p className="text-[var(--color-text-muted)] text-xs mb-4">{t("checkout.advance_text")}</p>
+
+                <div className="bg-[var(--card-bg)] rounded-xl p-4 mb-4 border border-[var(--card-border)]">
+                  <div className="flex justify-between items-center mb-3">
+                    <span className="text-[var(--color-text-muted)] text-xs">{t("checkout.advance_amount")}</span>
+                    <span className="text-[var(--color-primary)] font-mono font-bold text-lg">MAD {advanceAmount.toFixed(2)}</span>
+                  </div>
+                  <div className="border-t border-[var(--card-border)] pt-3">
+                    <p className="text-[var(--color-text-muted)] text-[0.625rem] font-mono whitespace-pre-line leading-relaxed">{t("checkout.advance_instructions")}</p>
+                  </div>
+                </div>
+
+                <p className="text-amber-400/70 text-[0.625rem] font-mono mb-4">{t("checkout.advance_reminder")}</p>
+
+                <button onClick={() => { setShowAdvance(false); navigate("/products"); }} className="btn btn-primary w-full justify-center">
+                  {t("checkout.advance_pay_later")}
+                </button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     );
   }
@@ -124,16 +162,16 @@ export default function Checkout() {
                 <input required type="email" value={form.email} onChange={update("email")} placeholder="john@example.com" className="input" />
               </div>
               <div className="sm:col-span-2">
+                <label className="text-[0.625rem] text-[var(--color-text-muted)] font-mono tracking-wider mb-1.5 block">{t("checkout.phone")}</label>
+                <input required type="tel" value={form.phone} onChange={update("phone")} placeholder="+212 6XX XXX XXX" className="input" />
+              </div>
+              <div className="sm:col-span-2">
                 <label className="text-[0.625rem] text-[var(--color-text-muted)] font-mono tracking-wider mb-1.5 block">{t("checkout.address")}</label>
                 <input required value={form.address} onChange={update("address")} placeholder="123 Tech Street" className="input" />
               </div>
               <div>
                 <label className="text-[0.625rem] text-[var(--color-text-muted)] font-mono tracking-wider mb-1.5 block">{t("checkout.city")}</label>
-                <input required value={form.city} onChange={update("city")} placeholder="New York" className="input" />
-              </div>
-              <div>
-                <label className="text-[0.625rem] text-[var(--color-text-muted)] font-mono tracking-wider mb-1.5 block">{t("checkout.zip")}</label>
-                <input required value={form.zip} onChange={update("zip")} placeholder="10001" className="input" />
+                <input required value={form.city} onChange={update("city")} placeholder="Casablanca" className="input" />
               </div>
             </div>
           </motion.div>
@@ -153,7 +191,7 @@ export default function Checkout() {
                     <p className="text-[var(--color-text-muted)] text-[0.625rem] font-mono">{s.time}</p>
                   </div>
                   <span className="text-[var(--color-text-muted)] text-xs font-mono">
-                    {freeShipping && s.id === "standard" ? t("checkout.free") : `$${s.cost}`}
+                    {freeShipping && s.id === "standard" ? t("checkout.free") : `MAD ${s.cost}`}
                   </span>
                 </label>
               ))}
@@ -175,20 +213,6 @@ export default function Checkout() {
               <label className="text-[0.625rem] text-[var(--color-text-muted)] font-mono tracking-wider mb-1.5 block flex items-center gap-1"><FileText size={11} /> {t("checkout.notes")}</label>
               <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} placeholder={t("checkout.special_instructions")}
                 className="input resize-none" />
-            </div>
-          </motion.div>
-
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="glass-card p-5">
-            <h2 className="text-sm font-semibold text-[var(--color-text)] tracking-wider mb-4 flex items-center gap-2">
-              <CreditCard size={14} className="text-[var(--color-primary)]" /> {t("checkout.payment")}
-            </h2>
-            <div>
-              <label className="text-[0.625rem] text-[var(--color-text-muted)] font-mono tracking-wider mb-1.5 block">{t("checkout.card_number")}</label>
-              <div className="relative">
-                <input required value={form.card} onChange={update("card")} placeholder="4242 4242 4242 4242" maxLength={19}
-                  className="input pl-10" />
-                <CreditCard size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" />
-              </div>
             </div>
           </motion.div>
         </div>
@@ -218,25 +242,24 @@ export default function Checkout() {
                       <p className="text-[var(--color-text-muted)] text-[0.6875rem] truncate">{item.name}</p>
                       <p className="text-[var(--color-text-muted)] text-[0.5625rem] font-mono opacity-60">x{item.quantity}</p>
                     </div>
-                    <span className="text-[var(--color-text-muted)] text-[0.6875rem] font-mono">${(item.price * item.quantity).toLocaleString()}</span>
+                    <span className="text-[var(--color-text-muted)] text-[0.6875rem] font-mono">MAD {(item.price * item.quantity).toLocaleString()}</span>
                   </div>
                 ))}
               </div>
               <div className="space-y-1.5 text-xs border-t border-[var(--card-border)] pt-3">
-                <div className="flex justify-between"><span className="text-[var(--color-text-muted)] font-mono text-[0.6875rem]">{t("checkout.subtotal")}</span><span className="text-[var(--color-text)] font-mono text-[0.6875rem] opacity-70">${totalPrice.toLocaleString()}</span></div>
-                <div className="flex justify-between"><span className="text-[var(--color-text-muted)] font-mono text-[0.6875rem]">{t("checkout.shipping_line")}</span><span className={`font-mono text-[0.6875rem] ${freeShipping ? "text-emerald-400" : "text-[var(--color-text)] opacity-70"}`}>{freeShipping ? t("checkout.free") : `$${effectiveShipping.toFixed(2)}`}</span></div>
-                <div className="flex justify-between"><span className="text-[var(--color-text-muted)] font-mono text-[0.6875rem]">{t("checkout.tax_line")}</span><span className="text-[var(--color-text)] font-mono text-[0.6875rem] opacity-70">${tax.toFixed(2)}</span></div>
-                {giftWrap && <div className="flex justify-between"><span className="text-[var(--color-text-muted)] font-mono text-[0.6875rem]">{t("checkout.gift_wrap_line")}</span><span className="text-[var(--color-text)] font-mono text-[0.6875rem] opacity-70">$4.99</span></div>}
-                {coupon && <div className="flex justify-between"><span className="text-[var(--color-primary)]/50 font-mono text-[0.6875rem]">{t("checkout.discount", { code: coupon.code })}</span><span className="text-[var(--color-primary)] font-mono text-[0.6875rem]">-${couponDiscount.toFixed(2)}</span></div>}
+                <div className="flex justify-between"><span className="text-[var(--color-text-muted)] font-mono text-[0.6875rem]">{t("checkout.subtotal")}</span><span className="text-[var(--color-text)] font-mono text-[0.6875rem] opacity-70">MAD {totalPrice.toLocaleString()}</span></div>
+                <div className="flex justify-between"><span className="text-[var(--color-text-muted)] font-mono text-[0.6875rem]">{t("checkout.shipping_line")}</span><span className={`font-mono text-[0.6875rem] ${freeShipping ? "text-emerald-400" : "text-[var(--color-text)] opacity-70"}`}>{freeShipping ? t("checkout.free") : `MAD ${effectiveShipping.toFixed(2)}`}</span></div>
+                <div className="flex justify-between"><span className="text-[var(--color-text-muted)] font-mono text-[0.6875rem]">{t("checkout.tax_line")}</span><span className="text-[var(--color-text)] font-mono text-[0.6875rem] opacity-70">MAD {tax.toFixed(2)}</span></div>
+                {giftWrap && <div className="flex justify-between"><span className="text-[var(--color-text-muted)] font-mono text-[0.6875rem]">{t("checkout.gift_wrap_line")}</span><span className="text-[var(--color-text)] font-mono text-[0.6875rem] opacity-70">MAD 4.99</span></div>}
+                {coupon && <div className="flex justify-between"><span className="text-[var(--color-primary)]/50 font-mono text-[0.6875rem]">{t("checkout.discount", { code: coupon.code })}</span><span className="text-[var(--color-primary)] font-mono text-[0.6875rem]">-MAD {couponDiscount.toFixed(2)}</span></div>}
                 <div className="flex justify-between border-t border-[var(--card-border)] pt-2 mt-2">
                   <span className="text-[var(--color-text)] text-sm font-bold">{t("checkout.total")}</span>
-                  <span className="price text-base">${total.toFixed(2)}</span>
+                  <span className="price text-base">MAD {total.toFixed(2)}</span>
                 </div>
               </div>
               <button type="submit" disabled={submitting} className="btn btn-primary w-full justify-center mt-4">
-                {submitting ? <><span className="spinner w-4 h-4" /> {t("checkout.processing")}</> : <><Lock size={13} /> {t("checkout.place_order")}</>}
+                {submitting ? <><span className="spinner w-4 h-4" /> {t("checkout.processing")}</> : <><Banknote size={13} /> {t("checkout.place_order")}</>}
               </button>
-              <div className="mt-3"><TrustBadges /></div>
             </div>
           </motion.div>
         </div>

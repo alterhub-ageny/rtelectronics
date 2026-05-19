@@ -31,6 +31,7 @@ export default function CategoryShowcase() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: i * 0.04, duration: 0.5 }}
+            className="h-full"
           >
             <Link
               to={`/products?category=${cat.slug}`}

@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import Header from "./Header";
 import Footer from "./Footer";
 import ChatWidget from "../ui/ChatWidget";
+import ErrorBoundary from "../ui/ErrorBoundary";
 
 export default function Layout() {
   return (
@@ -18,7 +19,9 @@ export default function Layout() {
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[var(--color-primary)]/3 rounded-full blur-[120px] pointer-events-none z-0" />
       <Header />
       <main className="flex-1 pt-16 relative z-10">
-        <Outlet />
+        <ErrorBoundary>
+          <Outlet />
+        </ErrorBoundary>
       </main>
       <Footer />
       <ChatWidget />

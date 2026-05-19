@@ -76,7 +76,7 @@ export default function SearchBar() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[var(--nav-icon-color)] text-[11px] font-medium truncate">{p.name}</p>
-                <p className="text-[var(--color-primary)] text-[10px] font-mono">${Number(p.price).toLocaleString()}</p>
+                <p className="text-[var(--color-primary)] text-[10px] font-mono">MAD {Number(p.price).toLocaleString()}</p>
               </div>
             </button>
           ))}

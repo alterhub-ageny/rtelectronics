@@ -58,6 +58,7 @@ CREATE TABLE IF NOT EXISTS orders (
   "statusHistory" JSONB DEFAULT '[]',
   "trackingNumber" TEXT,
   "estimatedDelivery" TIMESTAMPTZ,
+  "advancePayment" JSONB,
   "createdAt" TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -178,6 +179,7 @@ CREATE INDEX IF NOT EXISTS idx_stock_log_productId ON stock_log("productId");
 CREATE INDEX IF NOT EXISTS idx_expenses_date ON expenses(date);
 CREATE INDEX IF NOT EXISTS idx_notifications_read ON notifications(read);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_categories_slug ON categories(slug);
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS "advancePayment" JSONB;
 `;
 
 const DEFAULTS = `
@@ -186,7 +188,7 @@ INSERT INTO settings (key, value, type) VALUES
   ('store_email', 'support@rtelectronics.com', 'text'),
   ('store_phone', '+1 (555) 123-4567', 'text'),
   ('store_address', '123 Tech Street, Silicon Valley, CA 94025', 'text'),
-  ('currency', 'USD', 'text'),
+  ('currency', 'MAD', 'text'),
   ('tax_rate', '0.08', 'number'),
   ('free_shipping_min', '100', 'number'),
   ('shipping_rate', '10', 'number'),

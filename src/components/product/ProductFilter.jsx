@@ -18,14 +18,14 @@ export default function ProductFilter({ filters, onChange, onClear }) {
   const hasFilters = filters.category || filters.sort || filters.minPrice || filters.maxPrice || filters.minRating;
 
   return (
-    <div className="crystal rounded-2xl p-5">
+    <div className="glass-card rounded-2xl p-5">
       <div className="flex items-center justify-between mb-5">
-        <div className="flex items-center gap-2 text-white/40 font-display text-[11px] font-bold tracking-wider">
-          <SlidersHorizontal size={13} className="text-[var(--color-primary)]/40" />
+        <div className="flex items-center gap-2 text-[var(--color-text-muted)] font-display text-[11px] font-bold tracking-wider">
+          <SlidersHorizontal size={13} className="text-[var(--color-primary)]/60" />
           {t("products.filters")}
         </div>
         {hasFilters && (
-          <button onClick={onClear} className="text-[9px] text-[var(--color-primary)]/40 hover:text-white/40 flex items-center gap-1 transition-colors font-mono">
+          <button onClick={onClear} className="text-[9px] text-[var(--color-primary)]/60 hover:text-[var(--color-text-muted)] flex items-center gap-1 transition-colors font-mono">
             <X size={10} /> {t("common.clear")}
           </button>
         )}
@@ -33,11 +33,11 @@ export default function ProductFilter({ filters, onChange, onClear }) {
 
       <div className="space-y-4">
         <div>
-          <label className="text-[9px] text-white/20 font-mono tracking-wider mb-2 block">{t("products.category")}</label>
+          <label className="text-[9px] text-[var(--color-text-muted)] font-mono tracking-wider mb-2 block">{t("products.category")}</label>
           <select
             value={filters.category || ""}
             onChange={(e) => update("category", e.target.value)}
-            className="w-full bg-white/[0.02] border border-white/[0.04] rounded-xl px-3.5 py-2.5 text-white/40 text-[11px] focus:border-[var(--color-primary)]/20 focus:text-white/60 transition-all appearance-none cursor-pointer font-grotesk"
+            className="select"
           >
             <option value="">{t("products.all_categories")}</option>
             {categories.map((cat) => (
@@ -47,11 +47,11 @@ export default function ProductFilter({ filters, onChange, onClear }) {
         </div>
 
         <div>
-          <label className="text-[9px] text-white/20 font-mono tracking-wider mb-2 block">{t("products.sort")}</label>
+          <label className="text-[9px] text-[var(--color-text-muted)] font-mono tracking-wider mb-2 block">{t("products.sort")}</label>
           <select
             value={filters.sort || ""}
             onChange={(e) => update("sort", e.target.value)}
-            className="w-full bg-white/[0.02] border border-white/[0.04] rounded-xl px-3.5 py-2.5 text-white/40 text-[11px] focus:border-[var(--color-primary)]/20 focus:text-white/60 transition-all appearance-none cursor-pointer font-grotesk"
+            className="select"
           >
             {SORT_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -60,7 +60,7 @@ export default function ProductFilter({ filters, onChange, onClear }) {
         </div>
 
         <div>
-          <label className="text-[9px] text-white/20 font-mono tracking-wider mb-2 block">
+          <label className="text-[9px] text-[var(--color-text-muted)] font-mono tracking-wider mb-2 block">
             {t("products.price_range")} {filters.minPrice || filters.maxPrice ? `[${filters.minPrice || 0} - ${filters.maxPrice || "∞"}]` : ""}
           </label>
           <div className="flex gap-2">
@@ -69,20 +69,20 @@ export default function ProductFilter({ filters, onChange, onClear }) {
               placeholder={t("products.min")}
               value={filters.minPrice || ""}
               onChange={(e) => update("minPrice", e.target.value)}
-              className="w-full bg-white/[0.02] border border-white/[0.04] rounded-xl px-3.5 py-2.5 text-white/40 text-[11px] placeholder:text-white/10 focus:border-[var(--color-primary)]/20 focus:text-white/60 transition-all font-mono"
+              className="input"
             />
             <input
               type="number"
               placeholder={t("products.max")}
               value={filters.maxPrice || ""}
               onChange={(e) => update("maxPrice", e.target.value)}
-              className="w-full bg-white/[0.02] border border-white/[0.04] rounded-xl px-3.5 py-2.5 text-white/40 text-[11px] placeholder:text-white/10 focus:border-[var(--color-primary)]/20 focus:text-white/60 transition-all font-mono"
+              className="input"
             />
           </div>
         </div>
 
         <div>
-          <label className="text-[9px] text-white/20 font-mono tracking-wider mb-2 block">
+          <label className="text-[9px] text-[var(--color-text-muted)] font-mono tracking-wider mb-2 block">
             {t("products.min_rating")} {filters.minRating ? `[${filters.minRating}+]` : ""}
           </label>
           <div className="flex gap-2">
@@ -92,8 +92,8 @@ export default function ProductFilter({ filters, onChange, onClear }) {
                 onClick={() => update("minRating", filters.minRating === r ? "" : r)}
                 className={`flex-1 py-2 rounded-xl text-[10px] font-mono transition-all ${
                   filters.minRating == r
-                    ? "bg-[var(--color-primary)]/[0.04] border border-[var(--color-primary)]/20 text-[var(--color-primary)]/50"
-                    : "bg-white/[0.02] border border-white/[0.03] text-white/20 hover:border-white/10"
+                    ? "bg-[var(--color-primary)]/10 border border-[var(--color-primary)]/30 text-[var(--color-primary)]"
+                    : "bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 }`}
               >
                 {r}+ ★

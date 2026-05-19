@@ -265,7 +265,7 @@ function BarChart({ data, height = 160, color = "#ff2a2a" }) {
         return (
           <g key={i}>
             <rect x={x} y={height - 10 - barH} width={bw} height={barH} fill={color} rx="3" opacity="0.85" className="hover:opacity-100 transition-opacity">
-              <title>{d.label || ""}: ${v.toFixed(2)}</title>
+              <title>{d.label || ""}: MAD {v.toFixed(2)}</title>
             </rect>
             <rect x={x} y={height - 10 - barH} width={bw} height={barH} fill={`${color}40`} rx="3" className="animate-pulse" style={{ animationDelay: `${i * 50}ms` }} />
           </g>
@@ -342,16 +342,16 @@ function DashboardTab() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4">
-        <KpiCard title={t("admin.today")} value={`$${sf(stats.todayRevenue)}`} icon={BarChart3} color="text-emerald-400" subtitle={`${stats.todayOrders} ${t("admin.total_orders").toLowerCase()}`} />
-        <KpiCard title={t("admin.total_revenue")} value={`$${sf(stats.totalRevenue)}`} icon={TrendingUp} color="text-green-400" />
-        <KpiCard title={t("admin.total_expenses")} value={`$${sf(stats.totalExpenses)}`} icon={TrendingDown} color="text-orange-400" />
-        <KpiCard title={t("admin.net_profit")} value={`$${sf(stats.netProfit)}`} icon={DollarSign} color={stats.netProfit >= 0 ? "text-emerald-400" : "text-red-400"} subtitle={`${sf(profitMargin, 1)}% margin`} />
+        <KpiCard title={t("admin.today")} value={`MAD ${sf(stats.todayRevenue)}`} icon={BarChart3} color="text-emerald-400" subtitle={`${stats.todayOrders} ${t("admin.total_orders").toLowerCase()}`} />
+        <KpiCard title={t("admin.total_revenue")} value={`MAD ${sf(stats.totalRevenue)}`} icon={TrendingUp} color="text-green-400" />
+        <KpiCard title={t("admin.total_expenses")} value={`MAD ${sf(stats.totalExpenses)}`} icon={TrendingDown} color="text-orange-400" />
+        <KpiCard title={t("admin.net_profit")} value={`MAD ${sf(stats.netProfit)}`} icon={DollarSign} color={stats.netProfit >= 0 ? "text-emerald-400" : "text-red-400"} subtitle={`${sf(profitMargin, 1)}% margin`} />
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4">
         <KpiCard title={t("admin.total_orders")} value={stats.totalOrders} icon={ShoppingCart} trend={0} subtitle="all time" />
         <KpiCard title={t("admin.pending")} value={stats.pendingOrders} icon={Clock} color="text-yellow-400" />
         <KpiCard title={t("admin.low_stock")} value={stats.lowStockProducts} icon={AlertTriangle} color="text-orange-400" subtitle={`${stats.outOfStockProducts} ${t("admin.stock_out").toLowerCase()}`} />
-        <KpiCard title={t("admin.avg_order")} value={`$${sf(stats.averageOrderValue)}`} icon={Activity} />
+        <KpiCard title={t("admin.avg_order")} value={`MAD ${sf(stats.averageOrderValue)}`} icon={Activity} />
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4">
         <KpiCard title={t("admin.products")} value={stats.totalProducts} icon={Package} />
@@ -461,7 +461,7 @@ function ProductsTab({ addToast }) {
                       <div><p className="text-white font-medium truncate max-w-[200px]">{p.name}</p><p className="text-white/25 text-[10px]">{p.category}</p></div>
                     </div>
                   </td>
-                  <td className="px-4 text-right text-[var(--color-primary)] font-mono">${p.price?.toFixed(2)}</td>
+                  <td className="px-4 text-right text-[var(--color-primary)] font-mono">MAD {p.price?.toFixed(2)}</td>
                   <td className="px-4 text-right"><StockBadge stock={p.stock} /></td>
                   <td className="px-4 text-right text-white/70">{p.rating?.toFixed(1)}</td>
                   <td className="px-4 text-right"><div className="flex items-center justify-end gap-1">
@@ -551,7 +551,7 @@ function OrdersTab({ addToast }) {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead><tr className="text-white/30 text-xs uppercase border-b border-white/5">
-              <th className="text-left py-3 px-4">{t("admin.order_col")}</th><th className="text-left px-4">{t("admin.customer")}</th><th className="text-right px-4">{t("admin.items_col")}</th><th className="text-right px-4">{t("admin.total_col")}</th><th className="text-center px-4">{t("admin.status")}</th><th className="text-right px-4">{t("admin.date")}</th><th className="text-right px-4 w-24">{t("admin.action")}</th>
+              <th className="text-left py-3 px-4">{t("admin.order_col")}</th><th className="text-left px-4">{t("admin.customer")}</th><th className="text-right px-4">{t("admin.items_col")}</th><th className="text-right px-4">{t("admin.total_col")}</th><th className="text-right px-4">{t("admin.advance_col")}</th><th className="text-center px-4">{t("admin.status")}</th><th className="text-right px-4">{t("admin.date")}</th><th className="text-right px-4 w-24">{t("admin.action")}</th>
             </tr></thead>
             <tbody>
               {filtered.map((o) => (
@@ -559,7 +559,8 @@ function OrdersTab({ addToast }) {
                   <td className="py-3 px-4 font-mono text-xs text-white/50">#{o.id.slice(0, 8)}</td>
                   <td className="px-4 text-white/70">{o.address?.name || "—"}</td>
                   <td className="px-4 text-right text-white/70">{o.items?.length || 0}</td>
-                  <td className="px-4 text-right text-[var(--color-primary)] font-mono">${o.total?.toFixed(2)}</td>
+                  <td className="px-4 text-right text-[var(--color-primary)] font-mono">MAD {o.total?.toFixed(2)}</td>
+                  <td className="px-4 text-right">{o.advancePayment ? <span className={`text-[10px] px-2 py-1 rounded-full font-mono ${o.advancePayment.status === "paid" ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/25" : "bg-amber-500/15 text-amber-300 border border-amber-500/25"}`}>{o.advancePayment.status === "paid" ? "Paid" : `MAD ${(o.advancePayment.amount || 0).toFixed(2)}`}</span> : <span className="text-white/20 text-xs">—</span>}</td>
                   <td className="px-4 text-center"><StatusBadge status={o.status} /></td>
                   <td className="px-4 text-right text-white/40 text-xs">{o.createdAt?.slice(0, 10)}</td>
                   <td className="px-4 text-right">
@@ -735,7 +736,7 @@ function StockTab({ addToast }) {
                     <td className="py-3 px-4"><span className="text-white">{p.name}</span></td>
                     <td className="px-4 text-right"><StockBadge stock={p.stock} /></td>
                     <td className={`px-4 text-right font-mono font-bold ${p.stock === 0 ? "text-red-400" : "text-orange-400"}`}>{p.stock}</td>
-                    <td className="px-4 text-right text-[var(--color-primary)] font-mono">${p.price?.toFixed(2)}</td>
+                    <td className="px-4 text-right text-[var(--color-primary)] font-mono">MAD {p.price?.toFixed(2)}</td>
                     <td className="px-4 text-right"><button onClick={() => setAdjusting(p)} className="px-3 py-1.5 rounded-lg bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs hover:bg-[var(--color-primary)]/20 transition-all border border-[var(--color-primary)]/20">{t("admin.adjust")}</button></td>
                   </tr>
                 ))}
@@ -824,7 +825,7 @@ function ExpensesTab({ addToast }) {
       </div>
       <div className="flex items-center gap-3 text-sm">
         <span className="text-white/50">{t("admin.total_col")}:</span>
-        <span className="text-[var(--color-primary)] font-mono font-bold text-lg">${total.toFixed(2)}</span>
+        <span className="text-[var(--color-primary)] font-mono font-bold text-lg">MAD {total.toFixed(2)}</span>
         {filter && <button onClick={() => setFilter("")} className="text-xs text-white/30 hover:text-white/60"><X size={12} className="inline" /> {t("common.clear")}</button>}
       </div>
       <div className="glass rounded-2xl border border-white/5 overflow-hidden">
@@ -838,7 +839,7 @@ function ExpensesTab({ addToast }) {
                 <tr key={e.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                   <td className="py-3 px-4 text-white font-medium">{e.title}</td>
                   <td className="px-4"><CategoryBadge category={e.category} /></td>
-                  <td className="px-4 text-right text-orange-400 font-mono">${e.amount?.toFixed(2)}</td>
+                  <td className="px-4 text-right text-orange-400 font-mono">MAD {e.amount?.toFixed(2)}</td>
                   <td className="px-4 text-white/40 text-xs truncate max-w-[150px]">{e.description || "—"}</td>
                   <td className="px-4 text-right text-white/40 text-xs">{e.date?.slice(0, 10)}</td>
                   <td className="px-4 text-right"><div className="flex items-center justify-end gap-1">
@@ -952,7 +953,7 @@ function CouponsTab({ addToast }) {
               {coupons.map((c) => (
                 <tr key={c.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                   <td className="py-3 px-4 font-mono text-[var(--color-primary)] font-bold">{c.code}</td>
-                  <td className="px-4 text-right text-white/70">{c.type === "percent" ? `${c.discount}%` : c.type === "flat" ? `$${c.discount}` : c.discount}</td>
+                  <td className="px-4 text-right text-white/70">{c.type === "percent" ? `${c.discount}%` : c.type === "flat" ? `MAD ${c.discount}` : c.discount}</td>
                   <td className="px-4 text-center"><span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium bg-white/5 text-white/50 border border-white/10 capitalize">{c.type}</span></td>
                   <td className="px-4 text-right text-white/50">{c.used}/{c.maxUses}</td>
                   <td className="px-4 text-right text-white/50">{c.maxUses}</td>

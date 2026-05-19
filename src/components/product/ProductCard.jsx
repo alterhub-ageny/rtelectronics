@@ -101,11 +101,11 @@ export default function ProductCard({ product, index = 0 }) {
         <div className="flex items-center justify-between">
           <div>
             <span className="price text-lg">
-              ${Number(product.price).toLocaleString()}
+              MAD {Number(product.price).toLocaleString()}
             </span>
             {product.originalPrice > product.price && (
               <span className="ml-2 text-[0.6875rem] text-[var(--color-text-muted)] line-through font-mono opacity-50">
-                ${Number(product.originalPrice).toLocaleString()}
+                MAD {Number(product.originalPrice).toLocaleString()}
               </span>
             )}
           </div>

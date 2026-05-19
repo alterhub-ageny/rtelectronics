@@ -23,7 +23,7 @@ export default function CartItem({ item }) {
           {item.name}
         </Link>
         <p className="text-[var(--color-primary)] font-display font-bold text-lg mt-1">
-          ${(item.price * item.quantity).toLocaleString()}
+          MAD {(item.price * item.quantity).toLocaleString()}
         </p>
       </div>
 

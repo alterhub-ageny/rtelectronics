@@ -58,7 +58,7 @@ export default function Cart() {
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="text-[var(--color-text)] text-sm font-medium truncate">{item.name}</h3>
-                <p className="price text-xs mt-0.5">${Number(item.price).toFixed(2)}</p>
+                <p className="price text-xs mt-0.5">MAD {Number(item.price).toFixed(2)}</p>
               </div>
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1 border border-[var(--card-border)] rounded-xl overflow-hidden">
@@ -92,13 +92,13 @@ export default function Cart() {
             <h3 className="text-[var(--color-text-muted)] text-[0.75rem] font-semibold tracking-wider">{t("cart.order_summary")}</h3>
             <div className="space-y-2 text-xs font-mono">
               <div className="flex justify-between text-[var(--color-text-muted)]"><span>{t("cart.items")}</span><span className="text-[var(--color-text)] opacity-70">{totalItems}</span></div>
-              <div className="flex justify-between text-[var(--color-text-muted)]"><span>{t("cart.subtotal")}</span><span className="price">${Number(totalPrice).toFixed(2)}</span></div>
+              <div className="flex justify-between text-[var(--color-text-muted)]"><span>{t("cart.subtotal")}</span><span className="price">MAD {Number(totalPrice).toFixed(2)}</span></div>
               <div className="flex justify-between text-[var(--color-text-muted)]"><span>{t("cart.shipping")}</span><span className="text-[var(--color-text)] opacity-50">{t("cart.calculated_next")}</span></div>
             </div>
             <div className="divider" />
             <div className="flex justify-between items-center">
               <span className="text-[var(--color-text-muted)] text-xs font-mono">{t("cart.total")}</span>
-              <span className="price text-lg">${Number(totalPrice).toFixed(2)}</span>
+              <span className="price text-lg">MAD {Number(totalPrice).toFixed(2)}</span>
             </div>
             <Link
               to="/checkout"

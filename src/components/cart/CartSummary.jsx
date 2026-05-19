@@ -22,21 +22,21 @@ export default function CartSummary() {
       <div className="space-y-3 mb-6">
         <div className="flex justify-between text-sm">
           <span className="text-white/50">{t("cart_summary.subtotal", { count: items.length })}</span>
-          <span className="text-white font-mono">${totalPrice.toLocaleString()}</span>
+          <span className="text-white font-mono">MAD {totalPrice.toLocaleString()}</span>
         </div>
         <div className="flex justify-between text-sm">
           <span className="text-white/50">{t("cart_summary.shipping")}</span>
           <span className={shipping === 0 ? "text-emerald-400 font-mono" : "text-white font-mono"}>
-            {shipping === 0 ? t("cart_summary.free") : `$${shipping.toFixed(2)}`}
+            {shipping === 0 ? t("cart_summary.free") : `MAD ${shipping.toFixed(2)}`}
           </span>
         </div>
         <div className="flex justify-between text-sm">
           <span className="text-white/50">{t("cart_summary.tax")}</span>
-          <span className="text-white font-mono">${tax.toFixed(2)}</span>
+          <span className="text-white font-mono">MAD {tax.toFixed(2)}</span>
         </div>
         <div className="border-t border-white/10 pt-3 flex justify-between">
           <span className="text-white font-semibold">{t("cart_summary.total")}</span>
-          <span className="text-[var(--color-primary)] font-display font-bold text-xl">${total.toFixed(2)}</span>
+          <span className="text-[var(--color-primary)] font-display font-bold text-xl">MAD {total.toFixed(2)}</span>
         </div>
       </div>
 

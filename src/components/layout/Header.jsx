@@ -5,8 +5,8 @@ import { useTranslation } from "react-i18next";
 import {
   ShoppingCart, Menu, X, User, Package, Heart, LogOut,
   Sun, Moon, Laptop, Smartphone, Gamepad2, Tablet, Headphones,
-  Mouse, Gem, Gift, Watch, ChevronRight, Sparkles, Globe,
-  Zap
+  Mouse, Gem, Gift, Watch,   ChevronRight, Sparkles, Globe,
+  ArrowRight
 } from "lucide-react";
 import { useCategories } from "../../hooks/useCategories";
 import { useCart } from "../../context/CartContext";
@@ -62,33 +62,20 @@ export default function Header() {
       <div className="max-w-site mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group shrink-0">
-            <div className="relative">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-hover)] flex items-center justify-center shadow-lg shadow-[var(--color-primary)]/20">
-                <Zap size={16} className="text-white" />
-              </div>
-              <div className="absolute -inset-1 bg-[var(--color-primary)]/20 blur-xl rounded-full scale-150 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            </div>
-            <div>
-              <span className="text-sm font-bold tracking-[0.2em] text-[var(--color-text)] group-hover:text-[var(--color-primary)] transition-colors">
-                RT
-              </span>
-              <p className="text-[8px] text-[var(--color-text-muted)] tracking-[0.2em] uppercase font-mono -mt-0.5">
-                ELECTRONICS
-              </p>
-            </div>
+          <Link to="/" className="flex items-center group shrink-0">
+            <img src="/logo.svg" alt="RT Electronics" className="h-14 w-auto" />
           </Link>
 
           {/* Desktop Nav */}
           <nav className="hidden lg:flex items-center gap-1">
-            {categories.map((cat) => {
+            {categories.slice(0, 5).map((cat) => {
               const Icon = NAV_ICONS[cat.icon] || Package;
               const label = NAV_LABELS[cat.name] || cat.name;
               return (
                 <Link
                   key={cat.id}
                   to={`/products?category=${cat.slug}`}
-                  className="group relative px-3 py-2 text-[0.8125rem] font-medium text-[var(--nav-link)] hover:text-[var(--color-text)] transition-all duration-300"
+                  className="group relative px-3 py-2 text-[0.8125rem] font-medium text-[var(--nav-link)] hover:text-[var(--color-text)] transition-all duration-300 whitespace-nowrap"
                 >
                   <span className="flex items-center gap-1.5">
                     <Icon size={12} className="group-hover:text-[var(--color-primary)] transition-colors" />
@@ -98,6 +85,42 @@ export default function Header() {
                 </Link>
               );
             })}
+            {categories.length > 5 && (
+              <div className="group relative">
+                <button className="flex items-center gap-1.5 px-3 py-2 text-[0.8125rem] font-medium text-[var(--nav-link)] hover:text-[var(--color-text)] transition-all duration-300">
+                  <span className="flex items-center gap-1.5">
+                    <Package size={12} />
+                    More
+                    <ChevronRight size={10} className="group-hover:rotate-90 transition-transform duration-200" />
+                  </span>
+                </button>
+                <div className="absolute top-full right-0 mt-2 w-[240px] glass-card overflow-hidden p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 translate-y-1 group-hover:translate-y-0 z-50">
+                  <div className="flex flex-col gap-0.5">
+                    {categories.slice(5).map((cat) => {
+                      const Icon = NAV_ICONS[cat.icon] || Package;
+                      const label = NAV_LABELS[cat.name] || cat.name;
+                      return (
+                        <Link
+                          key={cat.id}
+                          to={`/products?category=${cat.slug}`}
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[0.8125rem] text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:bg-[var(--color-primary-subtle)] transition-all"
+                        >
+                          <Icon size={14} className="text-[var(--color-primary)]/60 shrink-0" />
+                          <span>{label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                  <div className="mt-1.5 pt-1.5 border-t border-[var(--card-border)]">
+                    <Link to="/products"
+                      className="flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-[0.75rem] font-medium text-[var(--color-primary)] hover:bg-[var(--color-primary-subtle)] transition-all"
+                    >
+                      {t("view_all")} <ArrowRight size={11} />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            )}
           </nav>
 
           {/* Actions */}
