@@ -128,11 +128,11 @@
   --megamenu-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
 
   /* ─── Footer ─── */
-  --footer-bg: #0A0A0F;
-  --footer-text: rgba(255, 255, 255, 0.4);
-  --footer-text-hover: #FFFFFF;
-  --footer-border: rgba(255, 255, 255, 0.06);
-  --footer-heading: rgba(255, 255, 255, 0.9);
+  --footer-bg: #F0F0F3;
+  --footer-text: rgba(0, 0, 0, 0.5);
+  --footer-text-hover: #0A0A0F;
+  --footer-border: rgba(0, 0, 0, 0.06);
+  --footer-heading: rgba(0, 0, 0, 0.9);
 
   /* ─── Product Card ─── */
   --product-image-bg: #F0F0F3;
