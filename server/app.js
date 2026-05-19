@@ -27,7 +27,7 @@ const SCHEMA_SQL = `
 CREATE TABLE IF NOT EXISTS categories (id TEXT PRIMARY KEY, name TEXT NOT NULL, slug TEXT NOT NULL, description TEXT, icon TEXT, image TEXT, featured BOOLEAN DEFAULT false, "order" INTEGER DEFAULT 0);
 CREATE TABLE IF NOT EXISTS products (id TEXT PRIMARY KEY, name TEXT NOT NULL, category TEXT NOT NULL, price DOUBLE PRECISION NOT NULL, "originalPrice" DOUBLE PRECISION, rating DOUBLE PRECISION DEFAULT 0, reviews INTEGER DEFAULT 0, description TEXT, features JSONB DEFAULT '[]', images JSONB DEFAULT '[]', stock INTEGER DEFAULT 0, badge TEXT, specs JSONB DEFAULT '{}', "createdAt" TIMESTAMPTZ DEFAULT NOW());
 CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, name TEXT NOT NULL, email TEXT UNIQUE NOT NULL, password TEXT NOT NULL, role TEXT DEFAULT 'user', avatar TEXT, addresses JSONB DEFAULT '[]', wishlist JSONB DEFAULT '[]', banned BOOLEAN DEFAULT false, "createdAt" TIMESTAMPTZ DEFAULT NOW());
-CREATE TABLE IF NOT EXISTS orders (id TEXT PRIMARY KEY, "userId" TEXT NOT NULL, items JSONB DEFAULT '[]', total DOUBLE PRECISION DEFAULT 0, shipping DOUBLE PRECISION DEFAULT 0, tax DOUBLE PRECISION DEFAULT 0, coupon JSONB, "shippingMethod" TEXT, "giftWrap" BOOLEAN DEFAULT false, notes TEXT, address JSONB, status TEXT DEFAULT 'confirmed', "statusHistory" JSONB DEFAULT '[]', "trackingNumber" TEXT, "estimatedDelivery" TIMESTAMPTZ, "createdAt" TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS orders (id TEXT PRIMARY KEY, "userId" TEXT NOT NULL, items JSONB DEFAULT '[]', total DOUBLE PRECISION DEFAULT 0, shipping DOUBLE PRECISION DEFAULT 0, tax DOUBLE PRECISION DEFAULT 0, coupon JSONB, "shippingMethod" TEXT, "giftWrap" BOOLEAN DEFAULT false, notes TEXT, address JSONB, status TEXT DEFAULT 'confirmed', "statusHistory" JSONB DEFAULT '[]', "trackingNumber" TEXT, "estimatedDelivery" TIMESTAMPTZ, "advancePayment" JSONB, "createdAt" TIMESTAMPTZ DEFAULT NOW());
 CREATE TABLE IF NOT EXISTS reviews (id TEXT PRIMARY KEY, "productId" TEXT NOT NULL, "userId" TEXT, "userName" TEXT, rating INTEGER NOT NULL, title TEXT DEFAULT '', comment TEXT NOT NULL, verified BOOLEAN DEFAULT false, "createdAt" TIMESTAMPTZ DEFAULT NOW());
 CREATE TABLE IF NOT EXISTS coupons (id TEXT PRIMARY KEY, code TEXT NOT NULL, discount DOUBLE PRECISION DEFAULT 0, type TEXT DEFAULT 'percent', "minOrder" DOUBLE PRECISION DEFAULT 0, "maxUses" INTEGER DEFAULT 100, used INTEGER DEFAULT 0, active BOOLEAN DEFAULT true, "expiresAt" DATE);
 CREATE TABLE IF NOT EXISTS contacts (id TEXT PRIMARY KEY, name TEXT NOT NULL, email TEXT NOT NULL, subject TEXT, message TEXT NOT NULL, read BOOLEAN DEFAULT false, "createdAt" TIMESTAMPTZ DEFAULT NOW());
@@ -67,6 +67,7 @@ async function initDb() {
   try {
     const stmts = SCHEMA_SQL.split(";").filter(Boolean);
     for (const s of stmts) { try { await query(s); } catch {} }
+    try { await query('ALTER TABLE orders ADD COLUMN IF NOT EXISTS "advancePayment" JSONB'); } catch {}
     await seedSettings();
     await seedAdmin();
     // Seed real product/category data
