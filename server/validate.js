@@ -46,9 +46,9 @@ export const addressSchema = z.object({
   name: z.string().min(1).max(200).optional(),
   street: z.string().min(1).max(500),
   city: z.string().min(1).max(200),
-  state: z.string().min(1).max(200),
-  zip: z.string().min(1).max(20),
-  country: z.string().min(1).max(200).optional(),
+  state: z.string().max(200).optional().default(""),
+  zip: z.string().max(20).optional().default(""),
+  country: z.string().max(200).optional().default("MA"),
   phone: z.string().max(50).optional(),
 });
 
